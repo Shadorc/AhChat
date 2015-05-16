@@ -34,7 +34,7 @@ public class Client {
 
 			BufferedReader in = new BufferedReader(new InputStreamReader(s_chat.getInputStream()));
 
-			//Lance le Thread de chat.
+			//Chat's thread
 			reception = new Reception(in);
 			new Thread(reception).start();
 

@@ -32,7 +32,7 @@ class ClientFrame extends JFrame {
 			}
 		});
 
-		this.setIconImage(new ImageIcon(this.getClass().getResource("/res/icone.png")).getImage());
+		this.setIconImage(new ImageIcon(this.getClass().getResource("/res/icon.png")).getImage());
 		this.setContentPane(new ConnectionPanel(this));
 		this.pack();
 		this.setMinimumSize(new Dimension(800, 600));

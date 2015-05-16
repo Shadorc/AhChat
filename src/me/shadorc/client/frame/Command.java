@@ -1,5 +1,7 @@
 package me.shadorc.client.frame;
 
+import java.util.Arrays;
+
 import javax.swing.JTextArea;
 
 public class Command {
@@ -11,23 +13,23 @@ public class Command {
 	}
 
 	public static void execute(String command) {
-		if(command.startsWith("/connexion")) {
-			Command.addUser(command.split(" ")[1]);
-		} else if(command.startsWith("/deconnexion")) {
-			Command.removeUser(command.split(" ")[1]);
-		} else if(command.startsWith("/rename")) {
-			Command.replaceUser(command.split(" ")[1], command.split(" ")[2]);
+		switch(command.split(" ")[0]) {
+			case "/connexion":
+				Command.addUser(command.split(" ")[1]);
+				break;
+			case "/deconnexion":
+				Command.removeUser(command.split(" ")[1]);
+				break;
+			case "/rename":
+				Command.replaceUser(command.split(" ")[1], command.split(" ")[2]);
+				break;
 		}
 	}
 
 	private static void addUser(String user) {
-		for(String name : users.getText().split("\n")) {
-			if(name.equals(user)) {
-				return;
-			}
+		if(!Arrays.asList(users.getText().split("\n")).contains(user)) {
+			users.append(user + "\n");
 		}
-
-		users.append(user + "\n");
 	}
 
 	private static void removeUser(String user) {

@@ -6,6 +6,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -26,12 +27,12 @@ class ConnectionPanel extends Box implements ActionListener {
 
 	private static final long serialVersionUID = 1L;
 
-	private final ImageIcon image = new ImageIcon(this.getClass().getResource("/res/fond.jpg"));
+	private Image background = new ImageIcon(this.getClass().getResource("/res/background.jpg")).getImage();
 
-	private JFormattedTextField saisisName;
-	private JFormattedTextField saisisIp;
+	private JFormattedTextField nameField;
+	private JFormattedTextField ipField;
 
-	private JButton ok;
+	private JButton connect;
 	private JButton create;
 
 	private JFrame frame;
@@ -59,22 +60,22 @@ class ConnectionPanel extends Box implements ActionListener {
 		name.setPreferredSize(new Dimension(100, 30));
 		top.add(name, BorderLayout.WEST);
 
-		saisisName = new JFormattedTextField();
-		top.add(saisisName, BorderLayout.CENTER);
+		nameField = new JFormattedTextField();
+		top.add(nameField, BorderLayout.CENTER);
 
 		JLabel ip = new JLabel("IP du Serveur :");
 		ip.setForeground(Color.BLACK);
 		ip.setPreferredSize(new Dimension(100, 30));
 		center.add(ip, BorderLayout.WEST);
 
-		saisisIp = new JFormattedTextField();
-		center.add(saisisIp, BorderLayout.CENTER);
+		ipField = new JFormattedTextField();
+		center.add(ipField, BorderLayout.CENTER);
 
 		bottom.add(new JLabel());
-		ok = new JButton("Connexion");
-		ok.setBackground(Color.WHITE);
-		ok.addActionListener(this);
-		bottom.add(ok);
+		connect = new JButton("Connexion");
+		connect.setBackground(Color.WHITE);
+		connect.addActionListener(this);
+		bottom.add(connect);
 		bottom.add(new JLabel());
 
 		bottom2.add(new JLabel());
@@ -103,15 +104,16 @@ class ConnectionPanel extends Box implements ActionListener {
 
 		JButton bu = (JButton) e.getSource();
 
-		if(bu == ok) {
-			if(saisisName.getText().isEmpty() 
-					|| saisisIp.getText().isEmpty() 
-					|| !saisisIp.getText().matches("^(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})$")  //Test if the IP address contains letters
-					|| !saisisName.getText().replaceAll("[^0-9a-zA-Z]", "").equals(saisisName.getText())) { //Test if name contains others than letters or number
+		if(bu == connect) {
+			if(nameField.getText().isEmpty() 
+					|| ipField.getText().isEmpty() 
+					|| !ipField.getText().matches("^(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})$")  //Test if the IP address contains letters
+					|| !nameField.getText().replaceAll("[^0-9a-zA-Z]", "").equals(nameField.getText())) { //Test if name contains others than letters or number
 				JOptionPane.showMessageDialog(null, "Merci de remplir tous les champs correctement. (Les pseudos ne peuvent contenir que des lettres et des chiffres)", "Erreur", JOptionPane.ERROR_MESSAGE);
+
 			} else {
 				ConnectedPanel pane = new ConnectedPanel(frame); //Sinon users est null et il y a une erreur lors du launch
-				if(Client.launch(saisisName.getText(), saisisIp.getText())) {
+				if(Client.launch(nameField.getText(), ipField.getText())) {
 					frame.setContentPane(pane);
 					frame.revalidate();
 				} else {
@@ -127,6 +129,6 @@ class ConnectionPanel extends Box implements ActionListener {
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		g.drawImage(image.getImage(), 0, 0, this.getWidth(), this.getHeight(), 0, 0, image.getIconWidth(), image.getIconHeight(), this);
+		g.drawImage(background, 0, 0, this.getWidth(), this.getHeight(), 0, 0, background.getWidth(null), background.getHeight(null), this);
 	}
 }

@@ -70,7 +70,7 @@ public class ConnectedPanel extends JPanel {
 		users.setPreferredSize(new Dimension(frame.getWidth()/4, 0));
 		this.add(users, BorderLayout.EAST);
 
-		final JFormattedTextField saisisTexte = new JFormattedTextField();
+		JFormattedTextField saisisTexte = new JFormattedTextField();
 		saisisTexte.setPreferredSize(new Dimension(frame.getWidth(), 25));
 		saisisTexte.addKeyListener(new KeyListener() {
 			@Override
@@ -98,18 +98,18 @@ public class ConnectedPanel extends JPanel {
 	}
 
 	public static void dispMessage(String message) {
-		try {
-			kit.insertHTML(doc, doc.getLength(), "<font size=4>" + message + "</font>", 0, 0, null);
-		} catch (BadLocationException | IOException e) {
-			JOptionPane.showMessageDialog(null, e.toString(), "Error", JOptionPane.ERROR_MESSAGE);
-		}
+		disp("<font size=4>" + message + "</font>");
 	}
 
 	public static void dispError(String error) {
+		disp("<b><i><font color='red' size=4> /!\\ " + error + " /!\\\n</b></i></font>");
+	}
+
+	private static void disp(String text) {
 		try {
-			kit.insertHTML(doc, doc.getLength(), "<b><i><font color='red' size=4> /!\\ " + error + " /!\\\n</b></i></font>", 0, 0, null);
+			kit.insertHTML(doc, doc.getLength(), text, 0, 0, null);
 		} catch (BadLocationException | IOException e) {
-			JOptionPane.showMessageDialog(null, e.toString(), "Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "Une erreur est survenue : " + e.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 }
