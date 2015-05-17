@@ -2,6 +2,7 @@ package me.shadorc.client;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -52,15 +53,33 @@ public class Client {
 			return false;
 		}
 	}
-	
+
 	public static void sendMessage(String message) {
 		emission.sendMessage(message);
 	}
 
-	public static void receiveFile() throws FileNotFoundException, IOException {
+	public static void receiveFile(String name) {
 		//Client's Desktop with file's name
-		File file = new File(FileSystemView.getFileSystemView().getHomeDirectory() + "\\test.jpg");	
-		new Transfer(s_data.getInputStream(), new FileOutputStream(file), file).start();
+		File file = new File(FileSystemView.getFileSystemView().getHomeDirectory() + "\\" + name);	
+		try {
+			new Transfer(s_data.getInputStream(), new FileOutputStream(file), file).start();
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(null, "Erreur lors du téléchargement : " + e.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+			e.printStackTrace();
+		}
+	}
+
+	public static void sendFile(String path) throws FileNotFoundException {
+		//Client's Desktop with file's name
+		File file = new File(path);	
+		try {
+			new Transfer(new FileInputStream(file), s_data.getOutputStream(), file).start();
+		} catch (FileNotFoundException e) {
+			throw e;
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(null, "Erreur lors du téléchargement : " + e.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+			e.printStackTrace();
+		}
 	}
 
 	public static void exit() {

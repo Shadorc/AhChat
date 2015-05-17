@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -77,6 +78,13 @@ public class ConnectedPanel extends JPanel {
 
 					if(message.equals("/quit")) {
 						Client.exit();
+					} else if(message.startsWith("/send")) {
+						try {
+							if(message.split(" ").length != 2) throw new FileNotFoundException("Chemin du fichier non spécifié.");
+							Client.sendFile(message.split(" ")[1]);
+						} catch (FileNotFoundException e1) {
+							ConnectedPanel.dispError("Merci d'entrer le chemin du fichier à envoyer.");
+						}
 					} else if(message.length() > 0) {
 						Client.sendMessage(message);
 					}

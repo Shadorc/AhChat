@@ -62,9 +62,9 @@ public class Transfer implements Runnable {
 			ConnectedPanel.dispError("[INFO] Transfert fini.");
 			try {
 				timer.stop();
+				in.close();
 				out.close();
 				out.flush();
-				in.close();
 			} catch (IOException e) {
 				ConnectedPanel.dispError("Erreur lors de la fin du transfert des données : " + e.getMessage());
 			}

@@ -3,6 +3,7 @@ package me.shadorc.server;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -10,6 +11,10 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileSystemView;
+
+import me.shadorc.client.Transfer;
 import me.shadorc.server.Server.Type;
 
 public class Client implements Runnable {
@@ -50,16 +55,27 @@ public class Client implements Runnable {
 		}
 	}
 
+	public void receiveFile(String name) {
+		//Client's Desktop with file's name
+		File file = new File(FileSystemView.getFileSystemView().getHomeDirectory() + "\\" + name);	
+		try {
+			new Transfer(s_data.getInputStream(), new FileOutputStream(file), file).start();
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(null, "Erreur lors du téléchargement : " + e.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+			e.printStackTrace();
+		}
+	}
+
 	public void sendFile(File file) {
-		send("[INFO] Envoie d'un fichier de " + file.length()/1024 + "ko.");
+		send("[INFO] Envoi d'un fichier de " + file.length()/1024 + "ko.");
 		try {
 			InputStream in = new FileInputStream(file);
 			OutputStream out = s_data.getOutputStream();
-			new Transfer(in, out).start();
+			new Transfer(in, out, file).start();
 
 		} catch (IOException e) {
-			ServerFrame.dispError("Erreur lors de l'envoit du fichier : " + e.getMessage() + ", annulation.");
-			send("Erreur lors de l'envoit du fichier : " + e.getMessage() + ", annulation.");
+			ServerFrame.dispError("Erreur lors de l'envoi du fichier : " + e.getMessage() + ", annulation.");
+			send("Erreur lors de l'envoi du fichier : " + e.getMessage() + ", annulation.");
 			e.printStackTrace();
 		}
 	}

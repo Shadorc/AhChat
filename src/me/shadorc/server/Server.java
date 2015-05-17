@@ -39,7 +39,7 @@ public class Server implements Runnable {
 			} catch (IOException e) {
 				ip = "Unknown";
 			}
-
+			
 			ServerFrame.dispMessage("Welcome");
 			ServerFrame.split();
 			ServerFrame.dispMessage("Ports : " + ss_chat.getLocalPort() + " (chat) & " + ss_data.getLocalPort() + " (data)");
