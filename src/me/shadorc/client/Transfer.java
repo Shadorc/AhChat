@@ -46,7 +46,7 @@ public class Transfer implements Runnable {
 		byte buff[] = new byte[1024];
 		int data;
 
-		ConnectedPanel.dispMessage("[INFO] Transfert en cours.");
+		ConnectedPanel.dispMessage("[INFO] Envoi en cours.");
 
 		timer.start();
 
@@ -57,10 +57,10 @@ public class Transfer implements Runnable {
 			}
 
 		} catch (IOException e) {
-			ConnectedPanel.dispError("Erreur lors de la récéption du fichier, " + e.getMessage() + ", annulation.");
+			ConnectedPanel.dispError("Erreur lors de l'envoi du fichier, " + e.getMessage() + ", annulation.");
 
 		} finally {
-			ConnectedPanel.dispMessage("[INFO] Transfert fini.");
+			ConnectedPanel.dispMessage("[INFO] Fichier envoyé.");
 			try {
 				timer.stop();
 				in.close();

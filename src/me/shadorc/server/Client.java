@@ -75,36 +75,41 @@ public class Client implements Runnable {
 				this.send("/connexion " + name);
 			}
 
+			//Ce thread attend en boucle la réception de données
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
 					InputStream in = null;
 					OutputStream out = null;
 
+					byte buff[] = new byte[1024];
+					int data;
+
 					try {
-						//Client's Desktop with file's name
-						File file = new File(FileSystemView.getFileSystemView().getHomeDirectory() + "\\" + "test.jpg");
-
 						in = s_data.getInputStream();
-						out = new FileOutputStream(file);
 
-						byte buff[] = new byte[1024];
-						int data;
+						if((data = in.read(buff)) != -1) {
+							//Client's Desktop with file's name
+							File file = new File(FileSystemView.getFileSystemView().getHomeDirectory() + "\\" + "test.jpg");
 
-						ConnectedPanel.dispMessage("[INFO] Transfert en cours.");
+							out = new FileOutputStream(file);
 
-						//					timer.start();
+							ConnectedPanel.dispMessage("[INFO] Fichier en cours de réception.");
 
-						while((data = in.read(buff)) != -1) {
-							out.write(buff, 0, data);
-							out.flush();
+							//					timer.start();
+
+							while(data != -1) {
+								out.write(buff, 0, data);
+								out.flush();
+								data = in.read(buff);
+							}
 						}
 
 					} catch (IOException e) {
-						ConnectedPanel.dispError("Erreur lors de la récéption du fichier, " + e.getMessage() + ", annulation.");
+						ConnectedPanel.dispError("Erreur lors de la réception du fichier, " + e.getMessage() + ", annulation.");
 
 					} finally {
-						ConnectedPanel.dispError("[INFO] Transfert fini.");
+						ConnectedPanel.dispError("[INFO] Fichier reçu.");
 						try {
 							//							timer.stop();
 							in.close();
