@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
+import java.util.Arrays;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFormattedTextField;
@@ -23,7 +24,6 @@ import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
 import me.shadorc.client.Client;
-import me.shadorc.client.Emission;
 
 public class ConnectedPanel extends JPanel {
 
@@ -34,11 +34,9 @@ public class ConnectedPanel extends JPanel {
 
 	private static JTextArea users = new JTextArea();
 
-	ConnectedPanel(JFrame frame) {
+	public ConnectedPanel(JFrame frame) {
 
 		super(new BorderLayout());
-
-		new Command(users);
 
 		JTextPane chat = new JTextPane();
 		chat.getDocument().addDocumentListener(new DocumentListener() {
@@ -81,7 +79,7 @@ public class ConnectedPanel extends JPanel {
 					if(message.equals("/quit")) {
 						Client.exit();
 					} else if(message.length() > 0) {
-						Emission.sendMessage(message);
+						Client.sendMessage(message);
 					}
 
 					saisisTexte.setText("");
@@ -95,6 +93,20 @@ public class ConnectedPanel extends JPanel {
 			public void keyReleased(KeyEvent e) {}
 		});
 		this.add(saisisTexte, BorderLayout.PAGE_END);
+	}
+
+	public static void addUser(String user) {
+		if(!Arrays.asList(users.getText().split("\n")).contains(user)) {
+			users.append(user + "\n");
+		}
+	}
+
+	public static void removeUser(String user) {
+		users.setText(users.getText().replace(user, ""));
+	}
+
+	public static void replaceUser(String oldName, String newName) {
+		users.setText(users.getText().replace(oldName, newName));
 	}
 
 	public static void dispMessage(String message) {

@@ -6,20 +6,18 @@ import java.net.SocketException;
 
 import javax.swing.JOptionPane;
 
-import me.shadorc.client.frame.Command;
 import me.shadorc.client.frame.ConnectedPanel;
 
-class Reception implements Runnable {
+public class Reception implements Runnable {
 
 	private BufferedReader in;
 
-	protected Reception(BufferedReader in) {
+	public Reception(BufferedReader in) {
 		this.in = in;
 	}
 
 	@Override
 	public void run() {
-
 		String message;
 
 		try {
@@ -32,17 +30,17 @@ class Reception implements Runnable {
 			}
 
 		} catch (SocketException e) {
-			ConnectedPanel.dispError("Le serveur a été fermé.");
+			ConnectedPanel.dispError("Le serveur a Ã©tÃ© fermÃ©.");
 
 		} catch (IOException e) {
-			ConnectedPanel.dispError("Erreur lors de la récéption des messages : " + e.toString());
+			ConnectedPanel.dispError("Erreur lors de la rÃ©cÃ©ption des messages : " + e.toString());
 
 		} finally {
 			this.close();
 		}
 	}
 
-	protected void close() {
+	public void close() {
 		try {
 			in.close();
 		} catch (IOException e) {

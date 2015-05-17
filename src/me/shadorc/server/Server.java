@@ -14,18 +14,18 @@ import java.util.HashMap;
 
 class Server implements Runnable {
 
-	private HashMap <String, PrintWriter> clients = new HashMap <>();
-	public static String ip;
+	private static HashMap <String, PrintWriter> clients = new HashMap <>();
+	private static String ip;
 
 	@Override
 	public void run() {
 
 		ServerSocket ss_chat = null; //Chat Socket Server
-		//ServerSocket ss_data = null; //Data Socket Server
+		ServerSocket ss_data = null; //Data Socket Server
 
 		try {
 			ss_chat = new ServerSocket(15000);
-			//ss_data = new ServerSocket(15001);
+			ss_data = new ServerSocket(15001);
 
 			try {
 				ip = new BufferedReader(new InputStreamReader(new URL("http://checkip.amazonaws.com").openStream())).readLine();
@@ -36,15 +36,15 @@ class Server implements Runnable {
 
 			ServerFrame.dispMessage("Welcome");
 			ServerFrame.split();
-			ServerFrame.dispMessage("Ports : " + ss_chat.getLocalPort() + " (chat)");// & " + ss_data.getLocalPort() + " (data)");
+			ServerFrame.dispMessage("Ports : " + ss_chat.getLocalPort() + " (chat) & " + ss_data.getLocalPort() + " (data)");
 			ServerFrame.dispMessage("IP : " + ip);
 			ServerFrame.split();
 			Command.admin("/help");
 			ServerFrame.split();
 
 			while(true) {
-				// attente en boucle de connexion (bloquant sur ss.accept)
-				new Client(ss_chat.accept(), /* ss_data.accept(), */this); //Client connects, new client thread is started
+				//Pending connection loop (blocking on ss.accept)
+				new Client(ss_chat.accept(), ss_data.accept());
 			}
 
 		} catch (IOException e) {
@@ -53,7 +53,7 @@ class Server implements Runnable {
 		} finally {
 			try {
 				ss_chat.close();
-				//ss_data.close();
+				ss_data.close();
 			} catch (IOException | NullPointerException e) {
 				ServerFrame.dispError("Erreur lors de la fermeture du serveur : " + e.toString());
 			}
@@ -64,7 +64,7 @@ class Server implements Runnable {
 		MESSAGE, COMMAND, INFO;
 	}
 
-	protected synchronized void sendAll(String message, Type type) {
+	public static synchronized void sendAll(String message, Type type) {
 
 		if(type == Type.MESSAGE || type == Type.INFO) {
 			message = new SimpleDateFormat("HH:mm:ss ").format(new Date()) 
@@ -73,32 +73,36 @@ class Server implements Runnable {
 			ServerFrame.dispMessage(message);
 		}
 
-		for(String user : clients.keySet()) {
-			clients.get(user).println(message);
-			clients.get(user).flush();
+		for(String client : clients.keySet()) {
+			clients.get(client).println(message);
+			clients.get(client).flush();
 		}
 	}
 
-	protected synchronized void addClient(PrintWriter out, String pseudo) {
+	public static synchronized void addClient(PrintWriter out, String pseudo) {
 		clients.put(pseudo, out);
-		this.sendAll("/connexion " + pseudo, Type.COMMAND);
+		sendAll("/connexion " + pseudo, Type.COMMAND);
 	}
 
-	protected synchronized void renClient(String oldName, String newName) {
+	public static synchronized void renClient(String oldName, String newName) {
 		PrintWriter oldOut = clients.get(oldName);
 		clients.remove(oldName);
 		clients.put(newName, oldOut);
 
-		this.sendAll(oldName + " s'est renommé en " + newName + ".", Type.INFO);
-		this.sendAll("/rename " + oldName + " " + newName, Type.COMMAND);
+		sendAll(oldName + " s'est renommÃ© en " + newName + ".", Type.INFO);
+		sendAll("/rename " + oldName + " " + newName, Type.COMMAND);
 	}
 
-	protected synchronized void delClient(String pseudo) {
+	public static synchronized void delClient(String pseudo) {
 		clients.remove(pseudo);
-		this.sendAll("/deconnexion " + pseudo, Type.COMMAND);
+		sendAll("/deconnexion " + pseudo, Type.COMMAND);
 	}
 
-	protected synchronized HashMap <String, PrintWriter> getClients() {
+	protected static HashMap <String, PrintWriter> getClients() {
 		return clients;
+	}
+
+	public static String getIp() {
+		return ip;
 	}
 }

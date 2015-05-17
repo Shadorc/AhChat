@@ -24,11 +24,11 @@ public class ServerFrame extends JFrame implements KeyListener, FocusListener {
 
 	private static final long serialVersionUID = 1L;
 
-	private String text = "Envoyer un message";
+	private String DEFAULT_TEXT = "Envoyer un message";
 
 	private static HTMLEditorKit kit = new HTMLEditorKit();
 	private static HTMLDocument doc = new HTMLDocument();
-	private JFormattedTextField textField = new JFormattedTextField(text);
+	private JFormattedTextField textField = new JFormattedTextField(DEFAULT_TEXT);
 
 	public ServerFrame() {
 
@@ -60,7 +60,6 @@ public class ServerFrame extends JFrame implements KeyListener, FocusListener {
 		this.setVisible(true);
 
 		Server serv = new Server();
-		new Command(serv);
 		new Thread(serv).start();
 	}
 
@@ -72,7 +71,7 @@ public class ServerFrame extends JFrame implements KeyListener, FocusListener {
 		try {
 			kit.insertHTML(doc, doc.getLength(), "<font size=4>" + message + "</font>", 0, 0, null);
 		} catch (BadLocationException | IOException e) {
-			JOptionPane.showMessageDialog(null, e.toString(), "Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, e.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
@@ -80,13 +79,13 @@ public class ServerFrame extends JFrame implements KeyListener, FocusListener {
 		try {
 			kit.insertHTML(doc, doc.getLength(), "<b><i><font color=red size=4> /!\\ " + error + " /!\\\n</b></i></font>", 0, 0, null);
 		} catch (BadLocationException | IOException e) {
-			JOptionPane.showMessageDialog(null, e.toString(), "Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, e.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
 	@Override
 	public void focusGained(FocusEvent arg0) {
-		if(textField.getText().equals(text)) {
+		if(textField.getText().equals(DEFAULT_TEXT)) {
 			textField.setText(null);
 		}
 	}
@@ -94,7 +93,7 @@ public class ServerFrame extends JFrame implements KeyListener, FocusListener {
 	@Override
 	public void focusLost(FocusEvent arg0) {
 		if(textField.getText().isEmpty()) {
-			textField.setText(text);
+			textField.setText(DEFAULT_TEXT);
 		}
 	}
 

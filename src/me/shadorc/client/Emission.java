@@ -4,18 +4,18 @@ import java.io.PrintWriter;
 
 public class Emission {
 
-	private static PrintWriter out;
+	private PrintWriter out;
 
-	protected Emission(PrintWriter out) {
-		Emission.out = out;
+	Emission(PrintWriter out) {
+		this.out = out;
 	}
 
-	public static void sendMessage(String m) {
+	public void sendMessage(String m) {
 		out.println(m);
 		out.flush();
 	}
 
-	protected void close() {
+	public void close() {
 		out.flush();
 		out.close();
 	}

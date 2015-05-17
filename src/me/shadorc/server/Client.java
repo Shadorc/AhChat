@@ -1,28 +1,30 @@
 package me.shadorc.server;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 
 import me.shadorc.server.Server.Type;
 
-class Client implements Runnable {
+public class Client implements Runnable {
 
-	private Server serv;
 	private Socket s_chat;
-	//	private Socket s_data;
+	private Socket s_data;
 	private PrintWriter out;
 	private BufferedReader in;
 
 	private String pseudo = "Unknown";
 
-	Client(Socket s_chat, /* Socket s_data, */Server serv) {
+	public Client(Socket s_chat, Socket s_data) {
 
-		this.serv = serv;
 		this.s_chat = s_chat;
-		//		this.s_data = s_data;
+		this.s_data = s_data;
 
 		try {
 			out = new PrintWriter(s_chat.getOutputStream());
@@ -31,30 +33,34 @@ class Client implements Runnable {
 			pseudo = in.readLine();
 
 			//If pseudo already exists, add number while pseudo exists (ex: Shadorc, Shadorc(1), Shadorc(2), ...)
-			for(int i = 1; serv.getClients().containsKey((pseudo)); i++) {
+			for(int i = 1; Server.getClients().containsKey((pseudo)); i++) {
 				pseudo = pseudo + "(" + i + ")";
 			}
 
-			serv.addClient(out, pseudo);
+			Server.addClient(out, pseudo);
 
 			new Thread(this).start();
 
 		} catch (IOException e) {
-			ServerFrame.dispError("Erreur lors de la création du client : " + e.toString());
+			ServerFrame.dispError("Erreur lors de la crÃ©ation du client : " + e.getMessage());
 			this.quit();
 		}
 	}
 
-	//	public void sendFile(File file) {
-	//		send("[INFO] Envoie d'un fichier de " + file.length()/1024 + "ko.");
-	//		try {
-	//			new Thread(new Transfer(new FileInputStream(file), s_data.getOutputStream())).start();
-	//		} catch (IOException e) {
-	//			Frame.dispError("Erreur lors de l'envoit du fichier : " + e.toString() + ", annulation.");
-	//			send("Erreur lors de l'envoit du fichier : " + e.toString() + ", annulation.");
-	//			e.printStackTrace();
-	//		}
-	//	}
+	public void sendFile(File file) {
+		send("[INFO] Envoie d'un fichier de " + file.length()/1024 + "ko.");
+		try {
+			InputStream in = new FileInputStream(file);
+			OutputStream out = s_data.getOutputStream();
+
+			Transfer tr = new Transfer(in, out);
+			new Thread(tr).start();
+		} catch (IOException e) {
+			ServerFrame.dispError("Erreur lors de l'envoit du fichier : " + e.getMessage() + ", annulation.");
+			send("Erreur lors de l'envoit du fichier : " + e.getMessage() + ", annulation.");
+			e.printStackTrace();
+		}
+	}
 
 	@Override
 	public void run() {
@@ -64,14 +70,14 @@ class Client implements Runnable {
 		try {
 			this.send("<b><font color=18B00A>* * Bienvenue ! Pour de l'aide entrer /help.");
 
-			serv.sendAll(pseudo + " vient de se connecter.", Type.INFO);
+			Server.sendAll(pseudo + " vient de se connecter.", Type.INFO);
 
 			//Send the list of all connected people
-			for(String name : serv.getClients().keySet()) {
+			for(String name : Server.getClients().keySet()) {
 				this.send("/connexion " + name);
 			}
 
-			//Attente en boucle des messages provenant du client (bloquant sur _in.read())
+			//Waiting loop messages from the client (blocking on _in.read ())
 			while((message = in.readLine()) != null) {
 				if(message.startsWith("/rename")) {
 					this.rename(message);
@@ -79,7 +85,7 @@ class Client implements Runnable {
 					this.send(Command.user(message));
 				} else {
 					// &lt; : "<" et &gt; : ">"
-					serv.sendAll("<b><font color=blue>&lt;" + pseudo + "&gt;</b> " + message, Type.MESSAGE);
+					Server.sendAll("<b><font color=blue>&lt;" + pseudo + "&gt;</b> " + message, Type.MESSAGE);
 				}
 			}
 
@@ -103,21 +109,21 @@ class Client implements Runnable {
 		} else {
 			String oldPseudo = pseudo;
 			pseudo = message.split(" ")[1];
-			serv.renClient(oldPseudo, pseudo);
+			Server.renClient(oldPseudo, pseudo);
 		}
 	}
 
 	private void quit() {
 		try {
-			serv.sendAll(pseudo + " s'est déconnecté.", Type.INFO);
-			serv.delClient(pseudo);
+			Server.sendAll(pseudo + " s'est dÃ©connectÃ©.", Type.INFO);
+			Server.delClient(pseudo);
 			s_chat.close();
 			//s_data.close();
 			out.flush();
 			out.close();
 			in.close();
 		} catch (IOException e) {
-			ServerFrame.dispError("Erreur lors de la fermeture du client : " + e.toString());
+			ServerFrame.dispError("Erreur lors de la fermeture du client : " + e.getMessage());
 		}
 	}
 }

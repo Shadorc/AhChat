@@ -18,7 +18,7 @@ public class Tray {
 	private static TrayIcon icon;
 	private static JFrame frame;
 
-	protected Tray(JFrame frame) {
+	public Tray(JFrame frame) {
 
 		Tray.frame = frame;
 		PopupMenu menu = new PopupMenu();
@@ -38,7 +38,7 @@ public class Tray {
 		try {
 			SystemTray.getSystemTray().add(icon);
 		} catch (AWTException e) {
-			ConnectedPanel.dispError("Erreur lors de la création du TrayIcon : " + e.toString());
+			ConnectedPanel.dispError("Erreur lors de la crÃ©ation du TrayIcon : " + e.toString());
 		}
 	}
 

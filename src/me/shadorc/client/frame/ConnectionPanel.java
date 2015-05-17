@@ -27,24 +27,21 @@ class ConnectionPanel extends Box implements ActionListener {
 
 	private static final long serialVersionUID = 1L;
 
-	private Image background = new ImageIcon(this.getClass().getResource("/res/background.jpg")).getImage();
-
-	private JFormattedTextField nameField;
-	private JFormattedTextField ipField;
-
-	private JButton connect;
-	private JButton create;
+	private JFormattedTextField nameField, ipField;
+	private JButton connect, create;
+	private Image background;
 
 	private JFrame frame;
 
-	protected ConnectionPanel(JFrame frame) {
+	public ConnectionPanel(JFrame frame) {
 
 		super(BoxLayout.Y_AXIS);
 
 		this.frame = frame;
+		this.background = new ImageIcon(this.getClass().getResource("/res/background.jpg")).getImage();
 
-		JPanel mainPane = new JPanel(new GridLayout(4, 0));
-		mainPane.setOpaque(false);
+		JPanel panel = new JPanel(new GridLayout(4, 0));
+		panel.setOpaque(false);
 
 		JPanel top = new JPanel(new BorderLayout());
 		top.setOpaque(false);
@@ -79,23 +76,23 @@ class ConnectionPanel extends Box implements ActionListener {
 		bottom.add(new JLabel());
 
 		bottom2.add(new JLabel());
-		create = new JButton("Créer un salon");
+		create = new JButton("CrÃ©er un salon");
 		create.setBackground(Color.WHITE);
 		create.addActionListener(this);
 		bottom2.add(create);
 		bottom2.add(new JLabel());
 
-		mainPane.add(top);
-		mainPane.add(center);
-		mainPane.add(bottom);
-		mainPane.add(bottom2);
+		panel.add(top);
+		panel.add(center);
+		panel.add(bottom);
+		panel.add(bottom2);
 
-		mainPane.setMaximumSize(new Dimension(400, 100));
+		panel.setMaximumSize(new Dimension(400, 100));
 
 		this.setOpaque(false);
 		this.setAlignmentX(Component.CENTER_ALIGNMENT);
 		this.add(Box.createVerticalGlue());
-		this.add(mainPane);
+		this.add(panel);
 		this.add(Box.createVerticalGlue());
 	}
 
