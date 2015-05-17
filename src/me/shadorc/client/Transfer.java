@@ -53,13 +53,14 @@ public class Transfer implements Runnable {
 		try {
 			while((data = in.read(buff)) != -1) {
 				out.write(buff, 0, data);
+				out.flush();
 			}
 
 		} catch (IOException e) {
 			ConnectedPanel.dispError("Erreur lors de la récéption du fichier, " + e.getMessage() + ", annulation.");
 
 		} finally {
-			ConnectedPanel.dispError("[INFO] Transfert fini.");
+			ConnectedPanel.dispMessage("[INFO] Transfert fini.");
 			try {
 				timer.stop();
 				in.close();
