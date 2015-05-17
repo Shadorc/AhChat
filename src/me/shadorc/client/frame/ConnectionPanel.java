@@ -9,6 +9,8 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -22,7 +24,7 @@ import javax.swing.JPanel;
 import me.shadorc.client.Client;
 import me.shadorc.server.ServerFrame;
 
-public class ConnectionPanel extends Box implements ActionListener {
+public class ConnectionPanel extends Box implements ActionListener, KeyListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -54,6 +56,7 @@ public class ConnectionPanel extends Box implements ActionListener {
 		top.add(name, BorderLayout.WEST);
 
 		nameField = new JFormattedTextField();
+		nameField.addKeyListener(this);
 		top.add(nameField, BorderLayout.CENTER);
 
 		JLabel ip = new JLabel("IP du Serveur :");
@@ -62,6 +65,7 @@ public class ConnectionPanel extends Box implements ActionListener {
 		center.add(ip, BorderLayout.WEST);
 
 		ipField = new JFormattedTextField();
+		ipField.addKeyListener(this);
 		center.add(ipField, BorderLayout.CENTER);
 
 		bottom.add(new JLabel());
@@ -94,27 +98,29 @@ public class ConnectionPanel extends Box implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-
 		JButton bu = (JButton) e.getSource();
 
 		if(bu == connect) {
-			if(nameField.getText().isEmpty() 
-					|| ipField.getText().isEmpty() 
-					|| !ipField.getText().matches("^(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})$")  //Test if the IP address contains letters
-					|| !nameField.getText().replaceAll("[^0-9a-zA-Z]", "").equals(nameField.getText())) { //Test if name contains others than letters or number
-				JOptionPane.showMessageDialog(null, "Merci de remplir tous les champs correctement. (Les pseudos ne peuvent contenir que des lettres et des chiffres)", "Erreur", JOptionPane.ERROR_MESSAGE);
-
-			} else {
-				ConnectedPanel pane = new ConnectedPanel(); //Sinon users est null et il y a une erreur lors du launch
-				if(Client.connect(nameField.getText(), ipField.getText())) {
-					ClientFrame.setPanel(pane);
-				} else {
-					JOptionPane.showMessageDialog(null, "Serveur indisponible ou inexistant.", "Erreur", JOptionPane.ERROR_MESSAGE);
-				}
-			}
-
+			this.connection();
 		} else if(bu == create) {
 			new ServerFrame();
+		}
+	}
+
+	private void connection() {
+		if(nameField.getText().isEmpty() 
+				|| ipField.getText().isEmpty() 
+				|| !ipField.getText().matches("^(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})$")  //Test if the IP address contains letters
+				|| !nameField.getText().replaceAll("[^0-9a-zA-Z]", "").equals(nameField.getText())) { //Test if name contains others than letters or number
+			JOptionPane.showMessageDialog(null, "Merci de remplir tous les champs correctement. (Les pseudos ne peuvent contenir que des lettres et des chiffres)", "Erreur", JOptionPane.ERROR_MESSAGE);
+
+		} else {
+			ConnectedPanel pane = new ConnectedPanel(); //Sinon users est null et il y a une erreur lors du launch
+			if(Client.connect(nameField.getText(), ipField.getText())) {
+				ClientFrame.setPanel(pane);
+			} else {
+				JOptionPane.showMessageDialog(null, "Serveur indisponible ou inexistant.", "Erreur", JOptionPane.ERROR_MESSAGE);
+			}
 		}
 	}
 
@@ -123,4 +129,17 @@ public class ConnectionPanel extends Box implements ActionListener {
 		super.paintComponent(g);
 		g.drawImage(background, 0, 0, this.getWidth(), this.getHeight(), 0, 0, background.getWidth(null), background.getHeight(null), this);
 	}
+
+	@Override
+	public void keyPressed(KeyEvent event) {
+		if(event.getKeyCode() == KeyEvent.VK_ENTER) {
+			this.connection();
+		}
+	}
+
+	@Override
+	public void keyReleased(KeyEvent arg0) { }
+
+	@Override
+	public void keyTyped(KeyEvent arg0) { }
 }
