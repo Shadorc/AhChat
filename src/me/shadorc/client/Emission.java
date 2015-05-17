@@ -6,7 +6,7 @@ public class Emission {
 
 	private PrintWriter out;
 
-	Emission(PrintWriter out) {
+	public Emission(PrintWriter out) {
 		this.out = out;
 	}
 

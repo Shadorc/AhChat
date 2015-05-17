@@ -12,16 +12,22 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 
-class Server implements Runnable {
+public class Server implements Runnable {
 
-	private static HashMap <String, PrintWriter> clients = new HashMap <>();
+	private static HashMap <String, PrintWriter> clients;
 	private static String ip;
+
+	public void start() {
+		new Thread(this).start();
+	}
 
 	@Override
 	public void run() {
 
 		ServerSocket ss_chat = null; //Chat Socket Server
 		ServerSocket ss_data = null; //Data Socket Server
+
+		clients = new HashMap <> ();
 
 		try {
 			ss_chat = new ServerSocket(15000);

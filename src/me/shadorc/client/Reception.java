@@ -40,6 +40,10 @@ public class Reception implements Runnable {
 		}
 	}
 
+	public void start() {
+		new Thread(this).start();
+	}
+
 	public void close() {
 		try {
 			in.close();

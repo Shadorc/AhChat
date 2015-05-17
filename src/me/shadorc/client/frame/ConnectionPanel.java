@@ -15,7 +15,6 @@ import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -23,7 +22,7 @@ import javax.swing.JPanel;
 import me.shadorc.client.Client;
 import me.shadorc.server.ServerFrame;
 
-class ConnectionPanel extends Box implements ActionListener {
+public class ConnectionPanel extends Box implements ActionListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -31,13 +30,10 @@ class ConnectionPanel extends Box implements ActionListener {
 	private JButton connect, create;
 	private Image background;
 
-	private JFrame frame;
-
-	public ConnectionPanel(JFrame frame) {
+	public ConnectionPanel() {
 
 		super(BoxLayout.Y_AXIS);
 
-		this.frame = frame;
 		this.background = new ImageIcon(this.getClass().getResource("/res/background.jpg")).getImage();
 
 		JPanel panel = new JPanel(new GridLayout(4, 0));
@@ -109,10 +105,9 @@ class ConnectionPanel extends Box implements ActionListener {
 				JOptionPane.showMessageDialog(null, "Merci de remplir tous les champs correctement. (Les pseudos ne peuvent contenir que des lettres et des chiffres)", "Erreur", JOptionPane.ERROR_MESSAGE);
 
 			} else {
-				ConnectedPanel pane = new ConnectedPanel(frame); //Sinon users est null et il y a une erreur lors du launch
-				if(Client.launch(nameField.getText(), ipField.getText())) {
-					frame.setContentPane(pane);
-					frame.revalidate();
+				ConnectedPanel pane = new ConnectedPanel(); //Sinon users est null et il y a une erreur lors du launch
+				if(Client.connect(nameField.getText(), ipField.getText())) {
+					ClientFrame.setPanel(pane);
 				} else {
 					JOptionPane.showMessageDialog(null, "Serveur indisponible ou inexistant.", "Erreur", JOptionPane.ERROR_MESSAGE);
 				}

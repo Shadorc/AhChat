@@ -14,6 +14,11 @@ class Transfer implements Runnable {
 		this.out = out;
 	}
 
+	public void start() {
+		new Thread(this).start();
+	}
+
+	@Override
 	public void run() {
 
 		byte buf[] = new byte[1024];

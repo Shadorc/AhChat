@@ -26,15 +26,17 @@ public class ServerFrame extends JFrame implements KeyListener, FocusListener {
 
 	private String DEFAULT_TEXT = "Envoyer un message";
 
-	private static HTMLEditorKit kit = new HTMLEditorKit();
-	private static HTMLDocument doc = new HTMLDocument();
-	private JFormattedTextField textField = new JFormattedTextField(DEFAULT_TEXT);
+	private static HTMLEditorKit kit;
+	private static HTMLDocument doc;
+	private JFormattedTextField textField;
 
 	public ServerFrame() {
-
 		super("Serveur");
-
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		kit = new HTMLEditorKit();
+		doc = new HTMLDocument();
+		textField = new JFormattedTextField(DEFAULT_TEXT);
 
 		JPanel pane = new JPanel();
 		pane.setLayout(new BorderLayout());
@@ -59,25 +61,24 @@ public class ServerFrame extends JFrame implements KeyListener, FocusListener {
 		this.setLocationRelativeTo(null);
 		this.setVisible(true);
 
-		Server serv = new Server();
-		new Thread(serv).start();
+		new Server().start();
 	}
 
-	protected static void split() {
+	public static void split() {
 		ServerFrame.dispMessage("--------");
 	}
 
-	protected static void dispMessage(String message) {
-		try {
-			kit.insertHTML(doc, doc.getLength(), "<font size=4>" + message + "</font>", 0, 0, null);
-		} catch (BadLocationException | IOException e) {
-			JOptionPane.showMessageDialog(null, e.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
-		}
+	public static void dispMessage(String message) {
+		disp("<font size=4>" + message + "</font>");
 	}
 
-	protected static void dispError(String error) {
+	public static void dispError(String error) {
+		disp("<b><i><font color=red size=4> /!\\ " + error + " /!\\\n</b></i></font>");
+	}
+
+	private static void disp(String message) {
 		try {
-			kit.insertHTML(doc, doc.getLength(), "<b><i><font color=red size=4> /!\\ " + error + " /!\\\n</b></i></font>", 0, 0, null);
+			kit.insertHTML(doc, doc.getLength(), message, 0, 0, null);
 		} catch (BadLocationException | IOException e) {
 			JOptionPane.showMessageDialog(null, e.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
 		}
@@ -106,10 +107,8 @@ public class ServerFrame extends JFrame implements KeyListener, FocusListener {
 	}
 
 	@Override
-	public void keyReleased(KeyEvent e) {
-	}
+	public void keyReleased(KeyEvent e) {}
 
 	@Override
-	public void keyTyped(KeyEvent e) {
-	}
+	public void keyTyped(KeyEvent e) {}
 }

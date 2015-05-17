@@ -22,14 +22,14 @@ public class Client {
 	private static Emission emission;
 	private static Reception reception;
 
-	public static boolean launch(String pseudo, String ip) {
+	public static boolean connect(String pseudo, String ip) {
 
 		try {
 			//Ping server to test if it is reachable
-			Process p1 = Runtime.getRuntime().exec("ping -n 1 " + ip);
-			p1.waitFor();
+			Process ping = Runtime.getRuntime().exec("ping -n 1 " + ip);
+			ping.waitFor();
 
-			if(p1.exitValue() == 0) {
+			if(ping.exitValue() == 0) {
 				s_chat = new Socket(ip, 15000);
 				s_data = new Socket(ip, 15001);
 			} else {
@@ -41,7 +41,7 @@ public class Client {
 
 			//Chat's thread
 			reception = new Reception(in);
-			new Thread(reception).start();
+			reception.start();
 
 			emission = new Emission(out);
 			emission.sendMessage(pseudo);
@@ -52,12 +52,15 @@ public class Client {
 			return false;
 		}
 	}
+	
+	public static void sendMessage(String message) {
+		emission.sendMessage(message);
+	}
 
 	public static void receiveFile() throws FileNotFoundException, IOException {
 		//Client's Desktop with file's name
-		File file = new File(FileSystemView.getFileSystemView().getHomeDirectory() + "\\test.wmv");	
-
-		new Thread(new Transfer(s_data.getInputStream(), new FileOutputStream(file), file)).start();;
+		File file = new File(FileSystemView.getFileSystemView().getHomeDirectory() + "\\test.jpg");	
+		new Transfer(s_data.getInputStream(), new FileOutputStream(file), file).start();
 	}
 
 	public static void exit() {
@@ -72,9 +75,5 @@ public class Client {
 
 		Tray.close();
 		System.exit(0);
-	}
-
-	public static void sendMessage(String message) {
-		emission.sendMessage(message);
 	}
 }

@@ -18,9 +18,9 @@ public class Tray {
 	private static TrayIcon icon;
 	private static JFrame frame;
 
-	public Tray(JFrame frame) {
+	public static void initialize(JFrame _frame) {
 
-		Tray.frame = frame;
+		frame = _frame;
 		PopupMenu menu = new PopupMenu();
 
 		MenuItem closeItem = new MenuItem("Close");
@@ -32,7 +32,7 @@ public class Tray {
 		});
 		menu.add(closeItem);
 
-		icon = new TrayIcon(new ImageIcon(this.getClass().getResource("/res/icon.png")).getImage(), "Chat", menu);
+		icon = new TrayIcon(new ImageIcon(Tray.class.getResource("/res/icon.png")).getImage(), "Chat", menu);
 		icon.setImageAutoSize(true);
 
 		try {

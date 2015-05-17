@@ -9,7 +9,6 @@ import java.util.Arrays;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFormattedTextField;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -34,7 +33,7 @@ public class ConnectedPanel extends JPanel {
 
 	private static JTextArea users = new JTextArea();
 
-	public ConnectedPanel(JFrame frame) {
+	public ConnectedPanel() {
 
 		super(new BorderLayout());
 
@@ -65,11 +64,11 @@ public class ConnectedPanel extends JPanel {
 
 		users.setEditable(false);
 		users.setBorder(BorderFactory.createLoweredBevelBorder());
-		users.setPreferredSize(new Dimension(frame.getWidth()/4, 0));
+		users.setPreferredSize(new Dimension((int) (ClientFrame.getDimension().getWidth()/4), 0));
 		this.add(users, BorderLayout.EAST);
 
 		JFormattedTextField saisisTexte = new JFormattedTextField();
-		saisisTexte.setPreferredSize(new Dimension(frame.getWidth(), 25));
+		saisisTexte.setPreferredSize(new Dimension((int) ClientFrame.getDimension().getWidth(), 25));
 		saisisTexte.addKeyListener(new KeyListener() {
 			@Override
 			public void keyPressed(KeyEvent e) {

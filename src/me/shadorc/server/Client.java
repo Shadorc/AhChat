@@ -16,15 +16,18 @@ public class Client implements Runnable {
 
 	private Socket s_chat;
 	private Socket s_data;
+
 	private PrintWriter out;
 	private BufferedReader in;
 
-	private String pseudo = "Unknown";
+	private String pseudo;
 
 	public Client(Socket s_chat, Socket s_data) {
 
 		this.s_chat = s_chat;
 		this.s_data = s_data;
+
+		this.pseudo = "Unknown";
 
 		try {
 			out = new PrintWriter(s_chat.getOutputStream());
@@ -52,9 +55,8 @@ public class Client implements Runnable {
 		try {
 			InputStream in = new FileInputStream(file);
 			OutputStream out = s_data.getOutputStream();
+			new Transfer(in, out).start();
 
-			Transfer tr = new Transfer(in, out);
-			new Thread(tr).start();
 		} catch (IOException e) {
 			ServerFrame.dispError("Erreur lors de l'envoit du fichier : " + e.getMessage() + ", annulation.");
 			send("Erreur lors de l'envoit du fichier : " + e.getMessage() + ", annulation.");
