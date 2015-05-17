@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -53,15 +54,20 @@ public class Server implements Runnable {
 				new Client(ss_chat.accept(), ss_data.accept());
 			}
 
-		} catch (IOException e) {
-			ServerFrame.dispError("Erreur lors de l'ouverture du serveur : " + e.toString());
+		} catch(BindException e) {
+			ServerFrame.dispError("Un serveur est déjà lancé.");
+
+		} catch(IOException e) {
+			ServerFrame.dispError("Erreur lors de l'ouverture du serveur : " + e.getMessage());
 
 		} finally {
 			try {
-				ss_chat.close();
-				ss_data.close();
-			} catch (IOException | NullPointerException e) {
-				ServerFrame.dispError("Erreur lors de la fermeture du serveur : " + e.toString());
+				if(ss_chat != null && ss_data != null) {
+					ss_chat.close();
+					ss_data.close();
+				}
+			} catch(IOException e) {
+				ServerFrame.dispError("Erreur lors de la fermeture du serveur : " + e.getMessage());
 			}
 		}
 	}

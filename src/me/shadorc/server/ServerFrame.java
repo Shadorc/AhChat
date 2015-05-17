@@ -32,7 +32,8 @@ public class ServerFrame extends JFrame implements KeyListener, FocusListener {
 
 	public ServerFrame() {
 		super("Serveur");
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		//FIXME: Close server when closing window without exit client
+		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
 		kit = new HTMLEditorKit();
 		doc = new HTMLDocument();
