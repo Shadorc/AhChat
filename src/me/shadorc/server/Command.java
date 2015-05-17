@@ -8,23 +8,23 @@ import me.shadorc.server.Server.Type;
 public class Command {
 
 	public static void admin(String command) {
-
+		
 		switch(command.toLowerCase()) {
 			case "/quit":
 				System.exit(0);
-				break;
+				return;
 			case "/total":
 				ServerFrame.dispMessage("Nombre de connectés : " + Server.getClients().size());
-				break;
+				return;
 			case "/ip":
 				ServerFrame.dispMessage("IP : " + Server.getIp());
 				Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(Server.getIp()), null);
-				break;
+				return;
 			case "/help":
 				ServerFrame.dispMessage("Quitter : /quit");
 				ServerFrame.dispMessage("Nombre de connectés : /total");
 				ServerFrame.dispMessage("IP du serveur : /ip");
-				break;
+				return;
 		}
 
 		if(command.startsWith("/")) {
