@@ -10,7 +10,6 @@ import java.util.Arrays;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFormattedTextField;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -128,7 +127,7 @@ public class ConnectedPanel extends JPanel {
 		try {
 			kit.insertHTML(doc, doc.getLength(), text, 0, 0, null);
 		} catch (BadLocationException | IOException e) {
-			JOptionPane.showMessageDialog(null, "Une erreur est survenue : " + e.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+			ClientFrame.showError(e, "Une erreur est survenue lors de l'affichage du message : " + e.getMessage());
 		}
 	}
 }

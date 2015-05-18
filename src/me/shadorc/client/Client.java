@@ -10,9 +10,9 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileSystemView;
 
+import me.shadorc.client.frame.ClientFrame;
 import me.shadorc.client.frame.Tray;
 
 public class Client {
@@ -64,8 +64,7 @@ public class Client {
 		try {
 			new Transfer(s_data.getInputStream(), new FileOutputStream(file), file).start();
 		} catch (IOException e) {
-			JOptionPane.showMessageDialog(null, "Erreur lors du téléchargement : " + e.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
-			e.printStackTrace();
+			ClientFrame.showError(e, "Erreur lors du téléchargement : " + e.getMessage());
 		}
 	}
 
@@ -77,8 +76,7 @@ public class Client {
 		} catch (FileNotFoundException e) {
 			throw e;
 		} catch (IOException e) {
-			JOptionPane.showMessageDialog(null, "Erreur lors du téléchargement : " + e.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
-			e.printStackTrace();
+			ClientFrame.showError(e, "Erreur lors de l'envoi : " + e.getMessage());
 		}
 	}
 
@@ -89,7 +87,7 @@ public class Client {
 			emission.close();
 			reception.close();
 		} catch (IOException | NullPointerException e) {
-			JOptionPane.showMessageDialog(null, "Erreur lors de la fermeture du client : " + e.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+			ClientFrame.showError(e, "Erreur lors de la fermeture du client : " + e.getMessage());
 		}
 
 		Tray.close();

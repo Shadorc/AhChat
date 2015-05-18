@@ -4,8 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.SocketException;
 
-import javax.swing.JOptionPane;
-
+import me.shadorc.client.frame.ClientFrame;
 import me.shadorc.client.frame.ConnectedPanel;
 
 public class Reception implements Runnable {
@@ -48,7 +47,7 @@ public class Reception implements Runnable {
 		try {
 			in.close();
 		} catch (IOException e) {
-			JOptionPane.showMessageDialog(null, e.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+			ClientFrame.showError(e, "Erreur lors de la fermeture : " + e.getMessage());
 		}
 	}
 }

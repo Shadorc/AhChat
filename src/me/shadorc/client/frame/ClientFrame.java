@@ -6,11 +6,12 @@ import java.awt.event.WindowEvent;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import me.shadorc.client.Client;
 
-class ClientFrame extends JFrame {
+public class ClientFrame extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 
@@ -42,6 +43,15 @@ class ClientFrame extends JFrame {
 		this.setPreferredSize(new Dimension(800, 600));
 		this.setLocationRelativeTo(null);
 		this.setVisible(true);
+	}
+
+	public static void showError(Exception e, String error) {
+		JOptionPane.showMessageDialog(null, error, "Client - Erreur", JOptionPane.ERROR_MESSAGE);
+		e.printStackTrace();
+	}
+
+	public static void showError(String error) {
+		JOptionPane.showMessageDialog(null, error, "Client - Erreur", JOptionPane.ERROR_MESSAGE);
 	}
 
 	public static void setPanel(JPanel pane) {

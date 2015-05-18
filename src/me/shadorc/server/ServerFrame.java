@@ -65,6 +65,11 @@ public class ServerFrame extends JFrame implements KeyListener, FocusListener {
 		new Server().start();
 	}
 
+	public static void showError(Exception e, String error) {
+		JOptionPane.showMessageDialog(null, error, "Serveur - Erreur", JOptionPane.ERROR_MESSAGE);
+		e.printStackTrace();
+	}
+
 	public static void split() {
 		ServerFrame.dispMessage("--------");
 	}
@@ -81,7 +86,7 @@ public class ServerFrame extends JFrame implements KeyListener, FocusListener {
 		try {
 			kit.insertHTML(doc, doc.getLength(), message, 0, 0, null);
 		} catch (BadLocationException | IOException e) {
-			JOptionPane.showMessageDialog(null, e.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+			showError(e, "Erreur lors de l'affichage du message : " + e.getMessage());
 		}
 	}
 
