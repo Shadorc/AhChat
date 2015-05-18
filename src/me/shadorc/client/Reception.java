@@ -9,7 +9,7 @@ import java.net.SocketException;
 
 import javax.swing.filechooser.FileSystemView;
 
-import me.shadorc.client.frame.ClientFrame;
+import me.shadorc.client.frame.Frame;
 import me.shadorc.client.frame.ConnectedPanel;
 
 public class Reception implements Runnable {
@@ -96,7 +96,7 @@ public class Reception implements Runnable {
 		try {
 			inChat.close();
 		} catch (IOException e) {
-			ClientFrame.showError(e, "Erreur lors de la fermeture : " + e.getMessage());
+			Frame.showError(e, "Erreur lors de la fermeture : " + e.getMessage());
 		}
 	}
 }

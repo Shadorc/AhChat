@@ -9,7 +9,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-import me.shadorc.client.frame.ClientFrame;
+import me.shadorc.client.frame.Frame;
 import me.shadorc.client.frame.Tray;
 
 public class Client {
@@ -64,7 +64,7 @@ public class Client {
 		} catch (FileNotFoundException e) {
 			throw e;
 		} catch (IOException e) {
-			ClientFrame.showError(e, "Erreur lors du téléversement : " + e.getMessage());
+			Frame.showError(e, "Erreur lors du téléversement : " + e.getMessage());
 		}
 	}
 
@@ -75,7 +75,7 @@ public class Client {
 			emission.close();
 			reception.close();
 		} catch (IOException | NullPointerException e) {
-			ClientFrame.showError(e, "Erreur lors de la fermeture du client : " + e.getMessage());
+			Frame.showError(e, "Erreur lors de la fermeture du client : " + e.getMessage());
 		}
 
 		Tray.close();

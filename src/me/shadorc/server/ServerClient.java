@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import me.shadorc.client.frame.ConnectedPanel;
 import me.shadorc.server.Server.Type;
 
-public class Client implements Runnable {
+public class ServerClient implements Runnable {
 
 	private Socket s_chat;
 	private Socket s_data;
@@ -23,7 +23,7 @@ public class Client implements Runnable {
 	private String name;
 	private String ip;
 
-	public Client(Socket s_chat, Socket s_data) {
+	public ServerClient(Socket s_chat, Socket s_data) {
 
 		this.s_chat = s_chat;
 		this.s_data = s_data;
@@ -64,7 +64,7 @@ public class Client implements Runnable {
 			Server.sendAll(name + " vient de se connecter.", Type.INFO);
 
 			//Send the list of all connected people
-			for(Client client : Server.getClients()) {
+			for(ServerClient client : Server.getClients()) {
 				this.sendMessage("/connexion " + client.getName());
 			}
 
@@ -73,7 +73,7 @@ public class Client implements Runnable {
 			//Waiting for messages from the client (blocking on inChat.readLine())
 			while((message = inChat.readLine()) != null) {
 				if(message.startsWith("/")) {
-					this.sendMessage(Command.user(this, message));
+					this.sendMessage(ServerCommand.user(this, message));
 				} else {
 					// &lt; : "<" et &gt; : ">"
 					Server.sendAll("<b><font color=blue>&lt;" + name + "&gt;</b> " + message, Type.MESSAGE);

@@ -14,7 +14,7 @@ import java.util.Date;
 
 public class Server implements Runnable {
 
-	private static ArrayList <Client> clients;
+	private static ArrayList <ServerClient> clients;
 	private static String ip;
 
 	private ServerSocket ss_chat, ss_data;
@@ -38,7 +38,7 @@ public class Server implements Runnable {
 		ss_chat = null; //Chat Socket Server
 		ss_data = null; //Data Socket Server
 
-		clients = new ArrayList <Client> ();
+		clients = new ArrayList <ServerClient> ();
 
 		try {
 			ss_chat = new ServerSocket(15000);
@@ -56,12 +56,12 @@ public class Server implements Runnable {
 			ServerFrame.dispMessage("Ports : " + ss_chat.getLocalPort() + " (chat) & " + ss_data.getLocalPort() + " (data)");
 			ServerFrame.dispMessage("IP : " + ip);
 			ServerFrame.split();
-			Command.admin("/help");
+			ServerCommand.admin("/help");
 			ServerFrame.split();
 
 			while(true) {
 				//Pending connection loop (blocking on accept())
-				new Client(ss_chat.accept(), ss_data.accept());
+				new ServerClient(ss_chat.accept(), ss_data.accept());
 			}
 
 		} catch(BindException e) {
@@ -97,28 +97,28 @@ public class Server implements Runnable {
 			ServerFrame.dispMessage(message);
 		}
 
-		for(Client client : clients) {
+		for(ServerClient client : clients) {
 			client.sendMessage(message);
 		}
 	}
 
 	public static synchronized void sendAll(ArrayList <Integer> data) {
-		for(Client client : clients) {
+		for(ServerClient client : clients) {
 			client.sendData(data);
 		}
 	}
 
-	public static synchronized void addClient(Client client) {
+	public static synchronized void addClient(ServerClient client) {
 		clients.add(client);
 		sendAll("/connexion " + client.getName(), Type.COMMAND);
 	}
 
-	public static synchronized void delClient(Client client) {
+	public static synchronized void delClient(ServerClient client) {
 		clients.remove(client);
 		sendAll("/deconnexion " + client.getName(), Type.COMMAND);
 	}
 
-	public static ArrayList <Client> getClients() {
+	public static ArrayList <ServerClient> getClients() {
 		return clients;
 	}
 

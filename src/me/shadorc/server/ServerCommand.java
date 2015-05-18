@@ -3,7 +3,7 @@ package me.shadorc.server;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 
-public class Command {
+public class ServerCommand {
 
 	public static void admin(String command) {
 
@@ -25,11 +25,11 @@ public class Command {
 				return;
 			default:
 				ServerFrame.dispMessage("Cette commande n'est pas supportée.");
-				Command.admin("/help");
+				ServerCommand.admin("/help");
 		}
 	}
 
-	public static String user(Client client, String command) {
+	public static String user(ServerClient client, String command) {
 
 		switch(command.toLowerCase().split(" ")[0]) {
 			case "/total":
@@ -45,7 +45,7 @@ public class Command {
 				+ ".....Envoyer un fichier : /send <chemin>\n" 
 				+ ".....Quitter : /quit";
 			default :
-				return "Cette commande n'est pas supportée.\n" + Command.user(client, "/help");
+				return "Cette commande n'est pas supportée.\n" + ServerCommand.user(client, "/help");
 		}
 	}
 }

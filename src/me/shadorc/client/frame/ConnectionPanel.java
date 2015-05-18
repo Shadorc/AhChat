@@ -111,14 +111,14 @@ public class ConnectionPanel extends Box implements ActionListener, KeyListener 
 				|| ipField.getText().isEmpty() 
 				|| !ipField.getText().matches("^(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})$")  //Test if the IP address contains letters
 				|| !nameField.getText().replaceAll("[^0-9a-zA-Z]", "").equals(nameField.getText())) { //Test if name contains others than letters or number
-			ClientFrame.showError("Merci de remplir tous les champs correctement. (Les pseudos ne peuvent contenir que des lettres et des chiffres)");
+			Frame.showError("Merci de remplir tous les champs correctement. (Les pseudos ne peuvent contenir que des lettres et des chiffres)");
 
 		} else {
 			ConnectedPanel pane = new ConnectedPanel(); //Sinon users est null et il y a une erreur lors du launch
 			if(Client.connect(nameField.getText(), ipField.getText())) {
-				ClientFrame.setPanel(pane);
+				Frame.setPanel(pane);
 			} else {
-				ClientFrame.showError("Serveur indisponible ou inexistant.");
+				Frame.showError("Serveur indisponible ou inexistant.");
 			}
 		}
 	}

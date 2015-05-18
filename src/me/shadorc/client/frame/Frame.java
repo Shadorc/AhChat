@@ -11,17 +11,17 @@ import javax.swing.JPanel;
 
 import me.shadorc.client.Client;
 
-public class ClientFrame extends JFrame {
+public class Frame extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 
-	public static ClientFrame frame;
+	public static Frame frame;
 
 	public static void main(String[] args) {
-		frame = new ClientFrame();
+		frame = new Frame();
 	}
 
-	public ClientFrame() {
+	public Frame() {
 		super("Client");
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -30,7 +30,7 @@ public class ClientFrame extends JFrame {
 		this.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-				if(ClientFrame.this.getContentPane().getClass().equals(ConnectedPanel.class)) {
+				if(Frame.this.getContentPane().getClass().equals(ConnectedPanel.class)) {
 					Client.exit();
 				}
 			}

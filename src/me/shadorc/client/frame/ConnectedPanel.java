@@ -64,11 +64,11 @@ public class ConnectedPanel extends JPanel {
 
 		users.setEditable(false);
 		users.setBorder(BorderFactory.createLoweredBevelBorder());
-		users.setPreferredSize(new Dimension((int) (ClientFrame.getDimension().getWidth()/4), 0));
+		users.setPreferredSize(new Dimension((int) (Frame.getDimension().getWidth()/4), 0));
 		this.add(users, BorderLayout.EAST);
 
 		JFormattedTextField saisisTexte = new JFormattedTextField();
-		saisisTexte.setPreferredSize(new Dimension((int) ClientFrame.getDimension().getWidth(), 25));
+		saisisTexte.setPreferredSize(new Dimension((int) Frame.getDimension().getWidth(), 25));
 		saisisTexte.addKeyListener(new KeyListener() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -120,7 +120,7 @@ public class ConnectedPanel extends JPanel {
 		try {
 			kit.insertHTML(doc, doc.getLength(), text, 0, 0, null);
 		} catch (BadLocationException | IOException e) {
-			ClientFrame.showError(e, "Une erreur est survenue lors de l'affichage du message : " + e.getMessage());
+			Frame.showError(e, "Une erreur est survenue lors de l'affichage du message : " + e.getMessage());
 		}
 	}
 }
