@@ -95,6 +95,7 @@ public class Reception implements Runnable {
 	public void close() {
 		try {
 			inChat.close();
+			inData.close();
 		} catch (IOException e) {
 			Frame.showError(e, "Erreur lors de la fermeture : " + e.getMessage());
 		}

@@ -14,8 +14,7 @@ import me.shadorc.client.frame.Tray;
 
 public class Client {
 
-	private static Socket s_chat;
-	private static Socket s_data;
+	private static Socket s_chat, s_data;
 
 	private static Emission emission;
 	private static Reception reception;
