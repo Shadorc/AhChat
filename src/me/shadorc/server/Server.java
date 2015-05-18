@@ -60,7 +60,7 @@ public class Server implements Runnable {
 			ServerFrame.split();
 
 			while(true) {
-				//Pending connection loop (blocking on ss.accept)
+				//Pending connection loop (blocking on accept())
 				new Client(ss_chat.accept(), ss_data.accept());
 			}
 
@@ -112,7 +112,7 @@ public class Server implements Runnable {
 		sendAll("/deconnexion " + client.getName(), Type.COMMAND);
 	}
 
-	protected static ArrayList <Client> getClients() {
+	public static ArrayList <Client> getClients() {
 		return clients;
 	}
 

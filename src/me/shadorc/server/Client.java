@@ -45,10 +45,10 @@ public class Client implements Runnable {
 
 			name = inChat.readLine();
 
-			//If pseudo already exists, add number while pseudo exists (ex: Shadorc, Shadorc(1), Shadorc(2), ...)
-			//			for(int i = 1; Server.getClients().containsKey((name)); i++) {
-			//				name = name + "(" + i + ")";
-			//			}
+			//			If pseudo already exists, add number while pseudo exists (ex: Shadorc, Shadorc(1), Shadorc(2), ...)
+			//						for(int i = 1; Server.getClients().containsKey((name)); i++) {
+			//							name = name + "(" + i + ")";
+			//						}
 
 			Server.addClient(this);
 
@@ -74,7 +74,7 @@ public class Client implements Runnable {
 				this.send("/connexion " + client.getName());
 			}
 
-			this.waitingForFile();
+			//			this.waitingForFile();
 
 			//Waiting loop messages from the client (blocking on _in.read ())
 			while((message = inChat.readLine()) != null) {
@@ -136,8 +136,6 @@ public class Client implements Runnable {
 
 						//						ConnectedPanel.dispMessage("[INFO] Fichier en cours de réception.");
 
-						//					timer.start();
-
 						while(data != -1) {
 							out.write(buff, 0, data);
 							out.flush();
@@ -151,10 +149,8 @@ public class Client implements Runnable {
 				} finally {
 					ConnectedPanel.dispError("[INFO] Fichier reçu.");
 					try {
-						//							timer.stop();
 						in.close();
 						out.close();
-						out.flush();
 					} catch (IOException | NullPointerException e) {
 						ConnectedPanel.dispError("Erreur lors de la fin du transfert des données : " + e.getMessage());
 					}
