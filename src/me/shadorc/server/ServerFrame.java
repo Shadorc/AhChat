@@ -112,8 +112,13 @@ public class ServerFrame extends JFrame implements KeyListener, FocusListener, W
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		if(e.getKeyCode() == KeyEvent.VK_ENTER) {
-			Command.admin(textField.getText());
+		String text = textField.getText();
+		if(e.getKeyCode() == KeyEvent.VK_ENTER && text.length() > 0) {
+			if(text.startsWith("/")) {
+				Command.admin(text);
+			} else {
+				Server.sendAll("<b><font color='black'>[SERVER] : </b>" + text, Server.Type.MESSAGE);
+			}
 			textField.setText("");
 		}
 	}

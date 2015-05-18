@@ -3,12 +3,10 @@ package me.shadorc.server;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 
-import me.shadorc.server.Server.Type;
-
 public class Command {
 
 	public static void admin(String command) {
-		
+
 		switch(command.toLowerCase()) {
 			case "/quit":
 				System.exit(0);
@@ -25,28 +23,27 @@ public class Command {
 				ServerFrame.dispMessage("Nombre de connectés : /total");
 				ServerFrame.dispMessage("IP du serveur : /ip");
 				return;
-		}
-
-		if(command.startsWith("/")) {
-			ServerFrame.dispMessage("Cette commande n'est pas supportée.");
-			Command.admin("/help");
-
-		} else {
-			Server.sendAll("<b><font color='black'>[SERVER] : </b>" + command, Type.MESSAGE);
+			default:
+				ServerFrame.dispMessage("Cette commande n'est pas supportée.");
+				Command.admin("/help");
 		}
 	}
 
-	public static String user(String command) {
-		switch(command.toLowerCase()) {
+	public static String user(Client client, String command) {
+
+		switch(command.toLowerCase().split(" ")[0]) {
 			case "/total":
 				return "Nombre de connectés : " + Server.getClients().size();
+			case "/rename":
+				if(command.split(" ").length != 2)	return "<font color=red>Pseudo invalide.";
+				client.setName(command.split(" ")[1]);
 			case "/help":
 				return "<u>Commandes disponibles :</u>\n" 
 				+ ".....Nombre de connectés : /total\n" 
 				+ ".....Changer de pseudo : /rename <pseudo>\n" 
 				+ ".....Quitter : /quit";
 			default :
-				return "Cette commande n'est pas supportée.\n" + Command.user("/help");
+				return "Cette commande n'est pas supportée.\n" + Command.user(client, "/help");
 		}
 	}
 }

@@ -78,10 +78,8 @@ public class Client implements Runnable {
 
 			//Waiting loop messages from the client (blocking on _in.read ())
 			while((message = inChat.readLine()) != null) {
-				if(message.startsWith("/rename")) {
-					this.rename(message);
-				} else if(message.startsWith("/")) {
-					this.send(Command.user(message));
+				if(message.startsWith("/")) {
+					this.send(Command.user(this, message));
 				} else {
 					// &lt; : "<" et &gt; : ">"
 					Server.sendAll("<b><font color=blue>&lt;" + name + "&gt;</b> " + message, Type.MESSAGE);
@@ -113,14 +111,6 @@ public class Client implements Runnable {
 	public void send(String message) {
 		outChat.println(message);
 		outChat.flush();
-	}
-
-	private void rename(String message) {
-		if(message.split(" ").length != 2) {
-			this.send("<font color=red>Pseudo invalide.");
-		} else {
-			this.name = message.split(" ")[1];
-		}
 	}
 
 	//Le client envoie un fichier, on l'envoie à tous les autres clients
@@ -175,6 +165,10 @@ public class Client implements Runnable {
 
 	public String getName() {
 		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	private void quit() {
