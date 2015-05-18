@@ -15,9 +15,9 @@ public class ServerClient implements Runnable {
 	private Socket s_chat;
 	private Socket s_data;
 
-	private PrintWriter outData;
-	private PrintWriter outChat;
+	private PrintWriter outData, outChat;
 	private BufferedReader inChat;
+	private InputStream inData;
 
 	private String name;
 	private String ip;
@@ -35,6 +35,7 @@ public class ServerClient implements Runnable {
 			inChat = new BufferedReader(new InputStreamReader(s_chat.getInputStream()));
 
 			outData = new PrintWriter(s_data.getOutputStream());
+			inData = s_chat.getInputStream();
 
 			name = inChat.readLine();
 
@@ -105,17 +106,13 @@ public class ServerClient implements Runnable {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				InputStream in = null;
-
 				byte buff[] = new byte[1024];
 				int bit; 
 
 				ArrayList <Integer> data = new ArrayList <Integer> ();;
 
 				try {
-					in = s_data.getInputStream();
-
-					while((bit = in.read(buff)) != -1) {
+					while((bit = inData.read(buff)) != -1) {
 						data.add(bit);
 					}
 
@@ -129,12 +126,6 @@ public class ServerClient implements Runnable {
 
 				} finally {
 					ServerClient.this.sendMessage("[INFO] Fichier reçu.");
-					try {
-						in.close();
-					} catch (IOException e) {
-						ServerClient.this.sendMessage("Erreur lors de la fin du transfert des données : " + e.getMessage());
-						ServerFrame.dispError(e, "Erreur lors de la fin du transfert des données : " + e.getMessage());
-					}
 				}
 			}
 		}).start();
@@ -163,6 +154,7 @@ public class ServerClient implements Runnable {
 			outData.close();
 			outChat.close();
 			inChat.close();
+			outChat.close();
 		} catch (IOException e) {
 			ServerFrame.dispError(e, "Erreur lors de la fermeture du client : " + e.getMessage());
 		}
