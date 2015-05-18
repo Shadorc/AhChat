@@ -5,17 +5,16 @@ import java.awt.datatransfer.StringSelection;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 
 public class Server implements Runnable {
 
-	private static HashMap <String, PrintWriter> clients;
+	private static ArrayList <Client> clients;
 	private static String ip;
 
 	private ServerSocket ss_chat, ss_data;
@@ -39,7 +38,7 @@ public class Server implements Runnable {
 		ss_chat = null; //Chat Socket Server
 		ss_data = null; //Data Socket Server
 
-		clients = new HashMap <> ();
+		clients = new ArrayList <Client> ();
 
 		try {
 			ss_chat = new ServerSocket(15000);
@@ -82,7 +81,7 @@ public class Server implements Runnable {
 			}
 		}
 
-		System.err.println("Le serveur est fermé.");
+		System.err.println("Le serveur a été fermé avec succés.");
 	}
 
 	public enum Type {
@@ -98,32 +97,22 @@ public class Server implements Runnable {
 			ServerFrame.dispMessage(message);
 		}
 
-		for(String client : clients.keySet()) {
-			clients.get(client).println(message);
-			clients.get(client).flush();
+		for(Client client : clients) {
+			client.send(message);
 		}
 	}
 
-	public static synchronized void addClient(PrintWriter out, String pseudo) {
-		clients.put(pseudo, out);
-		sendAll("/connexion " + pseudo, Type.COMMAND);
+	public static synchronized void addClient(Client client) {
+		clients.add(client);
+		sendAll("/connexion " + client.getName(), Type.COMMAND);
 	}
 
-	public static synchronized void renClient(String oldName, String newName) {
-		PrintWriter oldOut = clients.get(oldName);
-		clients.remove(oldName);
-		clients.put(newName, oldOut);
-
-		sendAll(oldName + " s'est renommé en " + newName + ".", Type.INFO);
-		sendAll("/rename " + oldName + " " + newName, Type.COMMAND);
+	public static synchronized void delClient(Client client) {
+		clients.remove(client);
+		sendAll("/deconnexion " + client.getName(), Type.COMMAND);
 	}
 
-	public static synchronized void delClient(String pseudo) {
-		clients.remove(pseudo);
-		sendAll("/deconnexion " + pseudo, Type.COMMAND);
-	}
-
-	protected static HashMap <String, PrintWriter> getClients() {
+	protected static ArrayList <Client> getClients() {
 		return clients;
 	}
 
