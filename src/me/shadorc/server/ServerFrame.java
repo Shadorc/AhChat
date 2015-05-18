@@ -76,16 +76,13 @@ public class ServerFrame extends JFrame implements KeyListener, FocusListener, W
 		e.printStackTrace();
 	}
 
-	public static void split() {
-		ServerFrame.dispMessage("--------");
-	}
-
 	public static void dispMessage(String message) {
 		disp("<font size=4>" + message + "</font>");
 	}
 
-	public static void dispError(String error) {
+	public static void dispError(Exception e, String error) {
 		disp("<b><i><font color=red size=4> /!\\ " + error + " /!\\\n</b></i></font>");
+		e.printStackTrace();
 	}
 
 	private static void disp(String message) {
@@ -94,6 +91,10 @@ public class ServerFrame extends JFrame implements KeyListener, FocusListener, W
 		} catch (BadLocationException | IOException e) {
 			showError(e, "Erreur lors de l'affichage du message : " + e.getMessage());
 		}
+	}
+
+	public static void split() {
+		ServerFrame.dispMessage("--------");
 	}
 
 	@Override

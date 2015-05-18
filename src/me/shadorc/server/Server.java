@@ -65,10 +65,10 @@ public class Server implements Runnable {
 			}
 
 		} catch(BindException e) {
-			ServerFrame.dispError("Un serveur est déjà lancé.");
+			ServerFrame.dispError(e, "Un serveur est déjà lancé.");
 
 		} catch(IOException e) {
-			ServerFrame.dispError("Erreur lors de l'ouverture du serveur : " + e.getMessage());
+			ServerFrame.dispError(e, "Erreur lors de l'ouverture du serveur : " + e.getMessage());
 
 		} finally {
 			try {
@@ -77,7 +77,7 @@ public class Server implements Runnable {
 					ss_data.close();
 				}
 			} catch(IOException e) {
-				ServerFrame.dispError("Erreur lors de la fermeture du serveur : " + e.getMessage());
+				ServerFrame.dispError(e, "Erreur lors de la fermeture du serveur : " + e.getMessage());
 			}
 		}
 

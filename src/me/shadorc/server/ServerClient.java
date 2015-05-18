@@ -48,7 +48,7 @@ public class ServerClient implements Runnable {
 			new Thread(this).start();
 
 		} catch (IOException e) {
-			ServerFrame.dispError("Erreur lors de la création du client : " + e.getMessage());
+			ServerFrame.dispError(e, "Erreur lors de la création du client : " + e.getMessage());
 			this.quit();
 		}
 	}
@@ -119,10 +119,13 @@ public class ServerClient implements Runnable {
 						data.add(bit);
 					}
 
+					ServerFrame.dispMessage(ServerClient.this.name + " envoie un fichier.");
+
 					Server.sendAll(data);
 
 				} catch (IOException e) {
 					ServerClient.this.sendMessage("Erreur lors de la réception du fichier, " + e.getMessage() + ", annulation.");
+					ServerFrame.dispError(e, "Erreur lors de la réception du fichier, " + e.getMessage() + ", annulation.");
 
 				} finally {
 					ServerClient.this.sendMessage("[INFO] Fichier reçu.");
@@ -130,6 +133,7 @@ public class ServerClient implements Runnable {
 						in.close();
 					} catch (IOException e) {
 						ServerClient.this.sendMessage("Erreur lors de la fin du transfert des données : " + e.getMessage());
+						ServerFrame.dispError(e, "Erreur lors de la fin du transfert des données : " + e.getMessage());
 					}
 				}
 			}
@@ -160,7 +164,7 @@ public class ServerClient implements Runnable {
 			outChat.close();
 			inChat.close();
 		} catch (IOException e) {
-			ServerFrame.dispError("Erreur lors de la fermeture du client : " + e.getMessage());
+			ServerFrame.dispError(e, "Erreur lors de la fermeture du client : " + e.getMessage());
 		}
 	}
 }
