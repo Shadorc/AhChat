@@ -9,8 +9,8 @@ import java.net.SocketException;
 
 import javax.swing.filechooser.FileSystemView;
 
-import me.shadorc.client.frame.Frame;
 import me.shadorc.client.frame.ConnectedPanel;
+import me.shadorc.client.frame.Frame;
 
 public class Reception implements Runnable {
 
@@ -42,10 +42,10 @@ public class Reception implements Runnable {
 			}
 
 		} catch (SocketException e) {
-			ConnectedPanel.dispError("Le serveur a été fermé.");
+			ConnectedPanel.dispError(e, "Le serveur a été fermé.");
 
 		} catch (IOException e) {
-			ConnectedPanel.dispError("Erreur lors de la récéption des messages : " + e.toString());
+			ConnectedPanel.dispError(e, "Erreur lors de la récéption des messages : " + e.getMessage());
 
 		} finally {
 			this.close();
@@ -78,14 +78,14 @@ public class Reception implements Runnable {
 					}
 
 				} catch (IOException e) {
-					ConnectedPanel.dispError("Erreur lors de la réception du fichier, " + e.getMessage() + ", annulation.");
+					ConnectedPanel.dispError(e, "Erreur lors de la réception du fichier, " + e.getMessage() + ", annulation.");
 
 				} finally {
-					ConnectedPanel.dispError("[INFO] Fichier reçu.");
+					ConnectedPanel.dispMessage("[INFO] Fichier reçu.");
 					try {
 						inData.close();
 					} catch (IOException e) {
-						ConnectedPanel.dispError("Erreur lors de la fin du transfert des données : " + e.getMessage());
+						ConnectedPanel.dispError(e, "Erreur lors de la fin du transfert des données : " + e.getMessage());
 					}
 				}
 			}

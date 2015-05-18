@@ -8,7 +8,6 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 
-import me.shadorc.client.frame.ConnectedPanel;
 import me.shadorc.server.Server.Type;
 
 public class ServerClient implements Runnable {
@@ -123,14 +122,14 @@ public class ServerClient implements Runnable {
 					Server.sendAll(data);
 
 				} catch (IOException e) {
-					ConnectedPanel.dispError("Erreur lors de la réception du fichier, " + e.getMessage() + ", annulation.");
+					ServerClient.this.sendMessage("Erreur lors de la réception du fichier, " + e.getMessage() + ", annulation.");
 
 				} finally {
-					ConnectedPanel.dispError("[INFO] Fichier reçu.");
+					ServerClient.this.sendMessage("[INFO] Fichier reçu.");
 					try {
 						in.close();
 					} catch (IOException e) {
-						ConnectedPanel.dispError("Erreur lors de la fin du transfert des données : " + e.getMessage());
+						ServerClient.this.sendMessage("Erreur lors de la fin du transfert des données : " + e.getMessage());
 					}
 				}
 			}

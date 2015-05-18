@@ -38,7 +38,7 @@ public class Tray {
 		try {
 			SystemTray.getSystemTray().add(icon);
 		} catch (AWTException e) {
-			ConnectedPanel.dispError("Erreur lors de la création du TrayIcon : " + e.toString());
+			ConnectedPanel.dispError(e, "Erreur lors de la création du TrayIcon : " + e.toString());
 		}
 	}
 

@@ -36,7 +36,7 @@ public class Transfer implements Runnable {
 			}
 
 		} catch (IOException e) {
-			ConnectedPanel.dispError("Erreur lors de l'envoi du fichier, " + e.getMessage() + ", annulation.");
+			ConnectedPanel.dispError(e, "Erreur lors de l'envoi du fichier, " + e.getMessage() + ", annulation.");
 
 		} finally {
 			ConnectedPanel.dispMessage("[INFO] Fichier envoyé !");
@@ -44,7 +44,7 @@ public class Transfer implements Runnable {
 				in.close();
 				out.close();
 			} catch (IOException e) {
-				ConnectedPanel.dispError("Erreur lors de la fin du transfert des données : " + e.getMessage());
+				ConnectedPanel.dispError(e, "Erreur lors de la fin du transfert des données : " + e.getMessage());
 			}
 		}
 	}

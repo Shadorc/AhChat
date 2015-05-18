@@ -112,8 +112,9 @@ public class ConnectedPanel extends JPanel {
 		disp("<font size=4>" + message + "</font>");
 	}
 
-	public static void dispError(String error) {
+	public static void dispError(Exception e, String error) {
 		disp("<b><i><font color='red' size=4> /!\\ " + error + " /!\\\n</b></i></font>");
+		e.printStackTrace();
 	}
 
 	private static void disp(String text) {
