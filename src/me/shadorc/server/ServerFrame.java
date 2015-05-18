@@ -6,6 +6,8 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.IOException;
 
 import javax.swing.JFormattedTextField;
@@ -20,7 +22,7 @@ import javax.swing.text.DefaultCaret;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
-public class ServerFrame extends JFrame implements KeyListener, FocusListener {
+public class ServerFrame extends JFrame implements KeyListener, FocusListener, WindowListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -30,10 +32,13 @@ public class ServerFrame extends JFrame implements KeyListener, FocusListener {
 	private static HTMLDocument doc;
 	private JFormattedTextField textField;
 
+	private Server serv;
+
 	public ServerFrame() {
 		super("Serveur");
-		//FIXME: Close server when closing window without exit client
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+		this.addWindowListener(this);
 
 		kit = new HTMLEditorKit();
 		doc = new HTMLDocument();
@@ -62,7 +67,8 @@ public class ServerFrame extends JFrame implements KeyListener, FocusListener {
 		this.setLocationRelativeTo(null);
 		this.setVisible(true);
 
-		new Server().start();
+		serv = new Server();
+		serv.start();
 	}
 
 	public static void showError(Exception e, String error) {
@@ -113,8 +119,31 @@ public class ServerFrame extends JFrame implements KeyListener, FocusListener {
 	}
 
 	@Override
+	public void windowClosed(WindowEvent e) {
+		serv.stop();
+	}
+
+	@Override
 	public void keyReleased(KeyEvent e) {}
 
 	@Override
 	public void keyTyped(KeyEvent e) {}
+
+	@Override
+	public void windowActivated(WindowEvent e) { }
+
+	@Override
+	public void windowClosing(WindowEvent e) { }
+
+	@Override
+	public void windowDeactivated(WindowEvent e) { }
+
+	@Override
+	public void windowDeiconified(WindowEvent e) { }
+
+	@Override
+	public void windowIconified(WindowEvent e) { }
+
+	@Override
+	public void windowOpened(WindowEvent e) { }
 }

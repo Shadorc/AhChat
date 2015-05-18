@@ -18,15 +18,26 @@ public class Server implements Runnable {
 	private static HashMap <String, PrintWriter> clients;
 	private static String ip;
 
+	private ServerSocket ss_chat, ss_data;
+
 	public void start() {
 		new Thread(this).start();
+	}
+
+	public void stop() {
+		try {
+			ss_chat.close();
+			ss_data.close();
+		} catch (IOException e) {
+			ServerFrame.showError(e, "Erreur lors de la fermeture du serveur : " + e.getMessage());
+		}
 	}
 
 	@Override
 	public void run() {
 
-		ServerSocket ss_chat = null; //Chat Socket Server
-		ServerSocket ss_data = null; //Data Socket Server
+		ss_chat = null; //Chat Socket Server
+		ss_data = null; //Data Socket Server
 
 		clients = new HashMap <> ();
 
@@ -70,6 +81,8 @@ public class Server implements Runnable {
 				ServerFrame.dispError("Erreur lors de la fermeture du serveur : " + e.getMessage());
 			}
 		}
+
+		System.err.println("Le serveur est fermé.");
 	}
 
 	public enum Type {
