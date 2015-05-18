@@ -98,7 +98,13 @@ public class Server implements Runnable {
 		}
 
 		for(Client client : clients) {
-			client.send(message);
+			client.sendMessage(message);
+		}
+	}
+
+	public static synchronized void sendAll(ArrayList <Integer> data) {
+		for(Client client : clients) {
+			client.sendData(data);
 		}
 	}
 

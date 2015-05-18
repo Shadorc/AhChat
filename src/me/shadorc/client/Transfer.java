@@ -27,7 +27,7 @@ public class Transfer implements Runnable {
 		byte buff[] = new byte[1024];
 		int data;
 
-		ConnectedPanel.dispMessage("[INFO] Envoi en cours.");
+		ConnectedPanel.dispMessage("[INFO] Envoi en cours...");
 
 		try {
 			while((data = in.read(buff)) != -1) {
@@ -39,7 +39,7 @@ public class Transfer implements Runnable {
 			ConnectedPanel.dispError("Erreur lors de l'envoi du fichier, " + e.getMessage() + ", annulation.");
 
 		} finally {
-			ConnectedPanel.dispMessage("[INFO] Fichier envoyé.");
+			ConnectedPanel.dispMessage("[INFO] Fichier envoyé !");
 			try {
 				in.close();
 				out.close();

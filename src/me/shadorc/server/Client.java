@@ -1,16 +1,13 @@
 package me.shadorc.server;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 
-import me.shadorc.client.Transfer;
 import me.shadorc.client.frame.ConnectedPanel;
 import me.shadorc.server.Server.Type;
 
@@ -19,11 +16,9 @@ public class Client implements Runnable {
 	private Socket s_chat;
 	private Socket s_data;
 
+	private PrintWriter outData;
 	private PrintWriter outChat;
 	private BufferedReader inChat;
-
-	private PrintWriter outData;
-	private BufferedReader inData;
 
 	private String name;
 	private String ip;
@@ -41,7 +36,6 @@ public class Client implements Runnable {
 			inChat = new BufferedReader(new InputStreamReader(s_chat.getInputStream()));
 
 			outData = new PrintWriter(s_data.getOutputStream());
-			inData = new BufferedReader(new InputStreamReader(s_data.getInputStream()));
 
 			name = inChat.readLine();
 
@@ -65,21 +59,21 @@ public class Client implements Runnable {
 		String message;
 
 		try {
-			this.send("<b><font color=18B00A>* * Bienvenue ! Pour de l'aide entrer /help.");
+			this.sendMessage("<b><font color=18B00A>* * Bienvenue ! Pour de l'aide entrer /help.");
 
 			Server.sendAll(name + " vient de se connecter.", Type.INFO);
 
 			//Send the list of all connected people
 			for(Client client : Server.getClients()) {
-				this.send("/connexion " + client.getName());
+				this.sendMessage("/connexion " + client.getName());
 			}
 
-			//			this.waitingForFile();
+			this.waitingForFile();
 
-			//Waiting loop messages from the client (blocking on _in.read ())
+			//Waiting for messages from the client (blocking on inChat.readLine())
 			while((message = inChat.readLine()) != null) {
 				if(message.startsWith("/")) {
-					this.send(Command.user(this, message));
+					this.sendMessage(Command.user(this, message));
 				} else {
 					// &lt; : "<" et &gt; : ">"
 					Server.sendAll("<b><font color=blue>&lt;" + name + "&gt;</b> " + message, Type.MESSAGE);
@@ -94,23 +88,16 @@ public class Client implements Runnable {
 		}
 	}
 
-	public void sendFile(File file) {
-		send("[INFO] Envoi d'un fichier de " + file.length()/1024 + "ko.");
-		try {
-			InputStream in = new FileInputStream(file);
-			OutputStream out = s_data.getOutputStream();
-			new Transfer(in, out, file).start();
-
-		} catch (IOException e) {
-			ServerFrame.dispError("Erreur lors de l'envoi du fichier : " + e.getMessage() + ", annulation.");
-			send("Erreur lors de l'envoi du fichier : " + e.getMessage() + ", annulation.");
-			e.printStackTrace();
-		}
-	}
-
-	public void send(String message) {
+	public void sendMessage(String message) {
 		outChat.println(message);
 		outChat.flush();
+	}
+
+	public void sendData(ArrayList <Integer> data) {
+		for(int bit : data) {
+			outData.write(bit);
+			outData.flush();
+		}
 	}
 
 	//Le client envoie un fichier, on l'envoie à tous les autres clients
@@ -120,28 +107,20 @@ public class Client implements Runnable {
 			@Override
 			public void run() {
 				InputStream in = null;
-				OutputStream out = null;
 
 				byte buff[] = new byte[1024];
-				int data;
+				int bit; 
+
+				ArrayList <Integer> data = new ArrayList <Integer> ();;
 
 				try {
 					in = s_data.getInputStream();
 
-					if((data = in.read(buff)) != -1) {
-						//Client's Desktop with file's name
-						//						File file = new File(FileSystemView.getFileSystemView().getHomeDirectory() + "\\" + "test.jpg");
-
-						//						out = new FileOutputStream(file);
-
-						//						ConnectedPanel.dispMessage("[INFO] Fichier en cours de réception.");
-
-						while(data != -1) {
-							out.write(buff, 0, data);
-							out.flush();
-							data = in.read(buff);
-						}
+					while((bit = in.read(buff)) != -1) {
+						data.add(bit);
 					}
+
+					Server.sendAll(data);
 
 				} catch (IOException e) {
 					ConnectedPanel.dispError("Erreur lors de la réception du fichier, " + e.getMessage() + ", annulation.");
@@ -150,13 +129,16 @@ public class Client implements Runnable {
 					ConnectedPanel.dispError("[INFO] Fichier reçu.");
 					try {
 						in.close();
-						out.close();
-					} catch (IOException | NullPointerException e) {
+					} catch (IOException e) {
 						ConnectedPanel.dispError("Erreur lors de la fin du transfert des données : " + e.getMessage());
 					}
 				}
 			}
 		}).start();
+	}
+
+	public String getIp() {
+		return ip;
 	}
 
 	public String getName() {
@@ -175,7 +157,7 @@ public class Client implements Runnable {
 			Server.delClient(this);
 			s_chat.close();
 			s_data.close();
-			outChat.flush();
+			outData.close();
 			outChat.close();
 			inChat.close();
 		} catch (IOException e) {
