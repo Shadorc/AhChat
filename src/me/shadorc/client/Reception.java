@@ -15,6 +15,10 @@ public class Reception implements Runnable {
 		this.in = in;
 	}
 
+	public void start() {
+		new Thread(this).start();
+	}
+
 	@Override
 	public void run() {
 		String message;
@@ -22,7 +26,7 @@ public class Reception implements Runnable {
 		try {
 			while((message = in.readLine()) != null) {
 				if(message.startsWith("/")) {
-					Command.execute(message);
+					Command.serverCommand(message);
 				} else {
 					ConnectedPanel.dispMessage(message);
 				}
@@ -37,10 +41,6 @@ public class Reception implements Runnable {
 		} finally {
 			this.close();
 		}
-	}
-
-	public void start() {
-		new Thread(this).start();
 	}
 
 	public void close() {

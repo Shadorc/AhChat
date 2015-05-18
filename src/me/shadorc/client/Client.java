@@ -76,7 +76,7 @@ public class Client {
 		} catch (FileNotFoundException e) {
 			throw e;
 		} catch (IOException e) {
-			ClientFrame.showError(e, "Erreur lors de l'envoi : " + e.getMessage());
+			ClientFrame.showError(e, "Erreur lors du téléversement : " + e.getMessage());
 		}
 	}
 

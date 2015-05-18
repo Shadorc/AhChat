@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -23,6 +22,7 @@ import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
 import me.shadorc.client.Client;
+import me.shadorc.client.Command;
 
 public class ConnectedPanel extends JPanel {
 
@@ -75,16 +75,9 @@ public class ConnectedPanel extends JPanel {
 				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
 					String message = saisisTexte.getText();
 
-					if(message.equals("/quit")) {
-						Client.exit();
-					} else if(message.startsWith("/send")) {
-						try {
-							if(message.split(" ").length != 2) throw new FileNotFoundException("Chemin du fichier non spécifié.");
-							Client.sendFile(message.split(" ")[1]);
-						} catch (FileNotFoundException e1) {
-							ConnectedPanel.dispError("Merci d'entrer le chemin du fichier à envoyer.");
-						}
-					} else if(message.length() > 0) {
+					if(message.startsWith("/")) {
+						Command.userCommand(message);
+					} else {
 						Client.sendMessage(message);
 					}
 
