@@ -37,6 +37,7 @@ public class Command {
 			case "/rename":
 				if(command.split(" ").length != 2)	return "<font color=red>Pseudo invalide.";
 				client.setName(command.split(" ")[1]);
+				return "Renommé en \"" + command.split(" ")[1] + "\".";
 			case "/help":
 				return "<u>Commandes disponibles :</u>\n" 
 				+ ".....Nombre de connectés : /total\n" 

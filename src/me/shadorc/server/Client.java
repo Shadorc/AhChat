@@ -164,6 +164,8 @@ public class Client implements Runnable {
 	}
 
 	public void setName(String name) {
+		Server.sendAll("/rename " + this.name + " " + name, Type.COMMAND);
+		Server.sendAll(this.name + " s'est renommé en " + name + ".", Type.INFO);
 		this.name = name;
 	}
 

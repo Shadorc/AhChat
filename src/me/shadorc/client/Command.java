@@ -22,16 +22,20 @@ public class Command {
 	}
 
 	public static void userCommand(String command) {
-		if(command.equalsIgnoreCase("/quit")) {
-			Client.exit();
-
-		} else if(command.startsWith("/send")) {
-			try {
-				if(command.split(" ").length != 2) throw new FileNotFoundException("Chemin du fichier non spécifié.");
-				Client.sendFile(command.split(" ")[1]);
-			} catch (FileNotFoundException e1) {
-				ConnectedPanel.dispError("Merci d'entrer le chemin du fichier à envoyer.");
-			}
+		switch(command.toLowerCase().split(" ")[0]) {
+			case "/quit":
+				Client.exit();
+				return;
+			case "/send":
+				try {
+					if(command.split(" ").length != 2) throw new FileNotFoundException("Chemin du fichier non spécifié.");
+					Client.sendFile(command.split(" ")[1]);
+				} catch (FileNotFoundException e1) {
+					ConnectedPanel.dispError("Merci d'entrer le chemin du fichier à envoyer.");
+				}
+				return;
+			default:
+				Client.sendMessage(command);
 		}
 	}
 }
