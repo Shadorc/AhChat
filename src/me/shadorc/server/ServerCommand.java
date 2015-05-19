@@ -41,8 +41,8 @@ public class ServerCommand {
 			case "/help":
 				return "<u>Commandes disponibles :</u>\n" 
 				+ ".....Nombre de connectés : /total\n" 
-				+ ".....Changer de pseudo : /rename <pseudo>\n" 
-				+ ".....Envoyer un fichier : /send <chemin>\n" 
+				+ ".....Changer de pseudo : /rename &lt;pseudo&gt;\n" 
+				+ ".....Envoyer un fichier : /send &lt;chemin&gt;\n" 
 				+ ".....Quitter : /quit";
 			default :
 				return "Cette commande n'est pas supportée.\n" + ServerCommand.user(client, "/help");
