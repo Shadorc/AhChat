@@ -59,10 +59,14 @@ public class Client {
 	}
 
 	public static void sendFile(File file) throws FileNotFoundException {
-
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
+
+				if(ConnectedPanel.getUsers().size() == 1) {
+					ConnectedPanel.dispMessage("[INFO] Il n'y a personne à qui envoyer ce fichier.");
+					return;
+				}
 
 				byte buff[] = new byte[1024];
 				int data;

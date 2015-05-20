@@ -6,6 +6,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFormattedTextField;
@@ -106,6 +107,10 @@ public class ConnectedPanel extends JPanel {
 
 	public static void replaceUser(String oldName, String newName) {
 		users.setText(users.getText().replace(oldName, newName));
+	}
+
+	public static List <String> getUsers() {
+		return Arrays.asList(users.getText().split("\n"));
 	}
 
 	public static void dispMessage(String message) {

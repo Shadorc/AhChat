@@ -10,6 +10,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.ArrayList;
 
 import me.shadorc.server.Server.Type;
 
@@ -113,6 +114,10 @@ public class ServerClient implements Runnable {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
+
+				ArrayList <ServerClient> clients = Server.getClients();
+				clients.remove(ServerClient.this);
+
 				byte buff[] = new byte[1024];
 				int data; 
 
@@ -133,7 +138,7 @@ public class ServerClient implements Runnable {
 
 					long total = 0;
 					while(total < size && (data = inData.read(buff, 0, size-total > buff.length ? buff.length : (int)(size-total))) > 0) {
-						for(ServerClient client : Server.getClients()) {
+						for(ServerClient client : clients) {
 							client.sendData(buff, 0, data);
 						}
 						total += data;
