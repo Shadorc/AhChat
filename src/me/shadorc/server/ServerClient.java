@@ -115,7 +115,7 @@ public class ServerClient implements Runnable {
 			@Override
 			public void run() {
 
-				ArrayList <ServerClient> clients = Server.getClients();
+				ArrayList <ServerClient> clients = new ArrayList <ServerClient> (Server.getClients());
 				clients.remove(ServerClient.this);
 
 				byte buff[] = new byte[1024];
