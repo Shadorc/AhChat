@@ -58,7 +58,7 @@ public class Client {
 		emission.sendMessage(message);
 	}
 
-	public static void sendFile(File file) throws FileNotFoundException {
+	public static void sendFile(File file) {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {

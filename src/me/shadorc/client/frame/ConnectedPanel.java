@@ -2,13 +2,18 @@ package me.shadorc.client.frame;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFormattedTextField;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -25,7 +30,7 @@ import javax.swing.text.html.HTMLEditorKit;
 import me.shadorc.client.Client;
 import me.shadorc.client.Command;
 
-public class ConnectedPanel extends JPanel {
+public class ConnectedPanel extends JPanel implements ActionListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -68,6 +73,8 @@ public class ConnectedPanel extends JPanel {
 		users.setPreferredSize(new Dimension((int) (Frame.getDimension().getWidth()/4), 0));
 		this.add(users, BorderLayout.EAST);
 
+		JPanel bottom = new JPanel(new BorderLayout());
+
 		JFormattedTextField saisisTexte = new JFormattedTextField();
 		saisisTexte.setPreferredSize(new Dimension((int) Frame.getDimension().getWidth(), 25));
 		saisisTexte.addKeyListener(new KeyListener() {
@@ -92,7 +99,13 @@ public class ConnectedPanel extends JPanel {
 			@Override
 			public void keyReleased(KeyEvent e) {}
 		});
-		this.add(saisisTexte, BorderLayout.PAGE_END);
+		bottom.add(saisisTexte, BorderLayout.CENTER);
+
+		JButton file = new JButton("Envoyer un fichier");
+		file.addActionListener(this);
+		bottom.add(file, BorderLayout.EAST);
+
+		this.add(bottom, BorderLayout.PAGE_END);
 	}
 
 	public static void addUser(String user) {
@@ -127,6 +140,20 @@ public class ConnectedPanel extends JPanel {
 			kit.insertHTML(doc, doc.getLength(), text, 0, 0, null);
 		} catch (BadLocationException | IOException e) {
 			Frame.showError(e, "Une erreur est survenue lors de l'affichage du message : " + e.getMessage());
+		}
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+		JFileChooser chooser = new JFileChooser(new File(System.getProperty("user.home"), "Desktop"));
+		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
+		File file;
+
+		int choice = chooser.showOpenDialog(null);
+		if(choice == JFileChooser.APPROVE_OPTION) {
+			file = new File(chooser.getSelectedFile().getPath());
+			Client.sendFile(file);
 		}
 	}
 }
