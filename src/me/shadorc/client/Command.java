@@ -1,5 +1,6 @@
 package me.shadorc.client;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 
 import me.shadorc.client.frame.ConnectedPanel;
@@ -29,7 +30,7 @@ public class Command {
 			case "/send":
 				try {
 					if(command.split(" ").length != 2) throw new FileNotFoundException();
-					Client.sendFile(command.split(" ")[1]);
+					Client.sendFile(new File(command.split(" ")[1]));
 				} catch (FileNotFoundException e) {
 					ConnectedPanel.dispError(e, "Merci d'entrer un chemin de fichier valide.");
 				}

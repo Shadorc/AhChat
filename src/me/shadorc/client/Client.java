@@ -1,16 +1,9 @@
 package me.shadorc.client;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 
+import me.shadorc.client.frame.ConnectedPanel;
 import me.shadorc.client.frame.Frame;
 import me.shadorc.client.frame.Tray;
 
@@ -65,14 +58,51 @@ public class Client {
 		emission.sendMessage(message);
 	}
 
-	public static void sendFile(String path) throws FileNotFoundException {
-		//Client's Desktop with file's name
-		File file = new File(path);	
-		try {
-			new Transfer(new FileInputStream(file), outData, file).start();
-		} catch (FileNotFoundException e) {
-			throw e;
-		}
+	public static void sendFile(File file) throws FileNotFoundException {
+
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+
+				byte buff[] = new byte[1024];
+				int data;
+
+				DataOutputStream dataOut = null;
+				FileInputStream fileReader = null;
+
+				try {
+					fileReader = new FileInputStream(file);
+
+					ConnectedPanel.dispMessage("[INFO] Client : Envoi de " + file.getName() + " en cours...");
+
+					dataOut = new DataOutputStream(outData);
+					dataOut.writeLong(file.length());
+					dataOut.flush();
+
+					while((data = fileReader.read(buff)) != -1) {
+						outData.write(buff, 0, data);
+						outData.flush();
+					}
+
+					ConnectedPanel.dispMessage("[INFO] Client : " + file.getName() + " envoyé !");
+
+				} catch (FileNotFoundException e) {
+					ConnectedPanel.dispError(e, "Merci d'entrer un chemin de fichier valide.");
+
+				} catch (IOException e) {
+					ConnectedPanel.dispError(e, "Erreur lors de l'envoi du fichier, " + e.getMessage() + ".");
+
+				} finally {
+					try {
+						if(fileReader != null) {
+							fileReader.close();
+						}
+					} catch (IOException e) {
+						ConnectedPanel.dispError(e, "Erreur lors de la fermeture de l'envoi du fichier, " + e.getMessage() + ".");
+					}
+				}
+			}
+		}).start();
 	}
 
 	public static void exit() {
