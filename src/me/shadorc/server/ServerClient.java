@@ -122,9 +122,11 @@ public class ServerClient implements Runnable {
 				try {
 					dataIn = new DataInputStream(inData);
 					long size = dataIn.readLong();
+					String fileName = dataIn.readUTF();
 
 					dataOut = new DataOutputStream(outData);
 					dataOut.writeLong(size);
+					dataOut.writeUTF(fileName);
 					dataOut.flush();
 
 					ServerFrame.dispMessage(ServerClient.this.name + " envoie un fichier de " + size/1024 + "ko.");

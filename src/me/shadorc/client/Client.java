@@ -77,6 +77,7 @@ public class Client {
 
 					dataOut = new DataOutputStream(outData);
 					dataOut.writeLong(file.length());
+					dataOut.writeUTF(file.getName());
 					dataOut.flush();
 
 					while((data = fileReader.read(buff)) != -1) {
