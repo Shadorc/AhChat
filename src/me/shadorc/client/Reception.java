@@ -1,6 +1,7 @@
 package me.shadorc.client;
 
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -31,7 +32,6 @@ public class Reception implements Runnable {
 		String message;
 
 		try {
-
 			this.waitingForFile();
 
 			while((message = inChat.readLine()) != null) {
@@ -63,34 +63,42 @@ public class Reception implements Runnable {
 				int data;
 
 				OutputStream out = null;
+				DataInputStream dataIn = null;
 
 				try {
-					if((data = inData.read(buff)) != -1) {
 
-						//Client's Desktop with file's name
-						File file = new File(FileSystemView.getFileSystemView().getHomeDirectory() + "\\" + "test.jpg");
-						out = new FileOutputStream(file);
+					dataIn = new DataInputStream(inData);
+					long size = dataIn.readLong();
 
-						ConnectedPanel.dispMessage("[INFO] Fichier en cours de réception.");
+					//Client's Desktop with file's name
+					File file = new File(FileSystemView.getFileSystemView().getHomeDirectory() + "\\" + "test.jpg");
+					out = new FileOutputStream(file);
 
-						while(data != -1) {
-							out.write(buff, 0, data);
-							out.flush();
-							data = inData.read(buff);
-						}
+					ConnectedPanel.dispMessage("[INFO] Client : Fichier en cours de réception.");
+
+					long total = 0;
+					while(total < size && (data = inData.read(buff, 0, size-total > buff.length ? buff.length : (int)(size-total))) > 0) {
+						out.write(buff, 0, data);
+						out.flush();
+						total += data;
 					}
+
+					ConnectedPanel.dispMessage("[INFO] Fichier reçu et enregistré.");
+
 				} catch (IOException e) {
-					ConnectedPanel.dispError(e, "Erreur lors de la réception du fichier, " + e.getMessage() + ", annulation.");
+					ConnectedPanel.dispError(e, "Erreur lors de la réception du fichier, " + e.getMessage() + ".");
 
 				} finally {
-					ConnectedPanel.dispMessage("[INFO] Fichier reçu et enregistré.");
-//					try {
-//						out.close();
-//					} catch (IOException e) {
-//						ConnectedPanel.dispError(e, "Erreur lors de la fermeture de la réception du fichier, " + e.getMessage() + ".");
-//					}
+					if(out != null/* && dataIn != null*/) {
+						try {
+							out.close();
+							//							dataIn.close();
+							System.out.println(this.getClass() + ": out closed.");
+						} catch (IOException e) {
+							ConnectedPanel.dispError(e, "Erreur lors de la fermeture de la réception du fichier, " + e.getMessage() + ".");
+						}
+					}
 				}
-				System.out.println("Finish : " + new Object(){}.getClass());
 			}
 		}).start();
 	}

@@ -1,6 +1,8 @@
 package me.shadorc.server;
 
 import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -114,27 +116,45 @@ public class ServerClient implements Runnable {
 				byte buff[] = new byte[1024];
 				int data; 
 
-				try {
-					if((data = inData.read(buff)) != -1) {
-						ServerFrame.dispMessage(ServerClient.this.name + " envoie un fichier.");
+				DataInputStream dataIn = null;
+				DataOutputStream dataOut = null;
 
-						while(data != -1) {
-							for(ServerClient client : Server.getClients()) {
-								client.sendData(buff, 0, data);
-							}
-							data = inData.read(buff);
+				try {
+					dataIn = new DataInputStream(inData);
+					long size = dataIn.readLong();
+
+					dataOut = new DataOutputStream(outData);
+					dataOut.writeLong(size);
+					dataOut.flush();
+
+					ServerFrame.dispMessage(ServerClient.this.name + " envoie un fichier de " + size/1024 + "ko.");
+
+					long total = 0;
+					while(total < size && (data = inData.read(buff, 0, size-total > buff.length ? buff.length : (int)(size-total))) > 0) {
+						for(ServerClient client : Server.getClients()) {
+							client.sendData(buff, 0, data);
 						}
+						total += data;
 					}
 
-				} catch (IOException e) {
-					ServerClient.this.sendMessage("Erreur lors de l'envoi du fichier, " + e.getMessage() + ", annulation.");
-					ServerFrame.dispError(e, "Erreur lors de l'envoi du fichier, " + e.getMessage() + ", annulation.");
-
-				} finally {
 					ServerClient.this.sendMessage("[INFO] Le serveur a bien reçu et transmis le fichier.");
-				}
 
-				System.out.println("Finish : " + new Object(){}.getClass());
+				} catch (IOException e) {
+					ServerClient.this.sendMessage("Erreur lors de l'envoi du fichier, " + e.getMessage() + ".");
+					ServerFrame.dispError(e, "Erreur lors de l'envoi du fichier, " + e.getMessage() + ".");
+
+					//				} finally {
+					//					if(dataIn != null && dataOut != null) {
+					//						try {
+					//							dataIn.close();
+					//							dataOut.close();
+					//							System.out.println(this.getClass() + ": dataOut / dataIn closed.");
+					//						} catch (IOException e) {
+					//							ServerClient.this.sendMessage("Erreur lors de l'arrêt de l'envoi du fichier, " + e.getMessage() + ".");
+					//							ServerFrame.dispError(e, "Erreur lors de l'arrêt de l'envoi du fichier, " + e.getMessage() + ".");
+					//						}
+					//					}
+				}
 			}
 		}).start();
 	}
