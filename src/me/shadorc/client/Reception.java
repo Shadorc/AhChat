@@ -92,11 +92,9 @@ public class Reception implements Runnable {
 					ConnectedPanel.dispError(e, "Erreur lors de la réception du fichier, " + e.getMessage() + ".");
 
 				} finally {
-					if(out != null/* && dataIn != null*/) {
+					if(out != null) {
 						try {
 							out.close();
-							//							dataIn.close();
-							System.out.println(this.getClass() + ": out closed.");
 						} catch (IOException e) {
 							ConnectedPanel.dispError(e, "Erreur lors de la fermeture de la réception du fichier, " + e.getMessage() + ".");
 						}
