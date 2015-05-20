@@ -4,19 +4,14 @@ import java.io.PrintWriter;
 
 public class Emission {
 
-	private PrintWriter out;
+	private PrintWriter outChat;
 
 	public Emission(PrintWriter out) {
-		this.out = out;
+		this.outChat = out;
 	}
 
 	public void sendMessage(String m) {
-		out.println(m);
-		out.flush();
-	}
-
-	public void close() {
-		out.flush();
-		out.close();
+		outChat.println(m);
+		outChat.flush();
 	}
 }

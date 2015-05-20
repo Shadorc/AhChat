@@ -102,12 +102,6 @@ public class Server implements Runnable {
 		}
 	}
 
-	public static synchronized void sendAll(ArrayList <Integer> data) {
-		for(ServerClient client : clients) {
-			client.sendData(data);
-		}
-	}
-
 	public static synchronized void addClient(ServerClient client) {
 		clients.add(client);
 		sendAll("/connexion " + client.getName(), Type.COMMAND);

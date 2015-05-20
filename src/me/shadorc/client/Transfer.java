@@ -39,5 +39,7 @@ public class Transfer implements Runnable {
 		} catch (IOException e) {
 			ConnectedPanel.dispError(e, "Erreur lors de l'envoi du fichier, " + e.getMessage() + ", annulation.");
 		}
+
+		System.out.println("Finish : " + new Object(){}.getClass());
 	}
 }

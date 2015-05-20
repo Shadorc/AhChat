@@ -4,9 +4,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.ArrayList;
+import java.net.SocketException;
 
 import me.shadorc.server.Server.Type;
 
@@ -15,9 +16,11 @@ public class ServerClient implements Runnable {
 	private Socket s_chat;
 	private Socket s_data;
 
-	private PrintWriter outData, outChat;
-	private BufferedReader inChat;
 	private InputStream inData;
+	private OutputStream outData;
+
+	private BufferedReader inChat;
+	private PrintWriter outChat;
 
 	private String name;
 	private String ip;
@@ -34,8 +37,8 @@ public class ServerClient implements Runnable {
 			outChat = new PrintWriter(s_chat.getOutputStream());
 			inChat = new BufferedReader(new InputStreamReader(s_chat.getInputStream()));
 
-			outData = new PrintWriter(s_data.getOutputStream());
-			inData = s_chat.getInputStream();
+			outData = s_data.getOutputStream();
+			inData = s_data.getInputStream();
 
 			name = inChat.readLine();
 
@@ -80,8 +83,12 @@ public class ServerClient implements Runnable {
 				}
 			}
 
-		} catch (IOException ignored) {
+		} catch (SocketException ignored) {
+			System.err.println(ignored);
 			//Client leave, the exception doesn't need to be managed
+
+		} catch (IOException e) {
+			ServerFrame.dispError(e, "Erreur lors de l'envoi de messages : " + e.getMessage());
 
 		} finally {
 			this.quit();
@@ -93,11 +100,9 @@ public class ServerClient implements Runnable {
 		outChat.flush();
 	}
 
-	public void sendData(ArrayList <Integer> data) {
-		for(int bit : data) {
-			outData.write(bit);
-			outData.flush();
-		}
+	public void sendData(byte[] b, int off, int len) throws IOException {
+		outData.write(b, off, len);
+		outData.flush();
 	}
 
 	//Le client envoie un fichier, on l'envoie à tous les autres clients
@@ -107,26 +112,29 @@ public class ServerClient implements Runnable {
 			@Override
 			public void run() {
 				byte buff[] = new byte[1024];
-				int bit; 
-
-				ArrayList <Integer> data = new ArrayList <Integer> ();;
+				int data; 
 
 				try {
-					while((bit = inData.read(buff)) != -1) {
-						data.add(bit);
+					if((data = inData.read(buff)) != -1) {
+						ServerFrame.dispMessage(ServerClient.this.name + " envoie un fichier.");
+
+						while(data != -1) {
+							for(ServerClient client : Server.getClients()) {
+								client.sendData(buff, 0, data);
+							}
+							data = inData.read(buff);
+						}
 					}
 
-					ServerFrame.dispMessage(ServerClient.this.name + " envoie un fichier.");
-
-					Server.sendAll(data);
-
 				} catch (IOException e) {
-					ServerClient.this.sendMessage("Erreur lors de la réception du fichier, " + e.getMessage() + ", annulation.");
-					ServerFrame.dispError(e, "Erreur lors de la réception du fichier, " + e.getMessage() + ", annulation.");
+					ServerClient.this.sendMessage("Erreur lors de l'envoi du fichier, " + e.getMessage() + ", annulation.");
+					ServerFrame.dispError(e, "Erreur lors de l'envoi du fichier, " + e.getMessage() + ", annulation.");
 
 				} finally {
-					ServerClient.this.sendMessage("[INFO] Fichier reçu.");
+					ServerClient.this.sendMessage("[INFO] Le serveur a bien reçu et transmis le fichier.");
 				}
+
+				System.out.println("Finish : " + new Object(){}.getClass());
 			}
 		}).start();
 	}
@@ -151,11 +159,11 @@ public class ServerClient implements Runnable {
 			Server.delClient(this);
 			s_chat.close();
 			s_data.close();
+			inData.close();
 			outData.close();
-			outChat.close();
 			inChat.close();
 			outChat.close();
-		} catch (IOException e) {
+		} catch (IOException | NullPointerException e) {
 			ServerFrame.dispError(e, "Erreur lors de la fermeture du client : " + e.getMessage());
 		}
 	}

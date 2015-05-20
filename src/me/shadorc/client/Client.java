@@ -5,7 +5,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 
@@ -18,6 +20,12 @@ public class Client {
 
 	private static Emission emission;
 	private static Reception reception;
+
+	private static InputStream inData;
+	private static OutputStream outData;
+
+	private static BufferedReader inChat;
+	private static PrintWriter outChat;
 
 	public static boolean connect(String pseudo, String ip) {
 
@@ -33,9 +41,11 @@ public class Client {
 				return false;
 			}
 
-			BufferedReader inData = new BufferedReader(new InputStreamReader(s_data.getInputStream()));
-			BufferedReader inChat = new BufferedReader(new InputStreamReader(s_chat.getInputStream()));
-			PrintWriter outChat = new PrintWriter(s_chat.getOutputStream());
+			inChat = new BufferedReader(new InputStreamReader(s_chat.getInputStream()));
+			outChat = new PrintWriter(s_chat.getOutputStream());
+
+			inData = s_data.getInputStream();
+			outData = s_data.getOutputStream();
 
 			//Chat's thread
 			reception = new Reception(inChat, inData);
@@ -59,11 +69,9 @@ public class Client {
 		//Client's Desktop with file's name
 		File file = new File(path);	
 		try {
-			new Transfer(new FileInputStream(file), s_data.getOutputStream(), file).start();
+			new Transfer(new FileInputStream(file), outData, file).start();
 		} catch (FileNotFoundException e) {
 			throw e;
-		} catch (IOException e) {
-			Frame.showError(e, "Erreur lors du téléversement : " + e.getMessage());
 		}
 	}
 
@@ -71,8 +79,10 @@ public class Client {
 		try {
 			s_chat.close();
 			s_data.close();
-			emission.close();
-			reception.close();
+			inChat.close();
+			inData.close();
+			outChat.close();
+			outData.close();
 		} catch (IOException | NullPointerException e) {
 			Frame.showError(e, "Erreur lors de la fermeture du client : " + e.getMessage());
 		}

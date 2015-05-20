@@ -4,19 +4,20 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.SocketException;
 
 import javax.swing.filechooser.FileSystemView;
 
 import me.shadorc.client.frame.ConnectedPanel;
-import me.shadorc.client.frame.Frame;
 
 public class Reception implements Runnable {
 
-	private BufferedReader inChat, inData;
+	private BufferedReader inChat;
+	private InputStream inData;
 
-	public Reception(BufferedReader inChat, BufferedReader inData) {
+	public Reception(BufferedReader inChat, InputStream inData) {
 		this.inChat = inChat;
 		this.inData = inData;
 	}
@@ -48,7 +49,7 @@ public class Reception implements Runnable {
 			ConnectedPanel.dispError(e, "Erreur lors de la récéption des messages : " + e.getMessage());
 
 		} finally {
-			this.close();
+			Client.exit();
 		}
 	}
 
@@ -58,46 +59,39 @@ public class Reception implements Runnable {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				int bit;
-				OutputStream out;
+				byte buff[] = new byte[1024];
+				int data;
+
+				OutputStream out = null;
 
 				try {
-					if((bit = inData.read()) != -1) {
+					if((data = inData.read(buff)) != -1) {
+
 						//Client's Desktop with file's name
 						File file = new File(FileSystemView.getFileSystemView().getHomeDirectory() + "\\" + "test.jpg");
-
 						out = new FileOutputStream(file);
 
 						ConnectedPanel.dispMessage("[INFO] Fichier en cours de réception.");
 
-						while(bit != -1) {
-							out.write(bit);
+						while(data != -1) {
+							out.write(buff, 0, data);
 							out.flush();
-							bit = inData.read();
+							data = inData.read(buff);
 						}
 					}
-
 				} catch (IOException e) {
 					ConnectedPanel.dispError(e, "Erreur lors de la réception du fichier, " + e.getMessage() + ", annulation.");
 
 				} finally {
-					ConnectedPanel.dispMessage("[INFO] Fichier reçu.");
-					try {
-						inData.close();
-					} catch (IOException e) {
-						ConnectedPanel.dispError(e, "Erreur lors de la fin du transfert des données : " + e.getMessage());
-					}
+					ConnectedPanel.dispMessage("[INFO] Fichier reçu et enregistré.");
+//					try {
+//						out.close();
+//					} catch (IOException e) {
+//						ConnectedPanel.dispError(e, "Erreur lors de la fermeture de la réception du fichier, " + e.getMessage() + ".");
+//					}
 				}
+				System.out.println("Finish : " + new Object(){}.getClass());
 			}
 		}).start();
-	}
-
-	public void close() {
-		try {
-			inChat.close();
-			inData.close();
-		} catch (IOException e) {
-			Frame.showError(e, "Erreur lors de la fermeture : " + e.getMessage());
-		}
 	}
 }
