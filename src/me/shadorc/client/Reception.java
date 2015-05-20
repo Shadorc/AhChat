@@ -70,10 +70,14 @@ public class Reception implements Runnable {
 					long size = dataIn.readLong();
 					String fileName = dataIn.readUTF();
 
+					File desktop = FileSystemView.getFileSystemView().getHomeDirectory();
+					String name = fileName.substring(0, fileName.lastIndexOf("."));
+					String format = fileName.substring(fileName.lastIndexOf("."));
+
 					//Client's Desktop with file's name
-					File file = new File(FileSystemView.getFileSystemView().getHomeDirectory() + "\\" + fileName);
-					for(int i = 0; file.exists(); i++) {
-						file = new File(FileSystemView.getFileSystemView().getHomeDirectory() + "\\" + fileName + "(" + i + ")");
+					File file = new File(desktop + "\\" + name + format);
+					for(int i = 1; file.exists(); i++) {
+						file = new File(desktop + "\\" + name + " (" + i + ")" + format);
 					}
 					out = new FileOutputStream(file);
 
