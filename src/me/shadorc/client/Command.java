@@ -28,10 +28,10 @@ public class Command {
 				return;
 			case "/send":
 				try {
-					if(command.split(" ").length != 2) throw new FileNotFoundException("Chemin du fichier non spécifié.");
+					if(command.split(" ").length != 2) throw new FileNotFoundException();
 					Client.sendFile(command.split(" ")[1]);
 				} catch (FileNotFoundException e) {
-					ConnectedPanel.dispError(e, "Merci d'entrer le chemin du fichier à envoyer.");
+					ConnectedPanel.dispError(e, "Merci d'entrer un chemin de fichier valide.");
 				}
 				return;
 			default:
