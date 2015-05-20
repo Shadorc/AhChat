@@ -77,7 +77,7 @@ public class ConnectedPanel extends JPanel {
 
 					if(message.startsWith("/")) {
 						Command.userCommand(message);
-					} else {
+					} else if(message.length() > 0){
 						Client.sendMessage(message);
 					}
 
