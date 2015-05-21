@@ -111,10 +111,7 @@ public class ConnectedPanel extends JPanel implements ActionListener {
 	}
 
 	public static void addUser(String user) {
-		System.err.println("Ajout de " + user);
-		if(!Arrays.asList(users.getText().split("\n")).contains(user)) {
-			users.append(user + "\n");
-		}
+		users.append(user + "\n");
 	}
 
 	public static void removeUser(String user) {

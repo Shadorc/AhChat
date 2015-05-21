@@ -10,7 +10,6 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.ArrayList;
 
 import me.shadorc.server.Server.Type;
 
@@ -71,6 +70,7 @@ public class ServerClient implements Runnable {
 
 			//Send the list of all connected people
 			for(ServerClient client : Server.getClients()) {
+				if(client == ServerClient.this) continue;
 				this.sendMessage("/connexion " + client.getName());
 			}
 
@@ -113,9 +113,6 @@ public class ServerClient implements Runnable {
 			@Override
 			public void run() {
 
-				ArrayList <ServerClient> clients = new ArrayList <ServerClient> (Server.getClients());
-				clients.remove(ServerClient.this);
-
 				DataInputStream dataIn = null;
 				DataOutputStream dataOut = null;
 
@@ -136,7 +133,8 @@ public class ServerClient implements Runnable {
 					int data; 
 
 					while(total < size && (data = inData.read(buff)) != -1) {
-						for(ServerClient client : clients) {
+						for(ServerClient client : Server.getClients()) {
+							if(client == ServerClient.this) continue;
 							client.sendData(buff, 0, data);
 						}
 						total += data;
