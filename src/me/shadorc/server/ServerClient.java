@@ -142,7 +142,7 @@ public class ServerClient implements Runnable {
 					}
 
 					ServerFrame.dispMessage("Fichier reçu et transmis à tous les clients.");
-					
+
 				} catch(EOFException | SocketException ignore) {
 					//Server's ending, ignore it
 
@@ -150,6 +150,8 @@ public class ServerClient implements Runnable {
 					ServerClient.this.sendMessage("Erreur lors de l'envoi du fichier, " + e.getMessage());
 					ServerFrame.dispError(e, "Erreur lors de l'envoi du fichier, " + e.getMessage());
 				}
+
+				ServerClient.this.waitingForFile();
 			}
 		}).start();
 	}

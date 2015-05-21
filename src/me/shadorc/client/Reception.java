@@ -105,6 +105,8 @@ public class Reception implements Runnable {
 						}
 					}
 				}
+				
+				Reception.this.waitingForFile();
 			}
 		}).start();
 	}
