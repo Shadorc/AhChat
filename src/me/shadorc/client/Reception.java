@@ -62,12 +62,12 @@ public class Reception implements Runnable {
 				DataInputStream dataIn = null;
 
 				try {
-					ConnectedPanel.dispMessage("[INFO] Client : Fichier en cours de réception.");
-
 					//Send file's informations
 					dataIn = new DataInputStream(inData);
 					long size = dataIn.readLong();
 					String fileName = dataIn.readUTF();
+
+					ConnectedPanel.dispMessage("[INFO] Client : Fichier en cours de réception.");
 
 					File desktop = FileSystemView.getFileSystemView().getHomeDirectory();
 					String name = fileName.substring(0, fileName.lastIndexOf("."));
