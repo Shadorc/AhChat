@@ -81,13 +81,11 @@ public class ServerClient implements Runnable {
 				if(message.startsWith("/")) {
 					this.sendMessage(ServerCommand.user(this, message));
 				} else {
-					// &lt; : "<" et &gt; : ">"
 					Server.sendAll("<b><font color=blue>&lt;" + name + "&gt;</b> " + message, Type.MESSAGE);
 				}
 			}
 
 		} catch (SocketException ignored) {
-			System.err.println(ignored);
 			//Client leave, the exception doesn't need to be managed
 
 		} catch (IOException e) {
@@ -108,18 +106,15 @@ public class ServerClient implements Runnable {
 		outData.flush();
 	}
 
-	//Le client envoie un fichier, on l'envoie à tous les autres clients
+	//This Thread is waiting for file from the Client
 	private void waitingForFile() {
-		//Ce thread attend en boucle la réception de données
+		//The client sends a file, Server sends it to others clients
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
 
 				ArrayList <ServerClient> clients = new ArrayList <ServerClient> (Server.getClients());
 				clients.remove(ServerClient.this);
-
-				byte buff[] = new byte[1024];
-				int data; 
 
 				DataInputStream dataIn = null;
 				DataOutputStream dataOut = null;
@@ -129,15 +124,18 @@ public class ServerClient implements Runnable {
 					long size = dataIn.readLong();
 					String fileName = dataIn.readUTF();
 
+					ServerFrame.dispMessage(ServerClient.this.name + " envoie un fichier de " + size/1024 + "ko nommé " + fileName + ".");
+
 					dataOut = new DataOutputStream(outData);
 					dataOut.writeLong(size);
 					dataOut.writeUTF(fileName);
 					dataOut.flush();
 
-					ServerFrame.dispMessage(ServerClient.this.name + " envoie un fichier de " + size/1024 + "ko.");
-
+					byte buff[] = new byte[1024];
 					long total = 0;
-					while(total < size && (data = inData.read(buff, 0, size-total > buff.length ? buff.length : (int)(size-total))) > 0) {
+					int data; 
+
+					while(total < size && (data = inData.read(buff)) != -1) {
 						for(ServerClient client : clients) {
 							client.sendData(buff, 0, data);
 						}
@@ -147,20 +145,8 @@ public class ServerClient implements Runnable {
 					ServerClient.this.sendMessage("[INFO] Le serveur a bien reçu et transmis le fichier.");
 
 				} catch (IOException e) {
-					ServerClient.this.sendMessage("Erreur lors de l'envoi du fichier, " + e.getMessage() + ".");
-					ServerFrame.dispError(e, "Erreur lors de l'envoi du fichier, " + e.getMessage() + ".");
-
-					//				} finally {
-					//					if(dataIn != null && dataOut != null) {
-					//						try {
-					//							dataIn.close();
-					//							dataOut.close();
-					//							System.out.println(this.getClass() + ": dataOut / dataIn closed.");
-					//						} catch (IOException e) {
-					//							ServerClient.this.sendMessage("Erreur lors de l'arrêt de l'envoi du fichier, " + e.getMessage() + ".");
-					//							ServerFrame.dispError(e, "Erreur lors de l'arrêt de l'envoi du fichier, " + e.getMessage() + ".");
-					//						}
-					//					}
+					ServerClient.this.sendMessage("Erreur lors de l'envoi du fichier, " + e.getMessage());
+					ServerFrame.dispError(e, "Erreur lors de l'envoi du fichier, " + e.getMessage());
 				}
 			}
 		}).start();

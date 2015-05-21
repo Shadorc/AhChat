@@ -53,19 +53,18 @@ public class Reception implements Runnable {
 		}
 	}
 
-	//Le client envoie un fichier, on l'envoie à tous les autres clients
+	//This thread is waiting for receiving data
 	private void waitingForFile() {
-		//Ce thread attend en boucle la réception de données
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				byte buff[] = new byte[1024];
-				int data;
-
 				OutputStream out = null;
 				DataInputStream dataIn = null;
 
 				try {
+					ConnectedPanel.dispMessage("[INFO] Client : Fichier en cours de réception.");
+
+					//Send file's informations
 					dataIn = new DataInputStream(inData);
 					long size = dataIn.readLong();
 					String fileName = dataIn.readUTF();
@@ -74,17 +73,19 @@ public class Reception implements Runnable {
 					String name = fileName.substring(0, fileName.lastIndexOf("."));
 					String format = fileName.substring(fileName.lastIndexOf("."));
 
-					//Client's Desktop with file's name
+					//While the file exists, change name
 					File file = new File(desktop + "\\" + name + format);
 					for(int i = 1; file.exists(); i++) {
 						file = new File(desktop + "\\" + name + " (" + i + ")" + format);
 					}
+
 					out = new FileOutputStream(file);
 
-					ConnectedPanel.dispMessage("[INFO] Client : Fichier en cours de réception.");
-
+					byte buff[] = new byte[1024];
 					long total = 0;
-					while(total < size && (data = inData.read(buff, 0, size-total > buff.length ? buff.length : (int)(size-total))) > 0) {
+					int data;
+
+					while(total < size && (data = inData.read(buff)) != -1) {
 						out.write(buff, 0, data);
 						out.flush();
 						total += data;
@@ -93,14 +94,14 @@ public class Reception implements Runnable {
 					ConnectedPanel.dispMessage("[INFO] Fichier reçu et enregistré.");
 
 				} catch (IOException e) {
-					ConnectedPanel.dispError(e, "Erreur lors de la réception du fichier, " + e.getMessage() + ".");
+					ConnectedPanel.dispError(e, "Erreur lors de la réception du fichier, " + e.getMessage());
 
 				} finally {
 					if(out != null) {
 						try {
 							out.close();
 						} catch (IOException e) {
-							ConnectedPanel.dispError(e, "Erreur lors de la fermeture de la réception du fichier, " + e.getMessage() + ".");
+							ConnectedPanel.dispError(e, "Erreur lors de la fermeture de la réception du fichier, " + e.getMessage());
 						}
 					}
 				}

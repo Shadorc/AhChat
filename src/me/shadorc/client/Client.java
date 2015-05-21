@@ -1,9 +1,14 @@
 package me.shadorc.client;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.Socket;
 
-import me.shadorc.client.frame.ConnectedPanel;
 import me.shadorc.client.frame.Frame;
 import me.shadorc.client.frame.Tray;
 
@@ -23,10 +28,11 @@ public class Client {
 	public static boolean connect(String pseudo, String ip) {
 
 		try {
-			//Ping server to test if it is reachable
+			//Ping server to test if it's reachable
 			Process ping = Runtime.getRuntime().exec("ping -n 1 " + ip);
 			ping.waitFor();
 
+			//Connexion successful
 			if(ping.exitValue() == 0) {
 				s_chat = new Socket(ip, 15000);
 				s_data = new Socket(ip, 15001);
@@ -44,7 +50,7 @@ public class Client {
 			reception = new Reception(inChat, inData);
 			reception.start();
 
-			emission = new Emission(outChat);
+			emission = new Emission(outChat, outData);
 			emission.sendMessage(pseudo);
 
 			return true;
@@ -59,55 +65,7 @@ public class Client {
 	}
 
 	public static void sendFile(File file) {
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-
-				if(ConnectedPanel.getUsers().size() == 1) {
-					ConnectedPanel.dispMessage("[INFO] Il n'y a personne à qui envoyer ce fichier.");
-					return;
-				}
-
-				byte buff[] = new byte[1024];
-				int data;
-
-				DataOutputStream dataOut = null;
-				FileInputStream fileReader = null;
-
-				try {
-					fileReader = new FileInputStream(file);
-
-					ConnectedPanel.dispMessage("[INFO] Client : Envoi de " + file.getName() + " en cours...");
-
-					dataOut = new DataOutputStream(outData);
-					dataOut.writeLong(file.length());
-					dataOut.writeUTF(file.getName());
-					dataOut.flush();
-
-					while((data = fileReader.read(buff)) != -1) {
-						outData.write(buff, 0, data);
-						outData.flush();
-					}
-
-					ConnectedPanel.dispMessage("[INFO] Client : " + file.getName() + " envoyé !");
-
-				} catch (FileNotFoundException e) {
-					ConnectedPanel.dispError(e, "Merci d'entrer un chemin de fichier valide.");
-
-				} catch (IOException e) {
-					ConnectedPanel.dispError(e, "Erreur lors de l'envoi du fichier, " + e.getMessage() + ".");
-
-				} finally {
-					try {
-						if(fileReader != null) {
-							fileReader.close();
-						}
-					} catch (IOException e) {
-						ConnectedPanel.dispError(e, "Erreur lors de la fermeture de l'envoi du fichier, " + e.getMessage() + ".");
-					}
-				}
-			}
-		}).start();
+		emission.sendFile(file);
 	}
 
 	public static void exit() {

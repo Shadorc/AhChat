@@ -1,6 +1,7 @@
 package me.shadorc.client.frame;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -103,12 +104,14 @@ public class ConnectedPanel extends JPanel implements ActionListener {
 
 		JButton file = new JButton("Envoyer un fichier");
 		file.addActionListener(this);
+		file.setBackground(Color.WHITE);
 		bottom.add(file, BorderLayout.EAST);
 
 		this.add(bottom, BorderLayout.PAGE_END);
 	}
 
 	public static void addUser(String user) {
+		System.err.println("Ajout de " + user);
 		if(!Arrays.asList(users.getText().split("\n")).contains(user)) {
 			users.append(user + "\n");
 		}
@@ -148,12 +151,9 @@ public class ConnectedPanel extends JPanel implements ActionListener {
 		JFileChooser chooser = new JFileChooser(new File(System.getProperty("user.home"), "Desktop"));
 		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
-		File file;
-
 		int choice = chooser.showOpenDialog(null);
 		if(choice == JFileChooser.APPROVE_OPTION) {
-			file = new File(chooser.getSelectedFile().getPath());
-			Client.sendFile(file);
+			Client.sendFile(chooser.getSelectedFile());
 		}
 	}
 }

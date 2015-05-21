@@ -80,8 +80,6 @@ public class Server implements Runnable {
 				ServerFrame.dispError(e, "Erreur lors de la fermeture du serveur : " + e.getMessage());
 			}
 		}
-
-		System.err.println("Le serveur a été fermé avec succés.");
 	}
 
 	public enum Type {
