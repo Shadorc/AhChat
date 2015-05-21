@@ -68,7 +68,7 @@ public class Client {
 		emission.sendFile(file);
 	}
 
-	public static void exit() {
+	public static void exit(boolean closeWindow) {
 		try {
 			s_chat.close();
 			s_data.close();
@@ -80,7 +80,9 @@ public class Client {
 			Frame.showError(e, "Erreur lors de la fermeture du client : " + e.getMessage());
 		}
 
-		Tray.close();
-		System.exit(0);
+		if(closeWindow) {
+			Tray.close();
+			System.exit(0);
+		}
 	}
 }

@@ -23,7 +23,7 @@ public class Frame extends JFrame {
 
 	public Frame() {
 		super("Client");
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
 		Tray.initialize(this);
 
@@ -31,7 +31,7 @@ public class Frame extends JFrame {
 			@Override
 			public void windowClosing(WindowEvent e) {
 				if(Frame.this.getContentPane().getClass().equals(ConnectedPanel.class)) {
-					Client.exit();
+					Client.exit(false);
 				}
 			}
 		});

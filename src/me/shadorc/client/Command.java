@@ -16,13 +16,15 @@ public class Command {
 			case "/rename":
 				ConnectedPanel.replaceUser(command.split(" ")[1], command.split(" ")[2]);
 				break;
+			case "/serverClosed":
+				Client.exit(false);
 		}
 	}
 
 	public static void userCommand(String command) {
 		switch(command.toLowerCase().split(" ")[0]) {
 			case "/quit":
-				Client.exit();
+				Client.exit(true);
 				return;
 			default:
 				Client.sendMessage(command);

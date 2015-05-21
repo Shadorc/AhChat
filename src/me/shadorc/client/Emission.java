@@ -35,9 +35,6 @@ public class Emission {
 					return;
 				}
 
-				byte buff[] = new byte[1024];
-				int data;
-
 				DataOutputStream dataOut = null;
 				FileInputStream fileReader = null;
 
@@ -50,6 +47,9 @@ public class Emission {
 					dataOut.writeLong(file.length());
 					dataOut.writeUTF(file.getName());
 					dataOut.flush();
+
+					byte buff[] = new byte[1024];
+					int data;
 
 					while((data = fileReader.read(buff)) != -1) {
 						outData.write(buff, 0, data);

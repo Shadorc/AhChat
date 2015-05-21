@@ -27,7 +27,7 @@ public class Tray {
 		closeItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Client.exit();
+				Client.exit(true);
 			}
 		});
 		menu.add(closeItem);

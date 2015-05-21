@@ -134,6 +134,10 @@ public class ConnectedPanel extends JPanel implements ActionListener {
 		disp("<b><i><font color='red' size=4> /!\\ " + error + " /!\\\n</b></i></font>");
 		e.printStackTrace();
 	}
+	
+	public static void dispError(String error) {
+		disp("<b><i><font color='red' size=4> /!\\ " + error + " /!\\\n</b></i></font>");
+	}
 
 	private static void disp(String text) {
 		try {

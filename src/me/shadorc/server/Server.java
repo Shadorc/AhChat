@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.BindException;
 import java.net.ServerSocket;
+import java.net.SocketException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ public class Server implements Runnable {
 
 	public void stop() {
 		try {
+			Server.sendAll("/serverClosed", Type.COMMAND);
 			ss_chat.close();
 			ss_data.close();
 		} catch (IOException e) {
@@ -66,6 +68,10 @@ public class Server implements Runnable {
 
 		} catch(BindException e) {
 			ServerFrame.dispError(e, "Un serveur est déjà lancé.");
+			
+		} catch(SocketException ignore) {
+			//Server's ending, ignore it
+			
 
 		} catch(IOException e) {
 			ServerFrame.dispError(e, "Erreur lors de l'ouverture du serveur : " + e.getMessage());

@@ -42,14 +42,11 @@ public class Reception implements Runnable {
 				}
 			}
 
-		} catch (SocketException e) {
-			ConnectedPanel.dispError(e, "Le serveur a été fermé.");
-
-		} catch (IOException e) {
-			ConnectedPanel.dispError(e, "Erreur lors de la récéption des messages : " + e.getMessage());
+		} catch (IOException ignore) {
+			ConnectedPanel.dispError("Le serveur a été fermé.");
 
 		} finally {
-			Client.exit();
+			Client.exit(false);
 		}
 	}
 
@@ -92,6 +89,9 @@ public class Reception implements Runnable {
 					}
 
 					ConnectedPanel.dispMessage("[INFO] Fichier reçu et enregistré.");
+
+				} catch (SocketException ignore) {
+					//Server's ending, ignore it.
 
 				} catch (IOException e) {
 					ConnectedPanel.dispError(e, "Erreur lors de la réception du fichier, " + e.getMessage());

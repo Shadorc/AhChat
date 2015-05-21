@@ -3,6 +3,7 @@ package me.shadorc.server;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -140,7 +141,10 @@ public class ServerClient implements Runnable {
 						total += data;
 					}
 
-					ServerClient.this.sendMessage("[INFO] Le serveur a bien reçu et transmis le fichier.");
+					ServerFrame.dispMessage("Fichier reçu et transmis à tous les clients.");
+					
+				} catch(EOFException | SocketException ignore) {
+					//Server's ending, ignore it
 
 				} catch (IOException e) {
 					ServerClient.this.sendMessage("Erreur lors de l'envoi du fichier, " + e.getMessage());
