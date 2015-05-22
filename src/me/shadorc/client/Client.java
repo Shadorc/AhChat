@@ -70,13 +70,13 @@ public class Client {
 
 	public static void exit(boolean closeWindow) {
 		try {
-			s_chat.close();
-			s_data.close();
-			inChat.close();
-			inData.close();
-			outChat.close();
-			outData.close();
-		} catch (IOException | NullPointerException e) {
+			if(s_chat != null) s_chat.close();
+			if(s_data != null) s_data.close();
+			if(inChat != null) inChat.close();
+			if(inData != null) inData.close();
+			if(outChat != null) outChat.close();
+			if(outData != null) outData.close();
+		} catch (IOException e) {
 			Frame.showError(e, "Erreur lors de la fermeture du client : " + e.getMessage());
 		}
 

@@ -35,11 +35,9 @@ public class Frame extends JFrame {
 		this.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-				if(Frame.this.getContentPane().getClass().equals(ConnectedPanel.class)) {
-					isOpen = false;
-					//Don't exit if Server is launched
-					Client.exit(!ServerFrame.isOpen());
-				}
+				isOpen = false;
+				//Don't exit if Server is launched
+				Client.exit(!ServerFrame.isOpen());
 			}
 		});
 
