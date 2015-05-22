@@ -6,8 +6,8 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.io.IOException;
 
 import javax.swing.JFormattedTextField;
@@ -22,9 +22,10 @@ import javax.swing.text.DefaultCaret;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
-public class ServerFrame extends JFrame implements KeyListener, FocusListener, WindowListener {
 import me.shadorc.client.Client;
 import me.shadorc.client.frame.Frame;
+
+public class ServerFrame extends JFrame implements KeyListener, FocusListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -46,6 +47,9 @@ import me.shadorc.client.frame.Frame;
 			@Override
 			public void windowClosed(WindowEvent e) {
 				serv.stop();
+				isOpen = false;
+				if(!Frame.isOpen()) {
+					Client.exit(true);
 				}
 			}
 		});
@@ -140,31 +144,8 @@ import me.shadorc.client.frame.Frame;
 	}
 
 	@Override
-	public void windowClosed(WindowEvent e) {
-		serv.stop();
-	}
-
-	@Override
 	public void keyReleased(KeyEvent e) {}
 
 	@Override
 	public void keyTyped(KeyEvent e) {}
-
-	@Override
-	public void windowActivated(WindowEvent e) { }
-
-	@Override
-	public void windowClosing(WindowEvent e) { }
-
-	@Override
-	public void windowDeactivated(WindowEvent e) { }
-
-	@Override
-	public void windowDeiconified(WindowEvent e) { }
-
-	@Override
-	public void windowIconified(WindowEvent e) { }
-
-	@Override
-	public void windowOpened(WindowEvent e) { }
 }
