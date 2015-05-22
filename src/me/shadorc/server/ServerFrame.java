@@ -23,10 +23,14 @@ import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
 public class ServerFrame extends JFrame implements KeyListener, FocusListener, WindowListener {
+import me.shadorc.client.Client;
+import me.shadorc.client.frame.Frame;
 
 	private static final long serialVersionUID = 1L;
 
 	private String DEFAULT_TEXT = "Envoyer un message";
+
+	private static boolean isOpen = false;
 
 	private static HTMLEditorKit kit;
 	private static HTMLDocument doc;
@@ -38,8 +42,15 @@ public class ServerFrame extends JFrame implements KeyListener, FocusListener, W
 		super("Serveur");
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-		this.addWindowListener(this);
+		this.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosed(WindowEvent e) {
+				serv.stop();
+				}
+			}
+		});
 
+		isOpen = true;
 		kit = new HTMLEditorKit();
 		doc = new HTMLDocument();
 		textField = new JFormattedTextField(DEFAULT_TEXT);
@@ -95,6 +106,10 @@ public class ServerFrame extends JFrame implements KeyListener, FocusListener, W
 
 	public static void split() {
 		ServerFrame.dispMessage("--------");
+	}
+
+	public static boolean isOpen() {
+		return isOpen;
 	}
 
 	@Override

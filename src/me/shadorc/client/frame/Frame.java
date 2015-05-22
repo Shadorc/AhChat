@@ -10,10 +10,13 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import me.shadorc.client.Client;
+import me.shadorc.server.ServerFrame;
 
 public class Frame extends JFrame {
 
 	private static final long serialVersionUID = 1L;
+
+	private static boolean isOpen = false;
 
 	public static Frame frame;
 
@@ -25,13 +28,17 @@ public class Frame extends JFrame {
 		super("Client");
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
+		isOpen = true;
+
 		Tray.initialize(this);
 
 		this.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
 				if(Frame.this.getContentPane().getClass().equals(ConnectedPanel.class)) {
-					Client.exit(false);
+					isOpen = false;
+					//Don't exit if Server is launched
+					Client.exit(!ServerFrame.isOpen());
 				}
 			}
 		});
@@ -62,5 +69,9 @@ public class Frame extends JFrame {
 
 	public static Dimension getDimension() {
 		return frame.getSize();
+	}
+
+	public static boolean isOpen() {
+		return isOpen;
 	}
 }
