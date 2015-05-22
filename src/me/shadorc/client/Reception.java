@@ -82,7 +82,7 @@ public class Reception implements Runnable {
 					long total = 0;
 					int data;
 
-					while(total < size && (data = inData.read(buff)) != -1) {
+					while(total < size && (data = inData.read(buff)) > 0) {
 						out.write(buff, 0, data);
 						out.flush();
 						total += data;
@@ -105,7 +105,7 @@ public class Reception implements Runnable {
 						}
 					}
 				}
-				
+
 				Reception.this.waitingForFile();
 			}
 		}).start();

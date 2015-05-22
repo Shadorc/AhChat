@@ -51,7 +51,7 @@ public class Emission {
 					byte buff[] = new byte[1024];
 					int data;
 
-					while((data = fileReader.read(buff)) != -1) {
+					while((data = fileReader.read(buff)) > 0) {
 						outData.write(buff, 0, data);
 						outData.flush();
 					}

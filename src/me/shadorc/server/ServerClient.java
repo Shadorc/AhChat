@@ -133,7 +133,7 @@ public class ServerClient implements Runnable {
 					long total = 0;
 					int data; 
 
-					while(total < size && (data = inData.read(buff)) != -1) {
+					while(total < size && (data = inData.read(buff)) > 0) {
 						for(ServerClient client : Server.getClients()) {
 							if(client == ServerClient.this) continue;
 							client.sendData(buff, 0, data);
