@@ -104,6 +104,7 @@ public class ConnectedPanel extends JPanel implements ActionListener {
 
 		JButton file = new JButton("Envoyer un fichier");
 		file.addActionListener(this);
+		file.setFocusable(false);
 		file.setBackground(Color.WHITE);
 		bottom.add(file, BorderLayout.EAST);
 
