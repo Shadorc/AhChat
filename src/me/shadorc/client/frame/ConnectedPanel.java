@@ -34,7 +34,7 @@ public class ConnectedPanel extends JPanel implements ActionListener {
 	private static HTMLEditorKit kit = new HTMLEditorKit();
 	private static HTMLDocument doc = new HTMLDocument();
 
-	private static JTextArea users = new JTextArea();
+	private static UserList users = new UserList();
 
 	public ConnectedPanel() {
 
@@ -67,7 +67,6 @@ public class ConnectedPanel extends JPanel implements ActionListener {
 
 		JPanel right = new JPanel(new GridLayout(2, 0));
 
-		users.setEditable(false);
 		users.setBorder(BorderFactory.createLoweredBevelBorder());
 		users.setPreferredSize(new Dimension((int) (Frame.getDimension().getWidth()/4), 0));
 		right.add(users);
@@ -113,20 +112,20 @@ public class ConnectedPanel extends JPanel implements ActionListener {
 		this.add(bottom, BorderLayout.PAGE_END);
 	}
 
-	public static void addUser(String user) {
-		users.append(user + "\n");
+	public static void addUser(String name) {
+		users.addUser(name, new ImageIcon(ConnectedPanel.class.getResource("/res/icon.png")));
 	}
 
-	public static void removeUser(String user) {
-		users.setText(users.getText().replace(user, ""));
+	public static void removeUser(String name) {
+		users.removeUser(name);
 	}
 
 	public static void replaceUser(String oldName, String newName) {
-		users.setText(users.getText().replace(oldName, newName));
+		users.replaceUser(oldName, newName);
 	}
 
 	public static List <String> getUsers() {
-		return Arrays.asList(users.getText().split("\n"));
+		return Arrays.asList(users.getUsers());
 	}
 
 	public static void dispMessage(String message) {
