@@ -27,8 +27,8 @@ public class Server implements Runnable {
 	public void stop() {
 		try {
 			Server.sendAll("/serverClosed", Type.COMMAND);
-			ss_chat.close();
-			ss_data.close();
+			if(ss_chat != null) ss_chat.close();
+			if(ss_data != null) ss_data.close();
 		} catch (IOException e) {
 			ServerFrame.showError(e, "Erreur lors de la fermeture du serveur : " + e.getMessage());
 		}

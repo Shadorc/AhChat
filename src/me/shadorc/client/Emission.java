@@ -66,9 +66,7 @@ public class Emission {
 
 				} finally {
 					try {
-						if(fileReader != null) {
-							fileReader.close();
-						}
+						if(fileReader != null) fileReader.close();
 					} catch (IOException e) {
 						ConnectedPanel.dispError(e, "Erreur lors de la fermeture de l'envoi du fichier, " + e.getMessage());
 					}
