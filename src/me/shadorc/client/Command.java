@@ -20,14 +20,4 @@ public class Command {
 				Client.exit(false);
 		}
 	}
-
-	public static void userCommand(String command) {
-		switch(command.toLowerCase().split(" ")[0]) {
-			case "/quit":
-				Client.exit(true);
-				return;
-			default:
-				Client.sendMessage(command);
-		}
-	}
 }

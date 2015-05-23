@@ -29,7 +29,6 @@ import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
 import me.shadorc.client.Client;
-import me.shadorc.client.Command;
 
 public class ConnectedPanel extends JPanel implements ActionListener {
 
@@ -83,13 +82,9 @@ public class ConnectedPanel extends JPanel implements ActionListener {
 			public void keyPressed(KeyEvent e) {
 				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
 					String message = saisisTexte.getText();
-
-					if(message.startsWith("/")) {
-						Command.userCommand(message);
-					} else if(message.length() > 0){
+					if(message.length() > 0){
 						Client.sendMessage(message);
 					}
-
 					saisisTexte.setText("");
 				}
 			}

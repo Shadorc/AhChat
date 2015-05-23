@@ -6,11 +6,7 @@ import java.awt.datatransfer.StringSelection;
 public class ServerCommand {
 
 	public static void admin(String command) {
-
 		switch(command.toLowerCase()) {
-			case "/quit":
-				System.exit(0);
-				return;
 			case "/total":
 				ServerFrame.dispMessage("Nombre de connectés : " + Server.getClients().size());
 				return;
@@ -19,7 +15,6 @@ public class ServerCommand {
 				Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(Server.getIp()), null);
 				return;
 			case "/help":
-				ServerFrame.dispMessage("Quitter : /quit");
 				ServerFrame.dispMessage("Nombre de connectés : /total");
 				ServerFrame.dispMessage("IP du serveur : /ip");
 				return;
@@ -30,20 +25,14 @@ public class ServerCommand {
 	}
 
 	public static String user(ServerClient client, String command) {
-
 		switch(command.toLowerCase().split(" ")[0]) {
-			case "/total":
-				return "Nombre de connectés : " + Server.getClients().size();
 			case "/rename":
 				if(command.split(" ").length != 2)	return "<font color=red>Pseudo invalide.";
 				client.setName(command.split(" ")[1]);
 				return "Renommé en \"" + command.split(" ")[1] + "\".";
 			case "/help":
 				return "<u>Commandes disponibles :</u>\n" 
-				+ ".....Nombre de connectés : /total\n" 
-				+ ".....Changer de pseudo : /rename &lt;pseudo&gt;\n" 
-				+ ".....Envoyer un fichier : /send &lt;chemin&gt;\n" 
-				+ ".....Quitter : /quit";
+				+ ".....Changer de pseudo : /rename &lt;pseudo&gt;\n";
 			default :
 				return "Cette commande n'est pas supportée.\n" + ServerCommand.user(client, "/help");
 		}
