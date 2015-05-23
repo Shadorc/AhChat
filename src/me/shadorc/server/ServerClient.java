@@ -139,12 +139,15 @@ public class ServerClient implements Runnable {
 					long total = 0;
 					int data; 
 
+					for(ServerClient client : Server.getClients()) {
+						if(client == ServerClient.this) continue;
+						client.sendLong(size);
+						client.sendString(fileName);
+					}
+
 					while(total < size && (data = inData.read(buff)) > 0) {
 						for(ServerClient client : Server.getClients()) {
 							if(client == ServerClient.this) continue;
-
-							client.sendLong(size);
-							client.sendString(fileName);
 							client.sendData(buff, 0, data);
 						}
 						total += data;
