@@ -87,7 +87,8 @@ public class ServerFrame extends JFrame implements KeyListener, FocusListener {
 
 		this.setContentPane(pane);
 		this.pack();
-		this.setSize(800, 600);
+		this.setMinimumSize(new Dimension(800, 600));
+		this.setPreferredSize(new Dimension(800, 600));
 		this.setLocationRelativeTo(null);
 		this.setVisible(true);
 

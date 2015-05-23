@@ -74,6 +74,8 @@ public class ConnectedPanel extends JPanel implements ActionListener {
 
 		progressBars = new ArrayList <JProgressBar> ();
 		progressPanel = new JPanel(new GridLayout());
+		progressPanel.setBorder(BorderFactory.createLoweredBevelBorder());
+		progressPanel.setBackground(Color.WHITE);
 		right.add(progressPanel);
 
 		this.add(right, BorderLayout.EAST);
