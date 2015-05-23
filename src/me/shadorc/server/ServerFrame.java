@@ -43,7 +43,7 @@ public class ServerFrame extends JFrame implements KeyListener, FocusListener {
 	private Server serv;
 
 	public ServerFrame() {
-		super("Serveur");
+		super("AhChat - Serveur");
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
 		this.addWindowListener(new WindowAdapter() {
@@ -109,7 +109,7 @@ public class ServerFrame extends JFrame implements KeyListener, FocusListener {
 	}
 
 	public static void showError(Exception e, String error) {
-		JOptionPane.showMessageDialog(null, error, "Serveur - Erreur", JOptionPane.ERROR_MESSAGE);
+		JOptionPane.showMessageDialog(null, error, "AhChat - Serveur - Erreur", JOptionPane.ERROR_MESSAGE);
 		e.printStackTrace();
 	}
 

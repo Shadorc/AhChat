@@ -25,7 +25,7 @@ public class Frame extends JFrame {
 	}
 
 	public Frame() {
-		super("Client");
+		super("AhChat");
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
 		isOpen = true;
@@ -51,12 +51,12 @@ public class Frame extends JFrame {
 	}
 
 	public static void showError(Exception e, String error) {
-		JOptionPane.showMessageDialog(null, error, "Client - Erreur", JOptionPane.ERROR_MESSAGE);
+		JOptionPane.showMessageDialog(null, error, "AhChat - Erreur", JOptionPane.ERROR_MESSAGE);
 		e.printStackTrace();
 	}
 
 	public static void showError(String error) {
-		JOptionPane.showMessageDialog(null, error, "Client - Erreur", JOptionPane.ERROR_MESSAGE);
+		JOptionPane.showMessageDialog(null, error, "AhChat - Erreur", JOptionPane.ERROR_MESSAGE);
 	}
 
 	public static void setPanel(JPanel pane) {
