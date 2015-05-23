@@ -21,6 +21,7 @@ public class ServerClient implements Runnable {
 
 	private InputStream inData;
 	private OutputStream outData;
+	private DataOutputStream outInfoData;
 
 	private BufferedReader inChat;
 	private PrintWriter outChat;
@@ -42,6 +43,7 @@ public class ServerClient implements Runnable {
 
 			outData = s_data.getOutputStream();
 			inData = s_data.getInputStream();
+			outInfoData = new DataOutputStream(outData); 
 
 			name = inChat.readLine();
 
@@ -107,6 +109,16 @@ public class ServerClient implements Runnable {
 		outData.flush();
 	}
 
+	public void sendLong(long data) throws IOException {
+		outInfoData.writeLong(data);
+		outInfoData.flush();
+	}
+
+	public void sendString(String data) throws IOException {
+		outInfoData.writeUTF(data);
+		outInfoData.flush();
+	}
+
 	//This Thread is waiting for file from the Client
 	private void waitingForFile() {
 		//The client sends a file, Server sends it to others clients
@@ -115,7 +127,6 @@ public class ServerClient implements Runnable {
 			public void run() {
 
 				DataInputStream dataIn = null;
-				DataOutputStream dataOut = null;
 
 				try {
 					dataIn = new DataInputStream(inData);
@@ -124,11 +135,6 @@ public class ServerClient implements Runnable {
 
 					ServerFrame.dispMessage(ServerClient.this.name + " envoie un fichier de " + size/1024 + "ko nommé " + fileName + ".");
 
-					dataOut = new DataOutputStream(outData);
-					dataOut.writeLong(size);
-					dataOut.writeUTF(fileName);
-					dataOut.flush();
-
 					byte buff[] = new byte[1024];
 					long total = 0;
 					int data; 
@@ -136,6 +142,9 @@ public class ServerClient implements Runnable {
 					while(total < size && (data = inData.read(buff)) > 0) {
 						for(ServerClient client : Server.getClients()) {
 							if(client == ServerClient.this) continue;
+
+							client.sendLong(size);
+							client.sendString(fileName);
 							client.sendData(buff, 0, data);
 						}
 						total += data;
@@ -178,6 +187,7 @@ public class ServerClient implements Runnable {
 			s_data.close();
 			inData.close();
 			outData.close();
+			outInfoData.close();
 			inChat.close();
 			outChat.close();
 		} catch (IOException | NullPointerException e) {
