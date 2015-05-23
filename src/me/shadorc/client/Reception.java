@@ -42,7 +42,7 @@ public class Reception implements Runnable {
 				}
 			}
 
-		} catch (IOException ignore) {
+		} catch (IOException e) {
 			ConnectedPanel.dispError("Le serveur a été fermé.");
 
 		} finally {
@@ -55,8 +55,8 @@ public class Reception implements Runnable {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				OutputStream out = null;
 				DataInputStream dataIn = null;
+				OutputStream fileWriter = null;
 
 				try {
 					//Send file's informations
@@ -66,6 +66,7 @@ public class Reception implements Runnable {
 
 					ConnectedPanel.dispMessage("[INFO] Client : Fichier en cours de réception.");
 
+					//FIXME: If file's name doesn't contain extension (.hpg,...)
 					File desktop = FileSystemView.getFileSystemView().getHomeDirectory();
 					String name = fileName.substring(0, fileName.lastIndexOf("."));
 					String format = fileName.substring(fileName.lastIndexOf("."));
@@ -76,15 +77,15 @@ public class Reception implements Runnable {
 						file = new File(desktop + "\\" + name + " (" + i + ")" + format);
 					}
 
-					out = new FileOutputStream(file);
+					fileWriter = new FileOutputStream(file);
 
 					byte buff[] = new byte[1024];
 					long total = 0;
 					int data;
 
 					while(total < size && (data = inData.read(buff)) > 0) {
-						out.write(buff, 0, data);
-						out.flush();
+						fileWriter.write(buff, 0, data);
+						fileWriter.flush();
 						total += data;
 					}
 
@@ -97,12 +98,10 @@ public class Reception implements Runnable {
 					ConnectedPanel.dispError(e, "Erreur lors de la réception du fichier, " + e.getMessage());
 
 				} finally {
-					if(out != null) {
-						try {
-							out.close();
-						} catch (IOException e) {
-							ConnectedPanel.dispError(e, "Erreur lors de la fermeture de la réception du fichier, " + e.getMessage());
-						}
+					try {
+						if(fileWriter != null) fileWriter.close();
+					} catch (IOException e) {
+						ConnectedPanel.dispError(e, "Erreur lors de la fermeture de la réception du fichier, " + e.getMessage());
 					}
 				}
 
