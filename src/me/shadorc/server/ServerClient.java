@@ -47,10 +47,12 @@ public class ServerClient implements Runnable {
 
 			name = inChat.readLine();
 
-			//			If pseudo already exists, add number while pseudo exists (ex: Shadorc, Shadorc(1), Shadorc(2), ...)
-			//						for(int i = 1; Server.getClients().containsKey((name)); i++) {
-			//							name = name + "(" + i + ")";
-			//						}
+			//If pseudo already exists, add ip to his name
+			for(int i = 0; i < Server.getClients().size(); i++) {
+				if(Server.getClients().get(i).getName().equalsIgnoreCase(name)) {
+					name = name + "(" + ip + ")";
+				}
+			}
 
 			Server.addClient(this);
 
