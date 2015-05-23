@@ -68,10 +68,10 @@ public class Server implements Runnable {
 
 		} catch(BindException e) {
 			ServerFrame.dispError(e, "Un serveur est déjà lancé.");
-			
+
 		} catch(SocketException ignore) {
 			//Server's ending, ignore it
-			
+
 
 		} catch(IOException e) {
 			ServerFrame.dispError(e, "Erreur lors de l'ouverture du serveur : " + e.getMessage());
@@ -108,11 +108,13 @@ public class Server implements Runnable {
 
 	public static synchronized void addClient(ServerClient client) {
 		clients.add(client);
+		ServerFrame.addUser(client.getName());
 		sendAll("/connexion " + client.getName(), Type.COMMAND);
 	}
 
 	public static synchronized void delClient(ServerClient client) {
 		clients.remove(client);
+		ServerFrame.removeUser(client.getName());
 		sendAll("/deconnexion " + client.getName(), Type.COMMAND);
 	}
 

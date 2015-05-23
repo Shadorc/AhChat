@@ -10,11 +10,13 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 
+import javax.swing.BorderFactory;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.text.BadLocationException;
@@ -35,6 +37,7 @@ public class ServerFrame extends JFrame implements KeyListener, FocusListener {
 
 	private static HTMLEditorKit kit;
 	private static HTMLDocument doc;
+	private static JTextArea users;
 	private JFormattedTextField textField;
 
 	private Server serv;
@@ -71,7 +74,13 @@ public class ServerFrame extends JFrame implements KeyListener, FocusListener {
 		JScrollPane scroll = new JScrollPane(chat, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		pane.add(scroll, BorderLayout.CENTER);
 
-		textField.setPreferredSize(new Dimension(this.getWidth(), 25));
+		users = new JTextArea();
+		users.setEditable(false);
+		users.setBorder(BorderFactory.createLoweredBevelBorder());
+		users.setPreferredSize(new Dimension((int) (Frame.getDimension().getWidth()/4), 0));
+		pane.add(users, BorderLayout.EAST);
+
+		textField.setPreferredSize(new Dimension(0, 25));
 		textField.addKeyListener(this);
 		textField.addFocusListener(this);
 		pane.add(textField, BorderLayout.PAGE_END);
@@ -84,6 +93,18 @@ public class ServerFrame extends JFrame implements KeyListener, FocusListener {
 
 		serv = new Server();
 		serv.start();
+	}
+
+	public static void addUser(String name) {
+		users.append(name + "\n");
+	}
+
+	public static void removeUser(String name) {
+		users.setText(users.getText().replace(name, ""));
+	}
+
+	public static void replaceUser(String oldName, String newName) {
+		users.setText(users.getText().replace(oldName, newName));
 	}
 
 	public static void showError(Exception e, String error) {
