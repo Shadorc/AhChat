@@ -133,7 +133,7 @@ public class ServerClient implements Runnable {
 					long size = dataIn.readLong();
 					String fileName = dataIn.readUTF();
 
-					ServerFrame.dispMessage(ServerClient.this.name + " envoie un fichier de " + size/1024 + "ko nommé " + fileName + ".");
+					ServerFrame.dispMessage(ServerClient.this.name + " envoie un fichier de " + size/1024 + "ko nommé \"" + fileName + "\".");
 
 					byte buff[] = new byte[1024];
 					long total = 0;
@@ -153,7 +153,7 @@ public class ServerClient implements Runnable {
 						total += data;
 					}
 
-					ServerFrame.dispMessage("Fichier reçu et transmis à tous les clients.");
+					ServerFrame.dispMessage("\"" + fileName + "\"a été transmis à tous les clients.");
 
 				} catch(EOFException | SocketException ignore) {
 					//Server's ending, ignore it

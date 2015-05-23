@@ -57,14 +57,15 @@ public class Reception implements Runnable {
 			public void run() {
 				DataInputStream dataIn = null;
 				OutputStream fileWriter = null;
+				String fileName = null;
 
 				try {
 					//Send file's informations
 					dataIn = new DataInputStream(inData);
 					long size = dataIn.readLong();
-					String fileName = dataIn.readUTF();
+					fileName = dataIn.readUTF();
 
-					ConnectedPanel.dispMessage("[INFO] Client : Fichier en cours de réception.");
+					ConnectedPanel.addProgressBar("Téléchargement : " + fileName);
 
 					//FIXME: If file's name doesn't contain extension (.hpg,...)
 					File desktop = FileSystemView.getFileSystemView().getHomeDirectory();
@@ -87,9 +88,8 @@ public class Reception implements Runnable {
 						fileWriter.write(buff, 0, data);
 						fileWriter.flush();
 						total += data;
+						ConnectedPanel.updateBar("Téléchargement : " + fileName, (int) (total * 100 / size));
 					}
-
-					ConnectedPanel.dispMessage("[INFO] Fichier reçu et enregistré.");
 
 				} catch (SocketException ignore) {
 					//Server's ending, ignore it.
@@ -99,6 +99,7 @@ public class Reception implements Runnable {
 
 				} finally {
 					try {
+						ConnectedPanel.removeProgressBar("Téléchargement : " + fileName);
 						if(fileWriter != null) fileWriter.close();
 					} catch (IOException e) {
 						ConnectedPanel.dispError(e, "Erreur lors de la fermeture de la réception du fichier, " + e.getMessage());

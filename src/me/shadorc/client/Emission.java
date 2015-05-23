@@ -39,7 +39,7 @@ public class Emission {
 				FileInputStream fileReader = null;
 
 				try {
-					ConnectedPanel.dispMessage("[INFO] Client : Envoi de " + file.getName() + " en cours...");
+					ConnectedPanel.addProgressBar("Envoi : " + file.getName());
 
 					fileReader = new FileInputStream(file);
 
@@ -50,13 +50,14 @@ public class Emission {
 
 					byte buff[] = new byte[1024];
 					int data;
+					int total = 0;
 
 					while((data = fileReader.read(buff)) > 0) {
 						outData.write(buff, 0, data);
 						outData.flush();
+						total += data;
+						ConnectedPanel.updateBar("Envoi : " + file.getName(), (int) (total * 100 / file.length()));
 					}
-
-					ConnectedPanel.dispMessage("[INFO] Client : " + file.getName() + " envoyé !");
 
 				} catch (FileNotFoundException e) {
 					ConnectedPanel.dispError(e, "Merci d'entrer un chemin de fichier valide.");
@@ -66,6 +67,7 @@ public class Emission {
 
 				} finally {
 					try {
+						ConnectedPanel.removeProgressBar("Envoi : " + file.getName());
 						if(fileReader != null) fileReader.close();
 					} catch (IOException e) {
 						ConnectedPanel.dispError(e, "Erreur lors de la fermeture de l'envoi du fichier, " + e.getMessage());

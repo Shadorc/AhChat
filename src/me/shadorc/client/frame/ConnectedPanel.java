@@ -3,24 +3,18 @@ package me.shadorc.client.frame;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JFormattedTextField;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextPane;
-import javax.swing.ScrollPaneConstants;
+import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
@@ -33,6 +27,9 @@ import me.shadorc.client.Client;
 public class ConnectedPanel extends JPanel implements ActionListener {
 
 	private static final long serialVersionUID = 1L;
+
+	private static JPanel progressPanel;
+	private static ArrayList <JProgressBar> progressBars;
 
 	private static HTMLEditorKit kit = new HTMLEditorKit();
 	private static HTMLDocument doc = new HTMLDocument();
@@ -68,10 +65,18 @@ public class ConnectedPanel extends JPanel implements ActionListener {
 		scroll.setOpaque(false);
 		this.add(scroll, BorderLayout.CENTER);
 
+		JPanel right = new JPanel(new GridLayout(2, 0));
+
 		users.setEditable(false);
 		users.setBorder(BorderFactory.createLoweredBevelBorder());
 		users.setPreferredSize(new Dimension((int) (Frame.getDimension().getWidth()/4), 0));
-		this.add(users, BorderLayout.EAST);
+		right.add(users);
+
+		progressBars = new ArrayList <JProgressBar> ();
+		progressPanel = new JPanel(new GridLayout());
+		right.add(progressPanel);
+
+		this.add(right, BorderLayout.EAST);
 
 		JPanel bottom = new JPanel(new BorderLayout());
 
@@ -130,7 +135,7 @@ public class ConnectedPanel extends JPanel implements ActionListener {
 		disp("<b><i><font color='red' size=4> /!\\ " + error + " /!\\\n</b></i></font>");
 		e.printStackTrace();
 	}
-	
+
 	public static void dispError(String error) {
 		disp("<b><i><font color='red' size=4> /!\\ " + error + " /!\\\n</b></i></font>");
 	}
@@ -140,6 +145,40 @@ public class ConnectedPanel extends JPanel implements ActionListener {
 			kit.insertHTML(doc, doc.getLength(), text, 0, 0, null);
 		} catch (BadLocationException | IOException e) {
 			Frame.showError(e, "Une erreur est survenue lors de l'affichage du message : " + e.getMessage());
+		}
+	}
+
+	public static void addProgressBar(String name) {
+		JProgressBar bar = new JProgressBar(0, 100);
+		bar.setName(name);
+		bar.setStringPainted(true);
+		progressBars.add(bar);
+		progressPanel.add(bar);
+		GridLayout progressLayout = ((GridLayout) progressPanel.getLayout());
+		progressLayout.setRows(progressLayout.getRows()+1);
+		progressPanel.revalidate();
+		progressPanel.repaint();
+	}
+
+	public static void removeProgressBar(String name) {
+		for(JProgressBar bar : progressBars) {
+			if(bar.getName().equals(name)) {
+				progressBars.remove(bar);
+				progressPanel.remove(bar);
+				((GridLayout) progressPanel.getLayout()).setRows(((GridLayout) progressPanel.getLayout()).getRows()-1);
+				progressPanel.revalidate();
+				progressPanel.repaint();
+				return;
+			}
+		}
+	}
+
+	public static void updateBar(String name, int value) {
+		for(JProgressBar bar : progressBars) {
+			if(bar.getName().equals(name)) {
+				bar.setValue(value);
+				bar.setString(name + " : " + value + "%");
+			}
 		}
 	}
 
