@@ -71,6 +71,7 @@ public class ConnectionPanel extends Box implements ActionListener, KeyListener 
 		connect = new JButton("Connexion");
 		connect.setBackground(Color.WHITE);
 		connect.addActionListener(this);
+		connect.setFocusable(false);
 		bottom.add(connect);
 		bottom.add(new JLabel());
 
@@ -78,6 +79,7 @@ public class ConnectionPanel extends Box implements ActionListener, KeyListener 
 		create = new JButton("Créer un salon");
 		create.setBackground(Color.WHITE);
 		create.addActionListener(this);
+		create.setFocusable(false);
 		bottom2.add(create);
 		bottom2.add(new JLabel());
 
@@ -114,12 +116,22 @@ public class ConnectionPanel extends Box implements ActionListener, KeyListener 
 			Frame.showError("Merci de remplir tous les champs correctement. (Les pseudos ne peuvent contenir que des lettres et des chiffres)");
 
 		} else {
-			ConnectedPanel pane = new ConnectedPanel(); //Sinon users est null et il y a une erreur lors du launch
-			if(Client.connect(nameField.getText(), ipField.getText())) {
-				Frame.setPanel(pane);
-			} else {
-				Frame.showError("Serveur indisponible ou inexistant.");
-			}
+			connect.setText("Connexion...");
+			connect.setEnabled(false);
+
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					ConnectedPanel pane = new ConnectedPanel(); //Sinon users est null et il y a une erreur lors du launch
+					if(Client.connect(nameField.getText(), ipField.getText())) {
+						Frame.setPanel(pane);
+					} else {
+						Frame.showError("Serveur indisponible ou inexistant.");
+						connect.setText("Connexion");
+						connect.setEnabled(true);
+					}
+				}
+			}).start();
 		}
 	}
 
