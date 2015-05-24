@@ -66,6 +66,7 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
 			}
 		});
 		iconButton.setFocusable(false);
+		iconButton.setContentAreaFilled(false);
 		iconButton.setBorder(BorderFactory.createEmptyBorder());
 		iconButton.setHorizontalTextPosition(JButton.CENTER);
 		iconButton.setVerticalTextPosition(JButton.CENTER);
@@ -152,12 +153,7 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
 
 			if(choice == JFileChooser.APPROVE_OPTION) {
 				icon = chooser.getSelectedFile();
-
-				Image pp = new ImageIcon(icon.getPath()).getImage();
-				int width = iconButton.getWidth();
-				int height = (int) ((double) width / pp.getWidth(null) * (pp.getHeight(null) * 1.0));
-
-				iconButton.setIcon(UserImage.create(icon, width, height));
+				iconButton.setIcon(UserImage.create(icon, -1, iconButton.getHeight()));
 			}
 		} else if(bu == connect) {
 			this.connection();

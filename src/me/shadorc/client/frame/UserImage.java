@@ -19,12 +19,12 @@ public class UserImage {
 	public static ImageIcon create(File file, int width, int height) {
 		ImageIcon icon =  new ImageIcon(file.getPath());
 
-		if(width != -1 && height != -1) {
+		if(width != -1 || height != -1) {
 			icon = new ImageIcon(icon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH));
 		}
 
 		/* Make Rounded Icon*/
-		int cornerRadius = icon.getIconHeight();
+		int cornerRadius = Math.max(icon.getIconWidth(), icon.getIconHeight());
 		int w = icon.getIconWidth();
 		int h = icon.getIconHeight();
 
