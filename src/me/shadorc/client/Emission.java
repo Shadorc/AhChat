@@ -30,7 +30,7 @@ public class Emission {
 			@Override
 			public void run() {
 
-				if(ConnectedPanel.getUsers().size() == 1) {
+				if(ConnectedPanel.getUsersList().getUsersArray().length == 1) {
 					ConnectedPanel.dispMessage("[INFO] Il n'y a personne à qui envoyer ce fichier.");
 					return;
 				}

@@ -156,7 +156,7 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
 				|| ipField.getText().isEmpty() 
 				|| !ipField.getText().matches("^(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})$")  //Test if the IP address contains letters
 				|| !nameField.getText().replaceAll("[^0-9a-zA-Z]", "").equals(nameField.getText())) { //Test if name contains others than letters or number
-			Frame.showError("Merci de remplir tous les champs correctement. (Les pseudos ne peuvent contenir que des lettres et des chiffres)");
+			Frame.popupError("Merci de remplir tous les champs correctement. (Les pseudos ne peuvent contenir que des lettres et des chiffres)");
 
 		} else {
 			connect.setText("Connexion...");
@@ -169,7 +169,7 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
 					if(Client.connect(nameField.getText(), icon, ipField.getText())) {
 						Frame.setPanel(pane);
 					} else {
-						Frame.showError("Serveur indisponible ou inexistant.");
+						Frame.popupError("Serveur indisponible ou inexistant.");
 						connect.setText("Connexion");
 						connect.setEnabled(true);
 					}

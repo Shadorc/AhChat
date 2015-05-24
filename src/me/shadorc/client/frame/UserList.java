@@ -35,7 +35,7 @@ public class UserList extends JList <String> {
 		}
 	}
 
-	public String[] getUsers() {
+	public String[] getUsersArray() {
 		return imageMap.keySet().toArray(new String[imageMap.size()]);
 	}
 

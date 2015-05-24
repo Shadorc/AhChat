@@ -32,7 +32,7 @@ public class Tray {
 		});
 		menu.add(closeItem);
 
-		icon = new TrayIcon(new ImageIcon(Tray.class.getResource("/res/icon.png")).getImage(), "Chat", menu);
+		icon = new TrayIcon(new ImageIcon(Tray.class.getResource("/res/icon.png")).getImage(), "AhChat", menu);
 		icon.setImageAutoSize(true);
 
 		try {

@@ -51,12 +51,12 @@ public class Frame extends JFrame {
 		this.setVisible(true);
 	}
 
-	public static void showError(Exception e, String error) {
+	public static void popupError(Exception e, String error) {
 		JOptionPane.showMessageDialog(null, error, "AhChat - Erreur", JOptionPane.ERROR_MESSAGE);
 		e.printStackTrace();
 	}
 
-	public static void showError(String error) {
+	public static void popupError(String error) {
 		JOptionPane.showMessageDialog(null, error, "AhChat - Erreur", JOptionPane.ERROR_MESSAGE);
 	}
 

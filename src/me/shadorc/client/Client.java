@@ -84,7 +84,7 @@ public class Client {
 			if(outChat != null) outChat.close();
 			if(outData != null) outData.close();
 		} catch (IOException e) {
-			Frame.showError(e, "Erreur lors de la fermeture du client : " + e.getMessage());
+			Frame.popupError(e, "Erreur lors de la fermeture du client : " + e.getMessage());
 		}
 
 		if(closeWindow) {

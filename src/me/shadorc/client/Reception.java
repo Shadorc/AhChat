@@ -29,11 +29,10 @@ public class Reception implements Runnable {
 
 	@Override
 	public void run() {
-		String message;
-
 		try {
 			this.waitingForFile();
 
+			String message;
 			while((message = inChat.readLine()) != null) {
 				if(message.startsWith("/")) {
 					Command.serverCommand(message);

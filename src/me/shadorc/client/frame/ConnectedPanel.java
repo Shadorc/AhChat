@@ -13,8 +13,6 @@ import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -128,20 +126,8 @@ public class ConnectedPanel extends JPanel implements ActionListener {
 		this.add(bottom, BorderLayout.PAGE_END);
 	}
 
-	public static void addUser(String name) {
-		users.addUser(name, new ImageIcon(ConnectedPanel.class.getResource("/res/icon.png")));
-	}
-
-	public static void removeUser(String name) {
-		users.removeUser(name);
-	}
-
-	public static void replaceUser(String oldName, String newName) {
-		users.replaceUser(oldName, newName);
-	}
-
-	public static List <String> getUsers() {
-		return Arrays.asList(users.getUsers());
+	public static UserList getUsersList() {
+		return users;
 	}
 
 	public static void dispMessage(String message) {
@@ -161,7 +147,7 @@ public class ConnectedPanel extends JPanel implements ActionListener {
 		try {
 			kit.insertHTML(doc, doc.getLength(), text, 0, 0, null);
 		} catch (BadLocationException | IOException e) {
-			Frame.showError(e, "Une erreur est survenue lors de l'affichage du message : " + e.getMessage());
+			Frame.popupError(e, "Une erreur est survenue lors de l'affichage du message : " + e.getMessage());
 		}
 	}
 
@@ -182,7 +168,8 @@ public class ConnectedPanel extends JPanel implements ActionListener {
 			if(bar.getName().equals(name)) {
 				progressBars.remove(bar);
 				progressPanel.remove(bar);
-				((GridLayout) progressPanel.getLayout()).setRows(((GridLayout) progressPanel.getLayout()).getRows()-1);
+				GridLayout progressLayout = ((GridLayout) progressPanel.getLayout());
+				progressLayout.setRows(progressLayout.getRows()-1);
 				progressPanel.revalidate();
 				progressPanel.repaint();
 				return;
@@ -195,6 +182,7 @@ public class ConnectedPanel extends JPanel implements ActionListener {
 			if(bar.getName().equals(name)) {
 				bar.setValue(value);
 				bar.setString(name + " : " + value + "%");
+				return;
 			}
 		}
 	}
