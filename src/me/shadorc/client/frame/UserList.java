@@ -40,7 +40,7 @@ public class UserList extends JList <String> {
 	}
 
 	public void addUser(String name, ImageIcon icon) {
-		imageMap.put(name, new ImageIcon(icon.getImage().getScaledInstance(20, 20, Image.SCALE_DEFAULT)));
+		imageMap.put(name, new ImageIcon(icon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH)));
 		this.setListData(imageMap.keySet().toArray(new String[imageMap.size()]));
 	}
 

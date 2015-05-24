@@ -1,6 +1,7 @@
 package me.shadorc.client.frame;
 
 import java.awt.Dimension;
+import java.awt.Image;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -41,7 +42,7 @@ public class Frame extends JFrame {
 			}
 		});
 
-		this.setIconImage(new ImageIcon(this.getClass().getResource("/res/icon.png")).getImage());
+		this.setIconImage(new ImageIcon(this.getClass().getResource("/res/icon.png")).getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH));
 		this.setContentPane(new ConnectionPanel());
 		this.pack();
 		this.setMinimumSize(new Dimension(800, 600));

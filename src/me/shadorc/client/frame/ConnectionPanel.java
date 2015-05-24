@@ -3,6 +3,7 @@ package me.shadorc.client.frame;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -17,8 +18,6 @@ import java.io.File;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -43,9 +42,10 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
 	public ConnectionPanel() {
 		super(new GridBagLayout());
 
-		this.background = new ImageIcon(this.getClass().getResource("/res/background.jpg")).getImage();
+		this.background = new ImageIcon(this.getClass().getResource("/res/background.png")).getImage();
 
-		JPanel mainPanel = new JPanel(new GridLayout(2, 0));
+		JPanel mainPanel = new JPanel(new BorderLayout());
+		mainPanel.setPreferredSize(new Dimension(500, 325));
 		mainPanel.setOpaque(false);
 
 		if(Storage.get(Data.ICON) != null) {
@@ -55,9 +55,7 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
 		}
 
 		/*Icon Panel*/
-		Box box = new Box(BoxLayout.X_AXIS);
-
-		iconButton = new JButton(UserImage.create(icon, -1, 100));
+		iconButton = new JButton(UserImage.create(icon, -1, 125));
 		iconButton.addActionListener(this);
 		iconButton.addMouseListener(new MouseAdapter() {
 			@Override
@@ -79,68 +77,53 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
 		iconButton.setBackground(Color.WHITE);
 		iconButton.setOpaque(false);
 
-		box.add(Box.createHorizontalGlue());
-		box.add(iconButton);
-		box.add(Box.createHorizontalGlue());
-		mainPanel.add(box);
+		mainPanel.add(iconButton, BorderLayout.PAGE_START);
 
-		JPanel loginPanel = new JPanel(new GridLayout(4, 0));
+		JPanel loginPanel = new JPanel(new GridLayout(2, 2, 20, 30));
+		loginPanel.setBorder(BorderFactory.createEmptyBorder(18, 0, 18, 0));
 		loginPanel.setOpaque(false);
 
 		/*Pseudo Panel*/
-		JPanel pseudoPane = new JPanel(new BorderLayout());
-		pseudoPane.setOpaque(false);
-		JLabel name = new JLabel("Pseudo :");
+		JLabel name = new JLabel("Pseudo :", JLabel.RIGHT);
 		name.setForeground(Color.BLACK);
-		name.setPreferredSize(new Dimension(100, 30));
-		pseudoPane.add(name, BorderLayout.WEST);
+		name.setFont(new Font("Segoe UI", Font.PLAIN, 28));
+		loginPanel.add(name);
 
 		nameField = new JFormattedTextField(Storage.get(Data.PSEUDO));
 		nameField.addKeyListener(this);
-		pseudoPane.add(nameField, BorderLayout.CENTER);
-
-		loginPanel.add(pseudoPane);
+		loginPanel.add(nameField);
 
 		/*IP Panel*/
-		JPanel ipPane = new JPanel(new BorderLayout());
-		ipPane.setOpaque(false);
-		JLabel ip = new JLabel("IP du Serveur :");
+		JLabel ip = new JLabel("IP du Serveur :", JLabel.RIGHT);
 		ip.setForeground(Color.BLACK);
-		ip.setPreferredSize(new Dimension(100, 30));
-		ipPane.add(ip, BorderLayout.WEST);
+		ip.setFont(new Font("Segoe UI", Font.PLAIN, 28));
+		loginPanel.add(ip);
 
 		ipField = new JFormattedTextField(Storage.get(Data.IP));
 		ipField.addKeyListener(this);
-		ipPane.add(ipField, BorderLayout.CENTER);
-		loginPanel.add(ipPane);
+		loginPanel.add(ipField);
 
-		/*Connexion Button Panel*/
-		JPanel connectionPane = new JPanel(new GridLayout(0, 3));
-		connectionPane.setOpaque(false);
-		connectionPane.add(new JLabel());
-		connect = new JButton("Connexion");
-		connect.setBackground(Color.WHITE);
-		connect.addActionListener(this);
-		connect.setFocusable(false);
-		connectionPane.add(connect);
-		connectionPane.add(new JLabel());
-		loginPanel.add(connectionPane);
+		mainPanel.add(loginPanel, BorderLayout.CENTER);
+
+		JPanel buttons = new JPanel(new GridLayout(0, 2, 20, 0));
+		buttons.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
+		buttons.setOpaque(false);
 
 		/*Créer Salon Button Panel*/
-		JPanel createPane = new JPanel(new GridLayout(0, 3));
-		createPane.setOpaque(false);
-		createPane.add(new JLabel());
-		create = new JButton("Créer un salon");
-		create.setBackground(Color.WHITE);
-		create.addActionListener(this);
-		create.setFocusable(false);
-		createPane.add(create);
-		createPane.add(new JLabel());
-		loginPanel.add(createPane);
+		JPanel createPanel = new JPanel(new BorderLayout());
+		createPanel.setOpaque(false);
+		create = new Button("Creer", "Créer un salon", this);
+		createPanel.add(create, BorderLayout.EAST);
+		buttons.add(createPanel);
 
-		loginPanel.setMaximumSize(new Dimension(400, 200));
+		/*Connexion Button Panel*/
+		JPanel connectPanel = new JPanel(new BorderLayout());
+		connectPanel.setOpaque(false);
+		connect = new Button("Valider", "Connexion", this);
+		connectPanel.add(connect, BorderLayout.WEST);
+		buttons.add(connectPanel);
 
-		mainPanel.add(loginPanel);
+		mainPanel.add(buttons, BorderLayout.PAGE_END);
 
 		this.setOpaque(false);
 		this.add(mainPanel);
