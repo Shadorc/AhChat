@@ -189,14 +189,14 @@ public class ServerClient implements Runnable {
 		try {
 			Server.sendAll(name + " s'est déconnecté.", Type.INFO);
 			Server.delClient(this);
-			s_chat.close();
-			s_data.close();
-			inData.close();
-			outData.close();
-			outInfoData.close();
-			inChat.close();
-			outChat.close();
-		} catch (IOException | NullPointerException e) {
+			if(s_chat != null) s_chat.close();
+			if(s_data != null) s_data.close();
+			if(inData != null) inData.close();
+			if(outData != null) outData.close();
+			if(outInfoData != null) outInfoData.close();
+			if(outChat != null) inChat.close();
+			if(outChat != null) outChat.close();
+		} catch (IOException e) {
 			ServerFrame.dispError(e, "Erreur lors de la fermeture du client : " + e.getMessage());
 		}
 	}
