@@ -27,6 +27,7 @@ import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import me.shadorc.client.Client;
+import me.shadorc.client.frame.Button.Size;
 import me.shadorc.client.frame.Storage.Data;
 import me.shadorc.server.ServerFrame;
 
@@ -79,7 +80,7 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
 
 		mainPanel.add(iconButton, BorderLayout.PAGE_START);
 
-		JPanel loginPanel = new JPanel(new GridLayout(2, 2, 20, 30));
+		JPanel loginPanel = new JPanel(new GridLayout(2, 2, 20, 25));
 		loginPanel.setBorder(BorderFactory.createEmptyBorder(18, 0, 18, 0));
 		loginPanel.setOpaque(false);
 
@@ -112,14 +113,14 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
 		/*Créer Salon Button Panel*/
 		JPanel createPanel = new JPanel(new BorderLayout());
 		createPanel.setOpaque(false);
-		create = new Button("Creer", "Créer un salon", this);
+		create = new Button("Creer", "Créer un salon", Size.NORMAL, this);
 		createPanel.add(create, BorderLayout.EAST);
 		buttons.add(createPanel);
 
 		/*Connexion Button Panel*/
 		JPanel connectPanel = new JPanel(new BorderLayout());
 		connectPanel.setOpaque(false);
-		connect = new Button("Valider", "Connexion", this);
+		connect = new Button("Valider", "Connexion", Size.NORMAL, this);
 		connectPanel.add(connect, BorderLayout.WEST);
 		buttons.add(connectPanel);
 

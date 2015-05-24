@@ -15,11 +15,17 @@ public class Button extends JButton {
 	private static final long serialVersionUID = 1L;
 
 	private String name;
+	private Size size;
 
-	public Button(String name, String info, ActionListener al) {
+	public enum Size {
+		SMALL, NORMAL;
+	}
+
+	public Button(String name, String info, Size size, ActionListener al) {
 		super();
 
 		this.name = name;
+		this.size = size;
 
 		final ImageIcon icon1 = this.getIcon("1");
 		final ImageIcon icon2 = this.getIcon("2");
@@ -50,6 +56,7 @@ public class Button extends JButton {
 
 	private ImageIcon getIcon(String number) {
 		ImageIcon icon = new ImageIcon(this.getClass().getResource("/res/Bouton " + name + number + ".png"));
-		return new ImageIcon(icon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH));
+		int dimension = (size == Size.NORMAL) ? 50 : 30;
+		return new ImageIcon(icon.getImage().getScaledInstance(dimension, dimension, Image.SCALE_SMOOTH));
 	}
 }
