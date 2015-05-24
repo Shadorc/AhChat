@@ -12,8 +12,6 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.SocketException;
 
-import javax.swing.ImageIcon;
-
 import me.shadorc.server.Server.Type;
 
 public class ServerClient implements Runnable {
@@ -30,7 +28,6 @@ public class ServerClient implements Runnable {
 
 	private String name;
 	private String ip;
-	private ImageIcon icon;
 
 	public ServerClient(Socket s_chat, Socket s_data) {
 

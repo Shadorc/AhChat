@@ -53,7 +53,6 @@ public class Client {
 			emission = new Emission(outChat, outData);
 
 			sendMessage(pseudo);
-//			sendFile(icon);
 
 			return true;
 
