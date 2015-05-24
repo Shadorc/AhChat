@@ -2,106 +2,164 @@ package me.shadorc.client.frame;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.File;
 
+import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import me.shadorc.client.Client;
 import me.shadorc.server.ServerFrame;
 
-public class ConnectionPanel extends Box implements ActionListener, KeyListener {
+public class ConnectionPanel extends JPanel implements ActionListener, KeyListener {
 
 	private static final long serialVersionUID = 1L;
 
 	private JFormattedTextField nameField, ipField;
-	private JButton connect, create;
+	private JButton connect, create, iconButton;
 	private Image background;
+	private File icon;
 
 	public ConnectionPanel() {
-
-		super(BoxLayout.Y_AXIS);
+		super(new GridBagLayout());
 
 		this.background = new ImageIcon(this.getClass().getResource("/res/background.jpg")).getImage();
 
-		JPanel panel = new JPanel(new GridLayout(4, 0));
-		panel.setOpaque(false);
+		JPanel mainPanel = new JPanel(new GridLayout(2, 0));
+		mainPanel.setOpaque(false);
 
-		JPanel top = new JPanel(new BorderLayout());
-		top.setOpaque(false);
-		JPanel center = new JPanel(new BorderLayout());
-		center.setOpaque(false);
-		JPanel bottom = new JPanel(new GridLayout(0, 3));
-		bottom.setOpaque(false);
-		JPanel bottom2 = new JPanel(new GridLayout(0, 3));
-		bottom2.setOpaque(false);
+		icon = new File(this.getClass().getResource("/res/icon.png").getFile());
 
+		/*Icon Panel*/
+		Box box = new Box(BoxLayout.X_AXIS);
+
+		iconButton = new JButton(UserImage.create(icon));
+		iconButton.addActionListener(this);
+		iconButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseExited(MouseEvent e) {
+				iconButton.setText("");
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				iconButton.setText("Changer");
+			}
+		});
+		iconButton.setFocusable(false);
+		iconButton.setBorder(BorderFactory.createEmptyBorder());
+		iconButton.setHorizontalTextPosition(JButton.CENTER);
+		iconButton.setVerticalTextPosition(JButton.CENTER);
+		iconButton.setForeground(Color.RED);
+		iconButton.setBackground(Color.WHITE);
+		iconButton.setOpaque(false);
+
+		box.add(Box.createHorizontalGlue());
+		box.add(iconButton);
+		box.add(Box.createHorizontalGlue());
+		mainPanel.add(box);
+
+		JPanel loginPanel = new JPanel(new GridLayout(4, 0));
+		loginPanel.setOpaque(false);
+
+		/*Pseudo Panel*/
+		JPanel pseudoPane = new JPanel(new BorderLayout());
+		pseudoPane.setOpaque(false);
 		JLabel name = new JLabel("Pseudo :");
 		name.setForeground(Color.BLACK);
 		name.setPreferredSize(new Dimension(100, 30));
-		top.add(name, BorderLayout.WEST);
+		pseudoPane.add(name, BorderLayout.WEST);
 
 		nameField = new JFormattedTextField();
 		nameField.addKeyListener(this);
-		top.add(nameField, BorderLayout.CENTER);
+		pseudoPane.add(nameField, BorderLayout.CENTER);
 
+		loginPanel.add(pseudoPane);
+
+		/*IP Panel*/
+		JPanel ipPane = new JPanel(new BorderLayout());
+		ipPane.setOpaque(false);
 		JLabel ip = new JLabel("IP du Serveur :");
 		ip.setForeground(Color.BLACK);
 		ip.setPreferredSize(new Dimension(100, 30));
-		center.add(ip, BorderLayout.WEST);
+		ipPane.add(ip, BorderLayout.WEST);
 
 		ipField = new JFormattedTextField();
 		ipField.addKeyListener(this);
-		center.add(ipField, BorderLayout.CENTER);
+		ipPane.add(ipField, BorderLayout.CENTER);
+		loginPanel.add(ipPane);
 
-		bottom.add(new JLabel());
+		/*Connexion Button Panel*/
+		JPanel connectionPane = new JPanel(new GridLayout(0, 3));
+		connectionPane.setOpaque(false);
+		connectionPane.add(new JLabel());
 		connect = new JButton("Connexion");
 		connect.setBackground(Color.WHITE);
 		connect.addActionListener(this);
 		connect.setFocusable(false);
-		bottom.add(connect);
-		bottom.add(new JLabel());
+		connectionPane.add(connect);
+		connectionPane.add(new JLabel());
+		loginPanel.add(connectionPane);
 
-		bottom2.add(new JLabel());
+		/*Créer Salon Button Panel*/
+		JPanel createPane = new JPanel(new GridLayout(0, 3));
+		createPane.setOpaque(false);
+		createPane.add(new JLabel());
 		create = new JButton("Créer un salon");
 		create.setBackground(Color.WHITE);
 		create.addActionListener(this);
 		create.setFocusable(false);
-		bottom2.add(create);
-		bottom2.add(new JLabel());
+		createPane.add(create);
+		createPane.add(new JLabel());
+		loginPanel.add(createPane);
 
-		panel.add(top);
-		panel.add(center);
-		panel.add(bottom);
-		panel.add(bottom2);
+		loginPanel.setMaximumSize(new Dimension(400, 200));
 
-		panel.setMaximumSize(new Dimension(400, 100));
+		mainPanel.add(loginPanel);
 
 		this.setOpaque(false);
-		this.setAlignmentX(Component.CENTER_ALIGNMENT);
-		this.add(Box.createVerticalGlue());
-		this.add(panel);
-		this.add(Box.createVerticalGlue());
+		this.add(mainPanel);
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		JButton bu = (JButton) e.getSource();
+		if(bu == iconButton) {
+			JFileChooser chooser = new JFileChooser(new File(System.getProperty("user.home"), "Desktop"));
+			chooser.setFileFilter(new FileNameExtensionFilter("Image files", ImageIO.getReaderFileSuffixes()));
+			chooser.setAcceptAllFileFilterUsed(false);
 
-		if(bu == connect) {
+			int choice = chooser.showOpenDialog(null);
+
+			if(choice == JFileChooser.APPROVE_OPTION) {
+				icon = chooser.getSelectedFile();
+
+				Image pp = new ImageIcon(icon.getPath()).getImage();
+				int width = iconButton.getWidth();
+				int height = (int) ((double) width / pp.getWidth(null) * (pp.getHeight(null) * 1.0));
+
+				iconButton.setIcon(UserImage.create(icon, width, height));
+			}
+		} else if(bu == connect) {
 			this.connection();
 		} else if(bu == create) {
 			new ServerFrame();
@@ -123,7 +181,7 @@ public class ConnectionPanel extends Box implements ActionListener, KeyListener 
 				@Override
 				public void run() {
 					ConnectedPanel pane = new ConnectedPanel(); //Sinon users est null et il y a une erreur lors du launch
-					if(Client.connect(nameField.getText(), ipField.getText())) {
+					if(Client.connect(nameField.getText(), icon, ipField.getText())) {
 						Frame.setPanel(pane);
 					} else {
 						Frame.showError("Serveur indisponible ou inexistant.");

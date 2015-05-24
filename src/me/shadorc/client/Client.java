@@ -25,7 +25,7 @@ public class Client {
 	private static BufferedReader inChat;
 	private static PrintWriter outChat;
 
-	public static boolean connect(String pseudo, String ip) {
+	public static boolean connect(String pseudo, File icon, String ip) {
 
 		try {
 			//Ping server to test if it's reachable
@@ -51,7 +51,9 @@ public class Client {
 			reception.start();
 
 			emission = new Emission(outChat, outData);
-			emission.sendMessage(pseudo);
+
+			sendMessage(pseudo);
+//			sendFile(icon);
 
 			return true;
 

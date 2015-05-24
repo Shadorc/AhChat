@@ -17,12 +17,12 @@ public class UserList extends JList <String> {
 
 	public UserList() {
 		super();
-		this.setCellRenderer(new MarioListRenderer());
+		this.setCellRenderer(new ListRenderer());
 
 		imageMap = new HashMap <String, ImageIcon> ();
 	}
 
-	public class MarioListRenderer extends DefaultListCellRenderer {
+	public class ListRenderer extends DefaultListCellRenderer {
 
 		private static final long serialVersionUID = 1L;
 
