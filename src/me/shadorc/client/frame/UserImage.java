@@ -12,10 +12,6 @@ import javax.swing.ImageIcon;
 
 public class UserImage {
 
-	public static ImageIcon create(File file) {
-		return UserImage.create(file, -1, -1);
-	}
-
 	public static ImageIcon create(File file, int width, int height) {
 		ImageIcon icon =  new ImageIcon(file.getPath());
 

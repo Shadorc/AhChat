@@ -10,6 +10,8 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 import me.shadorc.client.frame.Frame;
+import me.shadorc.client.frame.Storage;
+import me.shadorc.client.frame.Storage.Data;
 import me.shadorc.client.frame.Tray;
 
 public class Client {
@@ -26,6 +28,10 @@ public class Client {
 	private static PrintWriter outChat;
 
 	public static boolean connect(String pseudo, File icon, String ip) {
+
+		Storage.save(Data.PSEUDO, pseudo);
+		Storage.save(Data.IP, ip);
+		Storage.save(Data.ICON, icon.getPath());
 
 		try {
 			//Ping server to test if it's reachable

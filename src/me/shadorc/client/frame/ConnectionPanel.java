@@ -28,6 +28,7 @@ import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import me.shadorc.client.Client;
+import me.shadorc.client.frame.Storage.Data;
 import me.shadorc.server.ServerFrame;
 
 public class ConnectionPanel extends JPanel implements ActionListener, KeyListener {
@@ -47,12 +48,16 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
 		JPanel mainPanel = new JPanel(new GridLayout(2, 0));
 		mainPanel.setOpaque(false);
 
-		icon = new File(this.getClass().getResource("/res/icon.png").getFile());
+		if(Storage.get(Data.ICON) != null) {
+			icon = new File(Storage.get(Data.ICON));
+		} else {
+			icon = new File(this.getClass().getResource("/res/icon.png").getFile());
+		}
 
 		/*Icon Panel*/
 		Box box = new Box(BoxLayout.X_AXIS);
 
-		iconButton = new JButton(UserImage.create(icon));
+		iconButton = new JButton(UserImage.create(icon, -1, 100));
 		iconButton.addActionListener(this);
 		iconButton.addMouseListener(new MouseAdapter() {
 			@Override
@@ -90,7 +95,7 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
 		name.setPreferredSize(new Dimension(100, 30));
 		pseudoPane.add(name, BorderLayout.WEST);
 
-		nameField = new JFormattedTextField();
+		nameField = new JFormattedTextField(Storage.get(Data.PSEUDO));
 		nameField.addKeyListener(this);
 		pseudoPane.add(nameField, BorderLayout.CENTER);
 
@@ -104,7 +109,7 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
 		ip.setPreferredSize(new Dimension(100, 30));
 		ipPane.add(ip, BorderLayout.WEST);
 
-		ipField = new JFormattedTextField();
+		ipField = new JFormattedTextField(Storage.get(Data.IP));
 		ipField.addKeyListener(this);
 		ipPane.add(ipField, BorderLayout.CENTER);
 		loginPanel.add(ipPane);
