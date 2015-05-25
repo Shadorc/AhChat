@@ -12,15 +12,25 @@ import javax.swing.ImageIcon;
 
 public class UserImage {
 
-	public static ImageIcon create(File file, int width, int height) {
+	public static ImageIcon create(File file, int dimension) {
 		ImageIcon icon =  new ImageIcon(file.getPath());
 
-		if(width != -1 || height != -1) {
-			icon = new ImageIcon(icon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH));
-		}
+		//Resize image with ratio aspect
+		int width = (icon.getIconWidth() >= icon.getIconHeight()) ? -1 : dimension;;
+		int height = (icon.getIconWidth() >= icon.getIconHeight()) ? dimension : -1;
+
+		icon = new ImageIcon(icon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH));
+
+		//Get image's center
+		int size = Math.min(icon.getIconWidth(), icon.getIconHeight());
+
+		BufferedImage image = toBufferedImage(icon.getImage());
+		image = image.getSubimage(icon.getIconWidth()/2-size/2, icon.getIconHeight()/2-size/2, size, size);
+
+		icon = new ImageIcon(image);
 
 		/* Make Rounded Icon*/
-		int cornerRadius = Math.max(icon.getIconWidth(), icon.getIconHeight());
+		int cornerRadius = icon.getIconHeight();
 		int w = icon.getIconWidth();
 		int h = icon.getIconHeight();
 
@@ -35,5 +45,24 @@ public class UserImage {
 		g2.dispose();
 
 		return new ImageIcon(output);
+	}
+
+	/**
+	 * Converts a given Image into a BufferedImage
+	 *
+	 * @param img The Image to be converted
+	 * @return The converted BufferedImage
+	 */
+	public static BufferedImage toBufferedImage(Image img) {
+		// Create a buffered image with transparency
+		BufferedImage bimage = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+
+		// Draw the image on to the buffered image
+		Graphics2D bGr = bimage.createGraphics();
+		bGr.drawImage(img, 0, 0, null);
+		bGr.dispose();
+
+		// Return the buffered image
+		return bimage;
 	}
 }

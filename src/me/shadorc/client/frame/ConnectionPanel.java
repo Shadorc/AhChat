@@ -69,7 +69,7 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
 
 
 		/*Icon Panel*/
-		iconButton = new JButton(UserImage.create(icon, -1, 125));
+		iconButton = new JButton(UserImage.create(icon, 125));
 		iconButton.addActionListener(this);
 		iconButton.addMouseListener(new MouseAdapter() {
 			@Override
@@ -200,7 +200,7 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
 
 			if(choice == JFileChooser.APPROVE_OPTION) {
 				icon = chooser.getSelectedFile();
-				iconButton.setIcon(UserImage.create(icon, -1, iconButton.getHeight()));
+				iconButton.setIcon(UserImage.create(icon, iconButton.getHeight()));
 			}
 		} else if(bu == connect) {
 			this.connection();
