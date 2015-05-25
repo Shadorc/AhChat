@@ -8,6 +8,13 @@ import java.awt.Graphics;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Image;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetDragEvent;
+import java.awt.dnd.DropTargetDropEvent;
+import java.awt.dnd.DropTargetEvent;
+import java.awt.dnd.DropTargetListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -15,7 +22,9 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.util.List;
 
+import javax.activation.MimetypesFileTypeMap;
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -30,6 +39,9 @@ import me.shadorc.client.Client;
 import me.shadorc.client.frame.Button.Size;
 import me.shadorc.client.frame.Storage.Data;
 import me.shadorc.server.ServerFrame;
+
+import com.sun.org.apache.xml.internal.security.exceptions.Base64DecodingException;
+import com.sun.org.apache.xml.internal.security.utils.Base64;
 
 public class ConnectionPanel extends JPanel implements ActionListener, KeyListener {
 
@@ -55,6 +67,7 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
 			icon = new File(this.getClass().getResource("/res/icon.png").getFile());
 		}
 
+
 		/*Icon Panel*/
 		iconButton = new JButton(UserImage.create(icon, -1, 125));
 		iconButton.addActionListener(this);
@@ -77,6 +90,51 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
 		iconButton.setForeground(Color.RED);
 		iconButton.setBackground(Color.WHITE);
 		iconButton.setOpaque(false);
+
+		new DropTarget(iconButton, new DropTargetListener() {
+			@Override
+			public void drop(DropTargetDropEvent event) {
+				try {
+					// Accept the drop first, important!
+					event.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
+
+					// Get the files that are dropped as List
+					List <File> list = (List <File>) event.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
+					File file = list.get(0);
+
+					String mimetype= new MimetypesFileTypeMap().getContentType(file);
+					String type = mimetype.split("/")[0];
+					if(!type.equals("image")) {
+						iconButton.setIcon(UserImage.create(icon, 125));
+						return;
+					}
+
+					// Now get the first file from the list,
+					icon = file;
+					iconButton.setIcon(UserImage.create(icon, 125));
+
+				} catch (Exception e) {
+					iconButton.setIcon(UserImage.create(icon, 125));
+					e.printStackTrace();
+				}
+			}
+
+			@Override
+			public void dragEnter(DropTargetDragEvent e) {
+				iconButton.setIcon(UserImage.create(new File(this.getClass().getResource("/res/drop_icon.png").getFile()), 125));
+			}
+
+			@Override
+			public void dragExit(DropTargetEvent e) {
+				iconButton.setIcon(UserImage.create(icon, 125));
+			}
+
+			@Override
+			public void dragOver(DropTargetDragEvent e) { }
+
+			@Override
+			public void dropActionChanged(DropTargetDragEvent e) { }
+		});
 
 		mainPanel.add(iconButton, BorderLayout.PAGE_START);
 
