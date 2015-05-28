@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.SocketException;
+import java.util.Arrays;
 
 import javax.swing.filechooser.FileSystemView;
 
@@ -54,15 +55,15 @@ public class Reception implements Runnable {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				DataInputStream dataIn = null;
 				OutputStream fileWriter = null;
 				String fileName = null;
 
 				try {
 					//Send file's informations
-					dataIn = new DataInputStream(inData);
-					long size = dataIn.readLong();
-					fileName = dataIn.readUTF();
+					DataInputStream dataIn = new DataInputStream(inData);
+					String[] infos = dataIn.readUTF().split("&");
+					fileName = infos[0];
+					long size = Long.parseLong(infos[1]);
 
 					ConnectedPanel.addProgressBar("Téléchargement : " + fileName);
 

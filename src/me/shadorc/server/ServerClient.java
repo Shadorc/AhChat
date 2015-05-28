@@ -111,11 +111,6 @@ public class ServerClient implements Runnable {
 		outData.flush();
 	}
 
-	public void sendLong(long data) throws IOException {
-		outInfoData.writeLong(data);
-		outInfoData.flush();
-	}
-
 	public void sendString(String data) throws IOException {
 		outInfoData.writeUTF(data);
 		outInfoData.flush();
@@ -128,12 +123,11 @@ public class ServerClient implements Runnable {
 			@Override
 			public void run() {
 
-				DataInputStream dataIn = null;
-
 				try {
-					dataIn = new DataInputStream(inData);
-					long size = dataIn.readLong();
-					String fileName = dataIn.readUTF();
+					DataInputStream dataIn = new DataInputStream(inData);
+					String infos[] = dataIn.readUTF().split("&");
+					String fileName = infos[0];
+					long size = Long.parseLong(infos[1]);
 
 					ServerFrame.dispMessage(ServerClient.this.name + " envoie un fichier de " + size/1024 + "ko nommé \"" + fileName + "\".");
 
@@ -143,8 +137,7 @@ public class ServerClient implements Runnable {
 
 					for(ServerClient client : Server.getClients()) {
 						if(client == ServerClient.this) continue;
-						client.sendLong(size);
-						client.sendString(fileName);
+						client.sendString(fileName + "&" + size);
 					}
 
 					while(total < size && (data = inData.read(buff)) > 0) {

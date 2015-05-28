@@ -35,7 +35,6 @@ public class Emission {
 					return;
 				}
 
-				DataOutputStream dataOut = null;
 				FileInputStream fileReader = null;
 
 				try {
@@ -43,9 +42,8 @@ public class Emission {
 
 					fileReader = new FileInputStream(file);
 
-					dataOut = new DataOutputStream(outData);
-					dataOut.writeLong(file.length());
-					dataOut.writeUTF(file.getName());
+					DataOutputStream dataOut = new DataOutputStream(outData);
+					dataOut.writeUTF(file.getName() + "&" + file.length());
 					dataOut.flush();
 
 					byte buff[] = new byte[1024];
