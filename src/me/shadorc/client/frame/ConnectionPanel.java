@@ -61,13 +61,12 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
 		mainPanel.setPreferredSize(new Dimension(500, 325));
 		mainPanel.setOpaque(false);
 
-		if(Storage.get(Data.ICON) != null) {
-			icon = new File(Storage.get(Data.ICON));
+		if(Storage.getData(Data.ICON) != null) {
+			icon = new File(Storage.getData(Data.ICON));
 		} else {
 			icon = new File(this.getClass().getResource("/res/icon.png").getFile());
 		}
-
-
+		
 		/*Icon Panel*/
 		iconButton = new JButton(UserImage.create(icon, 125));
 		iconButton.addActionListener(this);
@@ -148,7 +147,7 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
 		name.setFont(new Font("Segoe UI", Font.PLAIN, 28));
 		loginPanel.add(name);
 
-		nameField = new JFormattedTextField(Storage.get(Data.PSEUDO));
+		nameField = new JFormattedTextField(Storage.getData(Data.PSEUDO));
 		nameField.addKeyListener(this);
 		loginPanel.add(nameField);
 
@@ -158,7 +157,7 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
 		ip.setFont(new Font("Segoe UI", Font.PLAIN, 28));
 		loginPanel.add(ip);
 
-		ipField = new JFormattedTextField(Storage.get(Data.IP));
+		ipField = new JFormattedTextField(Storage.getData(Data.IP));
 		ipField.addKeyListener(this);
 		loginPanel.add(ipField);
 

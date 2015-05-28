@@ -13,7 +13,7 @@ import javax.swing.ImageIcon;
 public class UserImage {
 
 	public static ImageIcon create(File file, int dimension) {
-		ImageIcon icon =  new ImageIcon(file.getPath());
+		ImageIcon icon = new ImageIcon(file.getPath());
 
 		//Resize image with ratio aspect
 		int width = (icon.getIconWidth() >= icon.getIconHeight()) ? -1 : dimension;;

@@ -29,9 +29,9 @@ public class Client {
 
 	public static boolean connect(String pseudo, File icon, String ip) {
 
-		Storage.save(Data.PSEUDO, pseudo);
-		Storage.save(Data.IP, ip);
-		Storage.save(Data.ICON, icon.getPath());
+		Storage.saveData(Data.PSEUDO, pseudo);
+		Storage.saveData(Data.IP, ip);
+		Storage.saveData(Data.ICON, icon.getPath());
 
 		try {
 			//Ping server to test if it's reachable

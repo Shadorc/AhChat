@@ -1,4 +1,0 @@
-Manifest-Version: 1.0
-Created-By: Shadorc
-Main-Class: me.shadorc.client.frame.Frame
-Class-Path: ./lib/json-simple-1.1.1.jar
