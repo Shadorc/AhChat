@@ -31,6 +31,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFormattedTextField;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -48,6 +49,7 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
 	private JButton connect, create, iconButton;
 	private Image background;
 	private File icon;
+	private ServerFrame serverFrame;
 
 	public ConnectionPanel() {
 		super(new GridBagLayout());
@@ -201,7 +203,12 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
 			this.connection();
 
 		} else if(bu == create) {
-			new ServerFrame();
+			if(serverFrame == null) {
+				serverFrame = new ServerFrame();
+			} else {
+				serverFrame.setState(JFrame.NORMAL);
+				serverFrame.toFront();
+			}
 		}
 	}
 

@@ -5,7 +5,6 @@ import java.awt.datatransfer.StringSelection;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.SocketException;
 import java.net.URL;
@@ -62,9 +61,6 @@ public class Server implements Runnable {
 				//Pending connection loop (blocking on accept())
 				new ServerClient(ss_chat.accept(), ss_data.accept());
 			}
-
-		} catch(BindException e) {
-			ServerFrame.dispError(e, "Un serveur est déjà lancé.");
 
 		} catch(SocketException ignore) {
 			//Server's ending, ignore it
