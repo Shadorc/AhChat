@@ -69,16 +69,13 @@ public class Server implements Runnable {
 		} catch(SocketException ignore) {
 			//Server's ending, ignore it
 
-
 		} catch(IOException e) {
 			ServerFrame.dispError(e, "Erreur lors de l'ouverture du serveur : " + e.getMessage());
 
 		} finally {
 			try {
-				if(ss_chat != null && ss_data != null) {
-					ss_chat.close();
-					ss_data.close();
-				}
+				if(ss_chat != null) ss_chat.close();
+				if(ss_data != null) ss_data.close();
 			} catch(IOException e) {
 				ServerFrame.dispError(e, "Erreur lors de la fermeture du serveur : " + e.getMessage());
 			}

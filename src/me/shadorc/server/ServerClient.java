@@ -21,6 +21,7 @@ public class ServerClient implements Runnable {
 
 	private InputStream inData;
 	private OutputStream outData;
+
 	private DataOutputStream outInfoData;
 
 	private BufferedReader inChat;
@@ -43,6 +44,7 @@ public class ServerClient implements Runnable {
 
 			outData = s_data.getOutputStream();
 			inData = s_data.getInputStream();
+
 			outInfoData = new DataOutputStream(outData); 
 
 			name = inChat.readLine();
@@ -50,7 +52,7 @@ public class ServerClient implements Runnable {
 			//If pseudo already exists, add ip to his name
 			for(int i = 0; i < Server.getClients().size(); i++) {
 				if(Server.getClients().get(i).getName().equalsIgnoreCase(name)) {
-					name = name + "(" + ip + ")";
+					name = name + ip;
 				}
 			}
 
@@ -129,7 +131,7 @@ public class ServerClient implements Runnable {
 					String fileName = infos[0];
 					long size = Long.parseLong(infos[1]);
 
-					ServerFrame.dispMessage(ServerClient.this.name + " envoie un fichier de " + size/1024 + "ko nommé \"" + fileName + "\".");
+					ServerFrame.dispMessage(ServerClient.this.name + " envoie un fichier de " + humanReadableByteCount(size) + " nommé \"" + fileName + "\".");
 
 					byte buff[] = new byte[1024];
 					long total = 0;
@@ -148,7 +150,7 @@ public class ServerClient implements Runnable {
 						total += data;
 					}
 
-					ServerFrame.dispMessage("\"" + fileName + "\"a été transmis à tous les clients.");
+					ServerFrame.dispMessage("\"" + fileName + "\" a été transmis à tous les clients.");
 
 				} catch(EOFException | SocketException ignore) {
 					//Server's ending, ignore it
@@ -161,6 +163,14 @@ public class ServerClient implements Runnable {
 				ServerClient.this.waitingForFile();
 			}
 		}).start();
+	}
+
+	private String humanReadableByteCount(long bytes) {
+		int unit = 1000;
+		if (bytes < unit) return bytes + " B";
+		int exp = (int) (Math.log(bytes) / Math.log(unit));
+		char pre = ("kMGTPE").charAt(exp-1);
+		return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
 	}
 
 	public String getIp() {

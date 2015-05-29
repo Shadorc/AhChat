@@ -30,12 +30,12 @@ public class ServerFrame extends JFrame implements KeyListener, FocusListener {
 
 	private static boolean isOpen = false;
 
+	private JFormattedTextField inputField;
 	private static HTMLEditorKit kit;
 	private static HTMLDocument doc;
-	private static UserList users;
-	private JFormattedTextField textField;
 
 	private static JList <String> serverInfos;
+	private static UserList usersList;
 
 	private Server serv;
 
@@ -55,41 +55,42 @@ public class ServerFrame extends JFrame implements KeyListener, FocusListener {
 		});
 
 		isOpen = true;
+
+		inputField = new JFormattedTextField(DEFAULT_TEXT);
 		kit = new HTMLEditorKit();
 		doc = new HTMLDocument();
-		textField = new JFormattedTextField(DEFAULT_TEXT);
 
-		JPanel pane = new JPanel();
-		pane.setLayout(new BorderLayout());
+		JPanel mainPanel = new JPanel();
+		mainPanel.setLayout(new BorderLayout());
 
-		JTextPane chat = new JTextPane();
-		chat.setEditorKit(kit);
-		chat.setDocument(doc);
-		chat.setEditable(false);
-		((DefaultCaret) chat.getCaret()).setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+		JTextPane chatPane = new JTextPane();
+		chatPane.setEditorKit(kit);
+		chatPane.setDocument(doc);
+		chatPane.setEditable(false);
+		((DefaultCaret) chatPane.getCaret()).setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 
-		JScrollPane scroll = new JScrollPane(chat, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		pane.add(scroll, BorderLayout.CENTER);
+		JScrollPane scroll = new JScrollPane(chatPane, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		mainPanel.add(scroll, BorderLayout.CENTER);
 
-		JPanel right = new JPanel(new GridLayout(2, 0));
-		right.setPreferredSize(new Dimension((int) (Frame.getDimension().getWidth()/4), 0));
+		JPanel rightPanel = new JPanel(new GridLayout(2, 0));
+		rightPanel.setPreferredSize(new Dimension((int) (Frame.getDimension().getWidth()/4), 0));
 
-		users = new UserList();
-		users.setBorder(BorderFactory.createLoweredBevelBorder());
-		right.add(users);
+		usersList = new UserList();
+		usersList.setBorder(BorderFactory.createLoweredBevelBorder());
+		rightPanel.add(usersList);
 
 		serverInfos = new JList <String> ();
 		serverInfos.setBorder(BorderFactory.createLoweredBevelBorder());
-		right.add(serverInfos);
+		rightPanel.add(serverInfos);
 
-		pane.add(right, BorderLayout.EAST);
+		mainPanel.add(rightPanel, BorderLayout.EAST);
 
-		textField.setPreferredSize(new Dimension(0, 25));
-		textField.addKeyListener(this);
-		textField.addFocusListener(this);
-		pane.add(textField, BorderLayout.PAGE_END);
+		inputField.setPreferredSize(new Dimension(0, 25));
+		inputField.addKeyListener(this);
+		inputField.addFocusListener(this);
+		mainPanel.add(inputField, BorderLayout.PAGE_END);
 
-		this.setContentPane(pane);
+		this.setContentPane(mainPanel);
 		this.pack();
 		this.setMinimumSize(new Dimension(800, 600));
 		this.setPreferredSize(new Dimension(800, 600));
@@ -101,15 +102,15 @@ public class ServerFrame extends JFrame implements KeyListener, FocusListener {
 	}
 
 	public static void addUser(String name) {
-		users.addUser(name, new ImageIcon(Command.class.getResource("/res/icon.png")));
+		usersList.addUser(name, new ImageIcon(Command.class.getResource("/res/icon.png")));
 	}
 
 	public static void removeUser(String name) {
-		users.removeUser(name);
+		usersList.removeUser(name);
 	}
 
 	public static void replaceUser(String oldName, String newName) {
-		users.replaceUser(oldName, newName);
+		usersList.replaceUser(oldName, newName);
 	}
 
 	public static void showError(Exception e, String error) {
@@ -139,25 +140,25 @@ public class ServerFrame extends JFrame implements KeyListener, FocusListener {
 	}
 
 	@Override
-	public void focusGained(FocusEvent arg0) {
-		if(textField.getText().equals(DEFAULT_TEXT)) {
-			textField.setText(null);
+	public void focusGained(FocusEvent event) {
+		if(inputField.getText().equals(DEFAULT_TEXT)) {
+			inputField.setText(null);
 		}
 	}
 
 	@Override
-	public void focusLost(FocusEvent arg0) {
-		if(textField.getText().isEmpty()) {
-			textField.setText(DEFAULT_TEXT);
+	public void focusLost(FocusEvent event) {
+		if(inputField.getText().isEmpty()) {
+			inputField.setText(DEFAULT_TEXT);
 		}
 	}
 
 	@Override
-	public void keyPressed(KeyEvent e) {
-		String text = textField.getText();
-		if(e.getKeyCode() == KeyEvent.VK_ENTER && text.length() > 0) {
+	public void keyPressed(KeyEvent event) {
+		String text = inputField.getText();
+		if(event.getKeyCode() == KeyEvent.VK_ENTER && text.length() > 0) {
 			Server.sendAll("<b><font color='black'>[SERVER] : </b>" + text, Server.Type.MESSAGE);
-			textField.setText("");
+			inputField.setText("");
 		}
 	}
 
