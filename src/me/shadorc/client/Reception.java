@@ -61,20 +61,26 @@ public class Reception implements Runnable {
 					//Send file's informations
 					DataInputStream dataIn = new DataInputStream(inData);
 					String[] infos = dataIn.readUTF().split("&");
+
 					fileName = infos[0];
 					long size = Long.parseLong(infos[1]);
 
 					ConnectedPanel.addProgressBar("Téléchargement : " + fileName);
 
-					//FIXME: If file's name doesn't contain extension (.hpg,...)
 					File desktop = FileSystemView.getFileSystemView().getHomeDirectory();
-					String name = fileName.substring(0, fileName.lastIndexOf("."));
-					String format = fileName.substring(fileName.lastIndexOf("."));
+					String name, format;
+					if(fileName.contains(".")) {
+						name = fileName.substring(0, fileName.lastIndexOf("."));
+						format = fileName.substring(fileName.lastIndexOf("."));
+					} else {
+						name = fileName;
+						format = "";
+					}
 
 					//While the file exists, change name
-					File file = new File(desktop + "\\" + name + format);
+					File file = new File(desktop + "/" + name + format);
 					for(int i = 1; file.exists(); i++) {
-						file = new File(desktop + "\\" + name + " (" + i + ")" + format);
+						file = new File(desktop + "/" + name + " (" + i + ")" + format);
 					}
 
 					fileWriter = new FileOutputStream(file);
