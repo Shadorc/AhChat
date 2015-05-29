@@ -1,12 +1,15 @@
 package me.shadorc.client.frame;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashMap;
 
 public class Storage {
 
@@ -17,16 +20,37 @@ public class Storage {
 	}
 
 	public static void saveData(Data data, String value) {
-		PrintWriter writer = null;
-		try {
-			file.createNewFile();
+		BufferedWriter writer = null;
+		BufferedReader reader = null;
 
-			writer = new PrintWriter(new FileWriter(file, true));
-			writer.println(data.toString() + ":" + value);
+		try {
+			HashMap <String, String> datas = new HashMap <String, String> ();
+
+			reader = new BufferedReader(new FileReader(file));
+
+			String line;
+			while((line = reader.readLine()) != null) {
+				datas.put(line.split(":", 2)[0], line.split(":", 2)[1]);
+			}
+
+			datas.put(data.toString(), value);
+
+			writer = new BufferedWriter(new FileWriter(file));
+
+			for(String key : datas.keySet()) {
+				writer.write(key + ":" + datas.get(key) + "\n");
+			}
+
 		} catch (IOException e) {
 			e.printStackTrace();
+
 		} finally {
-			if(writer != null) writer.close();
+			try {
+				if(writer != null) writer.close();
+				if(reader != null) reader.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
