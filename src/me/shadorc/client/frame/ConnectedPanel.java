@@ -2,6 +2,8 @@ package me.shadorc.client.frame;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridLayout;
@@ -10,13 +12,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.filechooser.FileSystemView;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultCaret;
 import javax.swing.text.html.HTMLDocument;
@@ -29,8 +34,8 @@ public class ConnectedPanel extends JPanel implements ActionListener {
 
 	private static final long serialVersionUID = 1L;
 
-	private static JPanel progressPanel;
-	private static ArrayList <JProgressBar> progressBars;
+	private static JScrollPane jsp;
+	private static HashMap <String, JProgressBar> progressBars;
 
 	private JButton fileButton, messageButton;
 	private JFormattedTextField inputText;
@@ -80,11 +85,14 @@ public class ConnectedPanel extends JPanel implements ActionListener {
 		users.setPreferredSize(new Dimension((int) (Frame.getDimension().getWidth()/4), 0));
 		right.add(users);
 
-		progressBars = new ArrayList <JProgressBar> ();
-		progressPanel = new JPanel(new GridLayout(10, 1));
+		progressBars = new HashMap <String, JProgressBar> ();
+
+		JPanel progressPanel = new JPanel(new GridLayout(10, 1));
 		progressPanel.setBorder(BorderFactory.createLoweredBevelBorder());
 		progressPanel.setBackground(Color.WHITE);
-		right.add(progressPanel);
+
+		jsp = new JScrollPane(progressPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		right.add(jsp);
 
 		this.add(right, BorderLayout.EAST);
 
@@ -151,36 +159,34 @@ public class ConnectedPanel extends JPanel implements ActionListener {
 		}
 	}
 
-	public static void addProgressBar(String name) {
+	public static void addProgressBar(String state, String name) {
 		JProgressBar bar = new JProgressBar(0, 100);
-		bar.setName(name);
+		bar.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		bar.setToolTipText("Ouvrir");
+		bar.setName(state + " : " + name);
 		bar.setStringPainted(true);
-		progressBars.add(bar);
-		progressPanel.add(bar);
-		progressPanel.revalidate();
-		progressPanel.repaint();
+		bar.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent event) {
+				if(event.getButton() == MouseEvent.BUTTON1) {
+					try {
+						Desktop.getDesktop().open(new File(FileSystemView.getFileSystemView().getHomeDirectory() + "/" + name));
+					} catch (IOException e) {
+						Frame.popupError(e, "Erreur lors de l'ouverture du fichier, " + e.getMessage());
+					}
+				}
+			}
+		});
+
+		progressBars.put(name, bar);
+		((JPanel) jsp.getViewport().getView()).add(bar);
+		jsp.revalidate();
+		jsp.repaint();
 	}
 
-	public static void removeProgressBar(String name) {
-		for(JProgressBar bar : progressBars) {
-			if(bar.getName().equals(name)) {
-				progressBars.remove(bar);
-				progressPanel.remove(bar);
-				progressPanel.revalidate();
-				progressPanel.repaint();
-				return;
-			}
-		}
-	}
-
-	public static void updateBar(String name, int value) {
-		for(JProgressBar bar : progressBars) {
-			if(bar.getName().equals(name)) {
-				bar.setValue(value);
-				bar.setString(name + " : " + value + "%");
-				return;
-			}
-		}
+	public static void updateBar(String state, String name, int value) {
+		progressBars.get(name).setValue(value);
+		progressBars.get(name).setString(state + " : " + name + " (" + value + "%)");
 	}
 
 	private void sendMessage() {

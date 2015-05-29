@@ -37,7 +37,7 @@ public class Emission {
 				FileInputStream fileReader = null;
 
 				try {
-					ConnectedPanel.addProgressBar("Envoi : " + file.getName());
+					ConnectedPanel.addProgressBar("Envoi", file.getName());
 
 					fileReader = new FileInputStream(file);
 
@@ -53,7 +53,7 @@ public class Emission {
 						outData.write(buff, 0, data);
 						outData.flush();
 						total += data;
-						ConnectedPanel.updateBar("Envoi : " + file.getName(), (int) (total * 100 / file.length()));
+						ConnectedPanel.updateBar("Envoi",  file.getName(), (int) (total * 100 / file.length()));
 					}
 
 				} catch (IOException e) {
@@ -61,7 +61,6 @@ public class Emission {
 
 				} finally {
 					try {
-						ConnectedPanel.removeProgressBar("Envoi : " + file.getName());
 						if(fileReader != null) fileReader.close();
 					} catch (IOException e) {
 						ConnectedPanel.dispError(e, "Erreur lors de la fermeture de l'envoi du fichier, " + e.getMessage());

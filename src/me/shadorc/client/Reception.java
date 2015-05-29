@@ -65,7 +65,7 @@ public class Reception implements Runnable {
 					fileName = infos[0];
 					long size = Long.parseLong(infos[1]);
 
-					ConnectedPanel.addProgressBar("Téléchargement : " + fileName);
+					ConnectedPanel.addProgressBar("Téléchargement", fileName);
 
 					File desktop = FileSystemView.getFileSystemView().getHomeDirectory();
 					String name, format;
@@ -93,7 +93,7 @@ public class Reception implements Runnable {
 						fileWriter.write(buff, 0, data);
 						fileWriter.flush();
 						total += data;
-						ConnectedPanel.updateBar("Téléchargement : " + fileName, (int) (total * 100 / size));
+						ConnectedPanel.updateBar("Téléchargement", fileName, (int) (total * 100 / size));
 					}
 
 				} catch (SocketException ignore) {
@@ -104,7 +104,6 @@ public class Reception implements Runnable {
 
 				} finally {
 					try {
-						ConnectedPanel.removeProgressBar("Téléchargement : " + fileName);
 						if(fileWriter != null) fileWriter.close();
 					} catch (IOException e) {
 						ConnectedPanel.dispError(e, "Erreur lors de la fermeture de la réception du fichier, " + e.getMessage());
