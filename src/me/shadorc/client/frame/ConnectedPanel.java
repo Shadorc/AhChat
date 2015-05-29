@@ -103,7 +103,7 @@ public class ConnectedPanel extends JPanel implements ActionListener {
 		bottom.setOpaque(false);
 		bottom.setBorder(BorderFactory.createEmptyBorder(10, 50, 5, 50));
 
-		inputField = new JFormattedTextField();
+		inputField = new JFormattedTextField(DEFAULT_TEXT);
 		inputField.setPreferredSize(new Dimension((int) Frame.getDimension().getWidth(), 25));
 		inputField.addKeyListener(new KeyListener() {
 			@Override
