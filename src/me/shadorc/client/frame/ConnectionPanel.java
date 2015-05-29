@@ -40,9 +40,6 @@ import me.shadorc.client.frame.Button.Size;
 import me.shadorc.client.frame.Storage.Data;
 import me.shadorc.server.ServerFrame;
 
-import com.sun.org.apache.xml.internal.security.exceptions.Base64DecodingException;
-import com.sun.org.apache.xml.internal.security.utils.Base64;
-
 public class ConnectionPanel extends JPanel implements ActionListener, KeyListener {
 
 	private static final long serialVersionUID = 1L;
@@ -66,7 +63,7 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
 		} else {
 			icon = new File(this.getClass().getResource("/res/icon.png").getFile());
 		}
-		
+
 		/*Icon Panel*/
 		iconButton = new JButton(UserImage.create(icon, 125));
 		iconButton.addActionListener(this);

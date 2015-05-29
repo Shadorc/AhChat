@@ -81,7 +81,7 @@ public class ConnectedPanel extends JPanel implements ActionListener {
 		right.add(users);
 
 		progressBars = new ArrayList <JProgressBar> ();
-		progressPanel = new JPanel(new GridLayout());
+		progressPanel = new JPanel(new GridLayout(10, 1));
 		progressPanel.setBorder(BorderFactory.createLoweredBevelBorder());
 		progressPanel.setBackground(Color.WHITE);
 		right.add(progressPanel);
@@ -157,8 +157,6 @@ public class ConnectedPanel extends JPanel implements ActionListener {
 		bar.setStringPainted(true);
 		progressBars.add(bar);
 		progressPanel.add(bar);
-		GridLayout progressLayout = ((GridLayout) progressPanel.getLayout());
-		progressLayout.setRows(progressLayout.getRows()+1);
 		progressPanel.revalidate();
 		progressPanel.repaint();
 	}
@@ -168,8 +166,6 @@ public class ConnectedPanel extends JPanel implements ActionListener {
 			if(bar.getName().equals(name)) {
 				progressBars.remove(bar);
 				progressPanel.remove(bar);
-				GridLayout progressLayout = ((GridLayout) progressPanel.getLayout());
-				progressLayout.setRows(progressLayout.getRows()-1);
 				progressPanel.revalidate();
 				progressPanel.repaint();
 				return;
