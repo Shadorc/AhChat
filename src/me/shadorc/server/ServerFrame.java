@@ -22,7 +22,7 @@ import me.shadorc.client.Command;
 import me.shadorc.client.frame.Frame;
 import me.shadorc.client.frame.UserList;
 
-public class ServerFrame extends JFrame implements KeyListener, FocusListener {
+public class ServerFrame extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 
@@ -56,7 +56,6 @@ public class ServerFrame extends JFrame implements KeyListener, FocusListener {
 
 		isOpen = true;
 
-		inputField = new JFormattedTextField(DEFAULT_TEXT);
 		kit = new HTMLEditorKit();
 		doc = new HTMLDocument();
 
@@ -85,9 +84,41 @@ public class ServerFrame extends JFrame implements KeyListener, FocusListener {
 
 		mainPanel.add(rightPanel, BorderLayout.EAST);
 
+		inputField = new JFormattedTextField(DEFAULT_TEXT);
 		inputField.setPreferredSize(new Dimension(0, 25));
-		inputField.addKeyListener(this);
-		inputField.addFocusListener(this);
+
+		inputField.addKeyListener(new KeyListener() {
+			@Override
+			public void keyPressed(KeyEvent event) {
+				String text = inputField.getText();
+				if(event.getKeyCode() == KeyEvent.VK_ENTER && text.length() > 0) {
+					Server.sendAll("<b><font color='black'>[SERVER] : </b>" + text, Server.Type.MESSAGE);
+					inputField.setText("");
+				}
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {}
+
+			@Override
+			public void keyTyped(KeyEvent e) {}
+		});
+
+		inputField.addFocusListener(new FocusListener() {
+			@Override
+			public void focusGained(FocusEvent event) {
+				if(inputField.getText().equals(DEFAULT_TEXT)) {
+					inputField.setText(null);
+				}
+			}
+
+			@Override
+			public void focusLost(FocusEvent event) {
+				if(inputField.getText().isEmpty()) {
+					inputField.setText(DEFAULT_TEXT);
+				}
+			}
+		});
 		mainPanel.add(inputField, BorderLayout.PAGE_END);
 
 		this.setContentPane(mainPanel);
@@ -138,35 +169,6 @@ public class ServerFrame extends JFrame implements KeyListener, FocusListener {
 	public static boolean isOpen() {
 		return isOpen;
 	}
-
-	@Override
-	public void focusGained(FocusEvent event) {
-		if(inputField.getText().equals(DEFAULT_TEXT)) {
-			inputField.setText(null);
-		}
-	}
-
-	@Override
-	public void focusLost(FocusEvent event) {
-		if(inputField.getText().isEmpty()) {
-			inputField.setText(DEFAULT_TEXT);
-		}
-	}
-
-	@Override
-	public void keyPressed(KeyEvent event) {
-		String text = inputField.getText();
-		if(event.getKeyCode() == KeyEvent.VK_ENTER && text.length() > 0) {
-			Server.sendAll("<b><font color='black'>[SERVER] : </b>" + text, Server.Type.MESSAGE);
-			inputField.setText("");
-		}
-	}
-
-	@Override
-	public void keyReleased(KeyEvent e) {}
-
-	@Override
-	public void keyTyped(KeyEvent e) {}
 
 	public static void update(String ip, String chatPort, String dataPort) {
 		serverInfos.setListData(new String[] {"IP : " + ip, "Chat port : " + chatPort, "Data port : " + dataPort});

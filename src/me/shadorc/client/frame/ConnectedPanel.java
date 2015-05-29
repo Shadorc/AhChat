@@ -10,6 +10,8 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
@@ -34,11 +36,13 @@ public class ConnectedPanel extends JPanel implements ActionListener {
 
 	private static final long serialVersionUID = 1L;
 
+	private String DEFAULT_TEXT = "Envoyer un message";
+
 	private static JScrollPane jsp;
 	private static HashMap <String, JProgressBar> progressBars;
 
 	private JButton fileButton, messageButton;
-	private JFormattedTextField inputText;
+	private JFormattedTextField inputField;
 
 	private Image background;
 
@@ -48,7 +52,6 @@ public class ConnectedPanel extends JPanel implements ActionListener {
 	private static UserList users = new UserList();
 
 	public ConnectedPanel() {
-
 		super(new BorderLayout());
 		this.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
@@ -100,9 +103,9 @@ public class ConnectedPanel extends JPanel implements ActionListener {
 		bottom.setOpaque(false);
 		bottom.setBorder(BorderFactory.createEmptyBorder(10, 50, 5, 50));
 
-		inputText = new JFormattedTextField();
-		inputText.setPreferredSize(new Dimension((int) Frame.getDimension().getWidth(), 25));
-		inputText.addKeyListener(new KeyListener() {
+		inputField = new JFormattedTextField();
+		inputField.setPreferredSize(new Dimension((int) Frame.getDimension().getWidth(), 25));
+		inputField.addKeyListener(new KeyListener() {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
@@ -116,7 +119,23 @@ public class ConnectedPanel extends JPanel implements ActionListener {
 			@Override
 			public void keyReleased(KeyEvent e) {}
 		});
-		bottom.add(inputText, BorderLayout.CENTER);
+
+		inputField.addFocusListener(new FocusListener() {
+			@Override
+			public void focusGained(FocusEvent event) {
+				if(inputField.getText().equals(DEFAULT_TEXT)) {
+					inputField.setText(null);
+				}
+			}
+
+			@Override
+			public void focusLost(FocusEvent event) {
+				if(inputField.getText().isEmpty()) {
+					inputField.setText(DEFAULT_TEXT);
+				}
+			}
+		});
+		bottom.add(inputField, BorderLayout.CENTER);
 
 		JPanel buttonsPanel = new JPanel(new GridLayout(1, 2));
 		buttonsPanel.setOpaque(false);
@@ -190,11 +209,11 @@ public class ConnectedPanel extends JPanel implements ActionListener {
 	}
 
 	private void sendMessage() {
-		String message = inputText.getText();
+		String message = inputField.getText();
 		if(message.length() > 0){
 			Client.sendMessage(message);
 		}
-		inputText.setText("");
+		inputField.setText("");
 	}
 
 	@Override
@@ -202,6 +221,7 @@ public class ConnectedPanel extends JPanel implements ActionListener {
 		JButton bu = (JButton) event.getSource();
 		if(bu == messageButton) {
 			this.sendMessage();
+
 		} else {
 			JFileChooser chooser = new JFileChooser(new File(System.getProperty("user.home"), "Desktop"));
 			chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
