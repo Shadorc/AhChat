@@ -1,24 +1,7 @@
 package me.shadorc.server;
 
-import java.awt.Toolkit;
-import java.awt.datatransfer.StringSelection;
 
 public class ServerCommand {
-
-	public static void admin(String command) {
-		switch(command.toLowerCase()) {
-			case "/ip":
-				ServerFrame.dispMessage("IP : " + Server.getIp());
-				Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(Server.getIp()), null);
-				return;
-			case "/help":
-				ServerFrame.dispMessage("IP du serveur : /ip");
-				return;
-			default:
-				ServerFrame.dispMessage("Cette commande n'est pas supportée.");
-				ServerCommand.admin("/help");
-		}
-	}
 
 	public static String user(ServerClient client, String command) {
 		switch(command.toLowerCase().split(" ")[0]) {

@@ -196,8 +196,10 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
 				icon = chooser.getSelectedFile();
 				iconButton.setIcon(UserImage.create(icon, iconButton.getHeight()));
 			}
+
 		} else if(bu == connect) {
 			this.connection();
+
 		} else if(bu == create) {
 			new ServerFrame();
 		}

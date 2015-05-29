@@ -2,6 +2,7 @@ package me.shadorc.server;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
@@ -10,15 +11,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JFormattedTextField;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
-import javax.swing.ScrollPaneConstants;
+import javax.swing.*;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultCaret;
 import javax.swing.text.html.HTMLDocument;
@@ -39,9 +32,10 @@ public class ServerFrame extends JFrame implements KeyListener, FocusListener {
 
 	private static HTMLEditorKit kit;
 	private static HTMLDocument doc;
-	//	private static JTextArea users;
 	private static UserList users;
 	private JFormattedTextField textField;
+
+	private static JList <String> serverInfos;
 
 	private Server serv;
 
@@ -77,10 +71,18 @@ public class ServerFrame extends JFrame implements KeyListener, FocusListener {
 		JScrollPane scroll = new JScrollPane(chat, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		pane.add(scroll, BorderLayout.CENTER);
 
+		JPanel right = new JPanel(new GridLayout(2, 0));
+		right.setPreferredSize(new Dimension((int) (Frame.getDimension().getWidth()/4), 0));
+
 		users = new UserList();
 		users.setBorder(BorderFactory.createLoweredBevelBorder());
-		users.setPreferredSize(new Dimension((int) (Frame.getDimension().getWidth()/4), 0));
-		pane.add(users, BorderLayout.EAST);
+		right.add(users);
+
+		serverInfos = new JList <String> ();
+		serverInfos.setBorder(BorderFactory.createLoweredBevelBorder());
+		right.add(serverInfos);
+
+		pane.add(right, BorderLayout.EAST);
 
 		textField.setPreferredSize(new Dimension(0, 25));
 		textField.addKeyListener(this);
@@ -132,10 +134,6 @@ public class ServerFrame extends JFrame implements KeyListener, FocusListener {
 		}
 	}
 
-	public static void split() {
-		ServerFrame.dispMessage("--------");
-	}
-
 	public static boolean isOpen() {
 		return isOpen;
 	}
@@ -158,11 +156,7 @@ public class ServerFrame extends JFrame implements KeyListener, FocusListener {
 	public void keyPressed(KeyEvent e) {
 		String text = textField.getText();
 		if(e.getKeyCode() == KeyEvent.VK_ENTER && text.length() > 0) {
-			if(text.startsWith("/")) {
-				ServerCommand.admin(text);
-			} else {
-				Server.sendAll("<b><font color='black'>[SERVER] : </b>" + text, Server.Type.MESSAGE);
-			}
+			Server.sendAll("<b><font color='black'>[SERVER] : </b>" + text, Server.Type.MESSAGE);
 			textField.setText("");
 		}
 	}
@@ -172,4 +166,8 @@ public class ServerFrame extends JFrame implements KeyListener, FocusListener {
 
 	@Override
 	public void keyTyped(KeyEvent e) {}
+
+	public static void update(String ip, String chatPort, String dataPort) {
+		serverInfos.setListData(new String[] {"IP : " + ip, "Chat port : " + chatPort, "Data port : " + dataPort});
+	}
 }

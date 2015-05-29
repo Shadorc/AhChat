@@ -16,9 +16,9 @@ import java.util.Date;
 public class Server implements Runnable {
 
 	private static ArrayList <ServerClient> clients;
-	private static String ip;
 
 	private ServerSocket ss_chat, ss_data;
+	private String ip;
 
 	public void start() {
 		new Thread(this).start();
@@ -53,13 +53,10 @@ public class Server implements Runnable {
 				ip = "Unknown";
 			}
 
+			ServerFrame.update(ip, Integer.toString(ss_chat.getLocalPort()), Integer.toString(ss_data.getLocalPort()));
+
 			ServerFrame.dispMessage("Welcome");
-			ServerFrame.split();
-			ServerFrame.dispMessage("Ports : " + ss_chat.getLocalPort() + " (chat) & " + ss_data.getLocalPort() + " (data)");
-			ServerFrame.dispMessage("IP : " + ip);
-			ServerFrame.split();
-			ServerCommand.admin("/help");
-			ServerFrame.split();
+			ServerFrame.dispMessage("-------------------------------------------");
 
 			while(true) {
 				//Pending connection loop (blocking on accept())
@@ -120,9 +117,5 @@ public class Server implements Runnable {
 
 	public static ArrayList <ServerClient> getClients() {
 		return clients;
-	}
-
-	public static String getIp() {
-		return ip;
 	}
 }
