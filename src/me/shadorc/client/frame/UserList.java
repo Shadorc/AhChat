@@ -3,6 +3,7 @@ package me.shadorc.client.frame;
 
 import java.awt.Component;
 import java.awt.Image;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import javax.swing.DefaultListCellRenderer;
@@ -36,7 +37,9 @@ public class UserList extends JList <String> {
 	}
 
 	public String[] getUsersArray() {
-		return imageMap.keySet().toArray(new String[imageMap.size()]);
+		String[] users = imageMap.keySet().toArray(new String[imageMap.size()]);
+		Arrays.sort(users, String.CASE_INSENSITIVE_ORDER);
+		return users;
 	}
 
 	public void addUser(String name, ImageIcon icon) {
