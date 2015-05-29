@@ -41,17 +41,17 @@ public class UserList extends JList <String> {
 
 	public void addUser(String name, ImageIcon icon) {
 		imageMap.put(name, new ImageIcon(icon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH)));
-		this.setListData(imageMap.keySet().toArray(new String[imageMap.size()]));
+		this.setListData(this.getUsersArray());
 	}
 
 	public void removeUser(String name) {
 		imageMap.remove(name);
-		this.setListData(imageMap.keySet().toArray(new String[imageMap.size()]));
+		this.setListData(this.getUsersArray());
 	}
 
 	public void replaceUser(String oldName, String newName) {
 		imageMap.put(newName, imageMap.get(oldName));
 		imageMap.remove(oldName);
-		this.setListData(imageMap.keySet().toArray(new String[imageMap.size()]));
+		this.setListData(this.getUsersArray());
 	}
 }

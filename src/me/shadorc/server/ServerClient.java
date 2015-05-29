@@ -75,7 +75,7 @@ public class ServerClient implements Runnable {
 
 			//Send the list of all connected people
 			for(ServerClient client : Server.getClients()) {
-				if(client == ServerClient.this) continue;
+				if(client == this) continue;
 				this.sendMessage("/connexion " + client.getName());
 			}
 

@@ -3,7 +3,6 @@ package me.shadorc.client;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -56,9 +55,6 @@ public class Emission {
 						total += data;
 						ConnectedPanel.updateBar("Envoi : " + file.getName(), (int) (total * 100 / file.length()));
 					}
-
-				} catch (FileNotFoundException e) {
-					ConnectedPanel.dispError(e, "Merci d'entrer un chemin de fichier valide.");
 
 				} catch (IOException e) {
 					ConnectedPanel.dispError(e, "Erreur lors de l'envoi du fichier, " + e.getMessage());
