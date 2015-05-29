@@ -90,22 +90,20 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
 		new DropTarget(iconButton, new DropTargetListener() {
 			@Override
 			public void drop(DropTargetDropEvent event) {
-				try {
-					// Accept the drop first, important!
+				try {					
 					event.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
 
-					// Get the files that are dropped as List
-					List <File> list = (List <File>) event.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
-					File file = list.get(0);
+					List <?> files = (List <?>) event.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
+					File file = (File) (files.get(0));
 
-					String mimetype= new MimetypesFileTypeMap().getContentType(file);
-					String type = mimetype.split("/")[0];
+					//Get the type of the file (e.g : image/jpeg")
+					String type = new MimetypesFileTypeMap().getContentType(file).split("/")[0];
+
 					if(!type.equals("image")) {
 						iconButton.setIcon(UserImage.create(icon, 125));
 						return;
 					}
 
-					// Now get the first file from the list,
 					icon = file;
 					iconButton.setIcon(UserImage.create(icon, 125));
 
