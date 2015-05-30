@@ -3,12 +3,9 @@ package me.shadorc.server;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.Toolkit;
+import java.awt.datatransfer.StringSelection;
+import java.awt.event.*;
 import java.io.IOException;
 
 import javax.swing.*;
@@ -80,6 +77,23 @@ public class ServerFrame extends JFrame {
 
 		serverInfos = new JList <String> ();
 		serverInfos.setBorder(BorderFactory.createLoweredBevelBorder());
+		serverInfos.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if(e.getButton() == MouseEvent.BUTTON3) {
+					JPopupMenu menu = new JPopupMenu();
+					JMenuItem item = new JMenuItem("Copy");
+					item.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(serverInfos.getSelectedValue().split(" : ", 2)[1]), null);
+						}
+					});
+					menu.add(item);
+					menu.show(e.getComponent(), e.getX(), e.getY());
+				}
+			}
+		});
 		rightPanel.add(serverInfos);
 
 		mainPanel.add(rightPanel, BorderLayout.EAST);
