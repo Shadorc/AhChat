@@ -12,7 +12,6 @@ import java.net.Socket;
 import me.shadorc.client.frame.Frame;
 import me.shadorc.client.frame.Storage;
 import me.shadorc.client.frame.Storage.Data;
-import me.shadorc.client.frame.Tray;
 
 public class Client {
 
@@ -88,7 +87,6 @@ public class Client {
 		}
 
 		if(closeWindow) {
-			Tray.close();
 			System.exit(0);
 		}
 	}

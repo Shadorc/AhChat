@@ -21,8 +21,6 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileSystemView;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultCaret;
@@ -58,19 +56,6 @@ public class ConnectedPanel extends JPanel implements ActionListener {
 		this.background = new ImageIcon(this.getClass().getResource("/res/background.png")).getImage();
 
 		JTextPane chat = new JTextPane();
-		chat.getDocument().addDocumentListener(new DocumentListener() {
-			@Override
-			public void removeUpdate(DocumentEvent arg0) {}
-
-			@Override
-			public void changedUpdate(DocumentEvent arg0) {}
-
-			@Override
-			public void insertUpdate(DocumentEvent arg0) {
-				Tray.alerteMessage();
-			}
-		});
-
 		chat.setEditable(false);
 		chat.setEditorKit(kit);
 		chat.setDocument(doc);
@@ -173,6 +158,7 @@ public class ConnectedPanel extends JPanel implements ActionListener {
 	private static void disp(String text) {
 		try {
 			kit.insertHTML(doc, doc.getLength(), text, 0, 0, null);
+			Tray.alert();
 		} catch (BadLocationException | IOException e) {
 			Frame.popupError(e, "Une erreur est survenue lors de l'affichage du message : " + e.getMessage());
 		}

@@ -42,13 +42,9 @@ public class Tray {
 		}
 	}
 
-	protected static void alerteMessage() {
+	public static void alert() {
 		if(!frame.isFocused()) {
 			icon.displayMessage(null, "[CHAT] Nouveau message", TrayIcon.MessageType.INFO);
 		}
-	}
-
-	public static void close() {
-		SystemTray.getSystemTray().remove(icon);
 	}
 }
