@@ -13,6 +13,9 @@ import me.shadorc.client.frame.Frame;
 import me.shadorc.client.frame.Storage;
 import me.shadorc.client.frame.Storage.Data;
 
+import com.sun.org.apache.xml.internal.security.exceptions.Base64DecodingException;
+import com.sun.org.apache.xml.internal.security.utils.Base64;
+
 public class Client {
 
 	private static Socket s_chat, s_data;
@@ -31,6 +34,13 @@ public class Client {
 		Storage.saveData(Data.PSEUDO, pseudo);
 		Storage.saveData(Data.IP, ip);
 		Storage.saveData(Data.ICON, icon.getPath());
+
+		try {
+			ip = new String(Base64.decode(ip.getBytes()));
+		} catch (Base64DecodingException e) {
+			Frame.popupError(e, "Erreur lors du décodage de l'IP, " + e.getMessage());
+			return false;
+		}
 
 		try {
 			//Ping server to test if it's reachable

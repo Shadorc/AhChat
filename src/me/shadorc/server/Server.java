@@ -12,6 +12,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import com.sun.org.apache.xml.internal.security.utils.Base64;
+
 public class Server implements Runnable {
 
 	private static ArrayList <ServerClient> clients;
@@ -47,6 +49,7 @@ public class Server implements Runnable {
 
 			try {
 				ip = new BufferedReader(new InputStreamReader(new URL("http://checkip.amazonaws.com").openStream())).readLine();
+				ip = Base64.encode(ip.getBytes());
 				Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(ip), null);
 			} catch (IOException e) {
 				ip = "Unknown";
