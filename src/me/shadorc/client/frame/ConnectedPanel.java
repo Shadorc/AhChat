@@ -125,11 +125,11 @@ public class ConnectedPanel extends JPanel implements ActionListener {
 		JPanel buttonsPanel = new JPanel(new GridLayout(1, 2));
 		buttonsPanel.setOpaque(false);
 
-		messageButton = new Button("Envoyer", "Envoyer un message", Size.SMALL, this);
+		messageButton = new Button("send", "Envoyer un message", Size.SMALL, this);
 		messageButton.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
 		buttonsPanel.add(messageButton);
 
-		fileButton = new Button("Envoyer", "Envoyer un fichier", Size.SMALL, this);
+		fileButton = new Button("send", "Envoyer un fichier", Size.SMALL, this);
 		fileButton.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
 		buttonsPanel.add(fileButton);
 

@@ -11,8 +11,10 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.Random;
 
-import me.shadorc.server.Server.Type;
+import me.shadorc.server.Server.MessageType;
+import me.shadorc.utility.ServerUtility;
 
 public class ServerClient implements Runnable {
 
@@ -49,10 +51,9 @@ public class ServerClient implements Runnable {
 
 			name = inChat.readLine();
 
-			//If pseudo already exists, add ip to his name
-			for(int i = 0; i < Server.getClients().size(); i++) {
-				if(Server.getClients().get(i).getName().equalsIgnoreCase(name)) {
-					name = name + ip;
+			for(ServerClient client : Server.getClients()) {
+				if(client.getName().equalsIgnoreCase(name)) {
+					name = name + "(" + new Random().nextInt(10) + ")";
 				}
 			}
 
@@ -71,9 +72,9 @@ public class ServerClient implements Runnable {
 		String message;
 
 		try {
-			this.sendMessage("<b><font color=18B00A>* * Bienvenue ! Pour de l'aide entrer /help.");
+			this.sendMessage("<b><font color=18B00A>* * Bienvenue ! Pour afficher l'aide, entrez /help.");
 
-			Server.sendAll(name + " vient de se connecter.", Type.INFO);
+			Server.sendAll(name + " vient de se connecter.", MessageType.INFO);
 
 			//Send the list of all connected people
 			for(ServerClient client : Server.getClients()) {
@@ -88,7 +89,7 @@ public class ServerClient implements Runnable {
 				if(message.startsWith("/")) {
 					this.sendMessage(ServerCommand.user(this, message));
 				} else {
-					Server.sendAll("<b><font color=blue>&lt;" + name + "&gt;</b> " + message, Type.MESSAGE);
+					Server.sendAll("<b><font color=blue>&lt;" + name + "&gt;</b> " + message, MessageType.NORMAL);
 				}
 			}
 
@@ -124,14 +125,13 @@ public class ServerClient implements Runnable {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-
 				try {
 					DataInputStream dataIn = new DataInputStream(inData);
 					String infos[] = dataIn.readUTF().split("&");
 					String fileName = infos[0];
 					long size = Long.parseLong(infos[1]);
 
-					ServerFrame.dispMessage(ServerClient.this.name + " envoie un fichier de " + humanReadableByteCount(size) + " nommé \"" + fileName + "\".");
+					ServerFrame.dispMessage(ServerClient.this.name + " envoie un fichier de " + ServerUtility.toReadableUnit(size) + " nommé \"" + fileName + "\".");
 
 					byte buff[] = new byte[1024];
 					long total = 0;
@@ -165,12 +165,11 @@ public class ServerClient implements Runnable {
 		}).start();
 	}
 
-	private String humanReadableByteCount(long bytes) {
-		int unit = 1000;
-		if (bytes < unit) return bytes + " B";
-		int exp = (int) (Math.log(bytes) / Math.log(unit));
-		char pre = ("kMGTPE").charAt(exp-1);
-		return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
+	public void setName(String name) {
+		Server.sendAll("/rename " + this.name + " " + name, MessageType.COMMAND);
+		Server.sendAll(this.name + " s'est renommé en " + name + ".", MessageType.INFO);
+		ServerFrame.replaceUser(this.name, name);
+		this.name = name;
 	}
 
 	public String getIp() {
@@ -181,20 +180,13 @@ public class ServerClient implements Runnable {
 		return name;
 	}
 
-	public void setName(String name) {
-		Server.sendAll("/rename " + this.name + " " + name, Type.COMMAND);
-		Server.sendAll(this.name + " s'est renommé en " + name + ".", Type.INFO);
-		ServerFrame.replaceUser(this.name, name);
-		this.name = name;
-	}
-
 	private void quit() {
 		try {
-			Server.sendAll(name + " s'est déconnecté.", Type.INFO);
+			Server.sendAll(name + " s'est déconnecté.", MessageType.INFO);
 			Server.delClient(this);
-			if(s_chat != null) s_chat.close();
-			if(s_data != null) s_data.close();
-			if(inData != null) inData.close();
+			if(s_chat != null) 	s_chat.close();
+			if(s_data != null)	s_data.close();
+			if(inData != null) 	inData.close();
 			if(outData != null) outData.close();
 			if(outInfoData != null) outInfoData.close();
 			if(outChat != null) inChat.close();

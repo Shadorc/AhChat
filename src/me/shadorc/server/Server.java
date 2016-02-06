@@ -2,17 +2,14 @@ package me.shadorc.server;
 
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.SocketException;
-import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 import com.sun.org.apache.xml.internal.security.utils.Base64;
+
+import me.shadorc.utility.ServerUtility;
 
 public class Server implements Runnable {
 
@@ -27,11 +24,12 @@ public class Server implements Runnable {
 
 	public void stop() {
 		try {
-			Server.sendAll("/serverClosed", Type.COMMAND);
+			Server.sendAll("/serverClosed", MessageType.COMMAND);
 			if(ss_chat != null) ss_chat.close();
 			if(ss_data != null) ss_data.close();
 		} catch (IOException e) {
 			ServerFrame.showError(e, "Erreur lors de la fermeture du serveur : " + e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
@@ -47,15 +45,11 @@ public class Server implements Runnable {
 			ss_chat = new ServerSocket(15000);
 			ss_data = new ServerSocket(15001);
 
-			try {
-				ip = new BufferedReader(new InputStreamReader(new URL("http://checkip.amazonaws.com").openStream())).readLine();
-				ip = Base64.encode(ip.getBytes());
-				Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(ip), null);
-			} catch (IOException e) {
-				ip = "Unknown";
-			}
+			ip = ServerUtility.getIp();
+			ip = Base64.encode(ip.getBytes());
+			Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(ip), null);
 
-			ServerFrame.update(ip, Integer.toString(ss_chat.getLocalPort()), Integer.toString(ss_data.getLocalPort()));
+			ServerFrame.updateInfos(ip, ss_chat.getLocalPort(), ss_data.getLocalPort());
 
 			ServerFrame.dispMessage("Welcome");
 			ServerFrame.dispMessage("-------------------------------------------");
@@ -81,15 +75,15 @@ public class Server implements Runnable {
 		}
 	}
 
-	public enum Type {
-		MESSAGE, COMMAND, INFO;
+	public enum MessageType {
+		NORMAL, COMMAND, INFO;
 	}
 
-	public static synchronized void sendAll(String message, Type type) {
+	public static synchronized void sendAll(String message, MessageType type) {
 
-		if(type == Type.MESSAGE || type == Type.INFO) {
-			message = new SimpleDateFormat("HH:mm:ss ").format(new Date()) 
-					+ (type == Type.INFO ? "<b><i><font color=red>[INFO]</b></i> " : "") 
+		if(type != MessageType.COMMAND) {
+			message = ServerUtility.getTime()
+					+ (type == MessageType.INFO ? "<b><i><font color=red>[INFO]</b></i> " : "") 
 					+ message;
 			ServerFrame.dispMessage(message);
 		}
@@ -102,13 +96,13 @@ public class Server implements Runnable {
 	public static synchronized void addClient(ServerClient client) {
 		clients.add(client);
 		ServerFrame.addUser(client.getName());
-		sendAll("/connexion " + client.getName(), Type.COMMAND);
+		Server.sendAll("/connexion " + client.getName(), MessageType.COMMAND);
 	}
 
 	public static synchronized void delClient(ServerClient client) {
 		clients.remove(client);
 		ServerFrame.removeUser(client.getName());
-		sendAll("/deconnexion " + client.getName(), Type.COMMAND);
+		Server.sendAll("/deconnexion " + client.getName(), MessageType.COMMAND);
 	}
 
 	public static ArrayList <ServerClient> getClients() {

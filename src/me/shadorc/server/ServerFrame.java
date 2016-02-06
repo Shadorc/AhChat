@@ -56,16 +56,17 @@ public class ServerFrame extends JFrame {
 		kit = new HTMLEditorKit();
 		doc = new HTMLDocument();
 
-		JPanel mainPanel = new JPanel();
-		mainPanel.setLayout(new BorderLayout());
+		JPanel mainPanel = new JPanel(new BorderLayout());
 
-		JTextPane chatPane = new JTextPane();
-		chatPane.setEditorKit(kit);
-		chatPane.setDocument(doc);
-		chatPane.setEditable(false);
-		((DefaultCaret) chatPane.getCaret()).setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+		JTextPane textPane = new JTextPane();
+		textPane.setEditorKit(kit);
+		textPane.setDocument(doc);
+		textPane.setEditable(false);
+		((DefaultCaret) textPane.getCaret()).setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 
-		JScrollPane scroll = new JScrollPane(chatPane, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		JScrollPane scroll = new JScrollPane(textPane, 
+				ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, 
+				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		mainPanel.add(scroll, BorderLayout.CENTER);
 
 		JPanel rightPanel = new JPanel(new GridLayout(2, 0));
@@ -105,9 +106,9 @@ public class ServerFrame extends JFrame {
 			@Override
 			public void keyPressed(KeyEvent event) {
 				String text = inputField.getText();
-				if(event.getKeyCode() == KeyEvent.VK_ENTER && text.length() > 0) {
-					Server.sendAll("<b><font color='black'>[SERVER] : </b>" + text, Server.Type.MESSAGE);
-					inputField.setText("");
+				if(event.getKeyCode() == KeyEvent.VK_ENTER && text.trim().length() > 0) {
+					Server.sendAll("<b><font color='black'>[SERVER] : </b>" + text, Server.MessageType.NORMAL);
+					inputField.setText(null);
 				}
 			}
 
@@ -164,11 +165,11 @@ public class ServerFrame extends JFrame {
 	}
 
 	public static void dispMessage(String message) {
-		disp("<font size=4>" + message + "</font>");
+		ServerFrame.disp("<font size=4>" + message + "</font>");
 	}
 
 	public static void dispError(Exception e, String error) {
-		disp("<b><i><font color=red size=4> /!\\ " + error + " /!\\\n</b></i></font>");
+		ServerFrame.disp("<b><i><font color=red size=4> /!\\ " + error + " /!\\\n</b></i></font>");
 		e.printStackTrace();
 	}
 
@@ -176,7 +177,7 @@ public class ServerFrame extends JFrame {
 		try {
 			kit.insertHTML(doc, doc.getLength(), message, 0, 0, null);
 		} catch (BadLocationException | IOException e) {
-			showError(e, "Erreur lors de l'affichage du message : " + e.getMessage());
+			ServerFrame.showError(e, "Erreur lors de l'affichage du message : " + e.getMessage());
 		}
 	}
 
@@ -184,7 +185,7 @@ public class ServerFrame extends JFrame {
 		return isOpen;
 	}
 
-	public static void update(String ip, String chatPort, String dataPort) {
+	public static void updateInfos(String ip, int chatPort, int dataPort) {
 		serverInfos.setListData(new String[] {"IP : " + ip, "Chat port : " + chatPort, "Data port : " + dataPort});
 	}
 }

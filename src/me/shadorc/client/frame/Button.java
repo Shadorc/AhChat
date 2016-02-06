@@ -55,7 +55,7 @@ public class Button extends JButton {
 	}
 
 	private ImageIcon getIcon(String number) {
-		ImageIcon icon = new ImageIcon(this.getClass().getResource("/res/Bouton " + name + number + ".png"));
+		ImageIcon icon = new ImageIcon(this.getClass().getResource("/res/Button_" + name + "_" + number + ".png"));
 		int dimension = (size == Size.NORMAL) ? 50 : 30;
 		return new ImageIcon(icon.getImage().getScaledInstance(dimension, dimension, Image.SCALE_SMOOTH));
 	}

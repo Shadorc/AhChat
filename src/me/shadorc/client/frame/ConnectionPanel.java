@@ -164,17 +164,17 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
 		buttons.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
 		buttons.setOpaque(false);
 
-		/*Créer Salon Button Panel*/
+		/*Create Chat Room Button Panel*/
 		JPanel createPanel = new JPanel(new BorderLayout());
 		createPanel.setOpaque(false);
-		create = new Button("Creer", "Créer un salon", Size.NORMAL, this);
+		create = new Button("create", "Créer un salon", Size.NORMAL, this);
 		createPanel.add(create, BorderLayout.EAST);
 		buttons.add(createPanel);
 
-		/*Connexion Button Panel*/
+		/*Connection Button Panel*/
 		JPanel connectPanel = new JPanel(new BorderLayout());
 		connectPanel.setOpaque(false);
-		connect = new Button("Valider", "Connexion", Size.NORMAL, this);
+		connect = new Button("validate", "Connexion", Size.NORMAL, this);
 		connectPanel.add(connect, BorderLayout.WEST);
 		buttons.add(connectPanel);
 
