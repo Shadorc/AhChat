@@ -1,8 +1,7 @@
 <h1>AhChat</h1>
 AhChat is a simple chat allows you to create channel and invite your friends to discuss through your IP. Messages support HTML tag (it's not a bug, it's a feature).
 
-<h2>ToDo</h2>
-* Bouton pour cacher/ouvrir le serveur
+<h2>TODO</h2>
 * Possibilité de refuser/accepter un fichier
 * Bug lors de l'envoi de plusieurs fichiers simultanément
 * Ne pas créer le fichier tant qu'il n'est pas complètement reçu

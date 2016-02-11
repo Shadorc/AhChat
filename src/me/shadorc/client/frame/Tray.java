@@ -22,32 +22,39 @@ public class Tray {
 
 		PopupMenu menu = new PopupMenu();
 
-		MenuItem quitItem = new MenuItem("Quitter");
-		quitItem.addActionListener(new ActionListener() {
+		MenuItem showServerItem = new MenuItem("Afficher le serveur");
+		showServerItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(ServerMain.isOpen()) {
+					ServerMain.getFrame().toFront();
+					ServerMain.getFrame().setVisible(true);
+				}
+			}
+		});
+		menu.add(showServerItem);
+
+		MenuItem exitServerItem = new MenuItem("Fermer le serveur");
+		exitServerItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(ServerMain.isOpen()) {
+					ServerMain.exit();
+				}
+			}
+		});
+		menu.add(exitServerItem);
+
+		menu.addSeparator();
+
+		MenuItem exitItem = new MenuItem("Quitter");
+		exitItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Client.exit(true);
 			}
 		});
-		menu.add(quitItem);
-
-		MenuItem closeServerItem = new MenuItem("Fermer le serveur");
-		closeServerItem.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				ServerMain.exit();
-			}
-		});
-		menu.add(closeServerItem);
-
-		MenuItem openServerItem = new MenuItem("Ouvrir le serveur");
-		openServerItem.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				//TODO
-			}
-		});
-		menu.add(openServerItem);
+		menu.add(exitItem);
 
 		icon = new TrayIcon(new ImageIcon(Tray.class.getResource("/res/icon.png")).getImage(), "AhChat", menu);
 		icon.setImageAutoSize(true);
