@@ -196,8 +196,8 @@ public class ConnectedPanel extends JPanel implements ActionListener {
 	}
 
 	private void sendMessage() {
-		String message = inputField.getText();
-		if(message.length() > 0){
+		String message = inputField.getText().trim();
+		if(!message.isEmpty()){
 			Client.sendMessage(message);
 		}
 		inputField.setText("");
