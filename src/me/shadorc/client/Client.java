@@ -9,12 +9,11 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-import me.shadorc.client.frame.Frame;
-import me.shadorc.client.frame.Storage;
-import me.shadorc.client.frame.Storage.Data;
-
 import com.sun.org.apache.xml.internal.security.exceptions.Base64DecodingException;
 import com.sun.org.apache.xml.internal.security.utils.Base64;
+
+import me.shadorc.client.frame.Storage;
+import me.shadorc.client.frame.Storage.Data;
 
 public class Client {
 
@@ -38,7 +37,7 @@ public class Client {
 		try {
 			ip = new String(Base64.decode(ip.getBytes()));
 		} catch (Base64DecodingException e) {
-			Frame.popupError(e, "Erreur lors du décodage de l'IP, " + e.getMessage());
+			Main.showErrorDialog(e, "Erreur lors du décodage de l'IP, " + e.getMessage());
 			return false;
 		}
 
@@ -84,7 +83,7 @@ public class Client {
 		emission.sendFile(file);
 	}
 
-	public static void exit(boolean closeWindow) {
+	public static void exit(boolean exit) {
 		try {
 			if(s_chat != null) s_chat.close();
 			if(s_data != null) s_data.close();
@@ -93,10 +92,10 @@ public class Client {
 			if(outChat != null) outChat.close();
 			if(outData != null) outData.close();
 		} catch (IOException e) {
-			Frame.popupError(e, "Erreur lors de la fermeture du client : " + e.getMessage());
+			Main.showErrorDialog(e, "Erreur lors de la fermeture du client : " + e.getMessage());
 		}
 
-		if(closeWindow) {
+		if(exit) {
 			System.exit(0);
 		}
 	}

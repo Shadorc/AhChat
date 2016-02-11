@@ -13,7 +13,7 @@ import java.util.HashMap;
 
 public class Storage {
 
-	private static File file = new File("data.txt");
+	private static File file = new File("data");
 
 	public enum Data {
 		PSEUDO, IP, ICON;

@@ -16,7 +16,7 @@ import javax.swing.text.html.HTMLEditorKit;
 
 import me.shadorc.client.Client;
 import me.shadorc.client.Command;
-import me.shadorc.client.frame.Frame;
+import me.shadorc.client.Main;
 import me.shadorc.client.frame.UserList;
 
 public class ServerFrame extends JFrame {
@@ -45,7 +45,7 @@ public class ServerFrame extends JFrame {
 			public void windowClosed(WindowEvent e) {
 				serv.stop();
 				isOpen = false;
-				if(!Frame.isOpen()) {
+				if(!Main.getFrame().isVisible()) {
 					Client.exit(true);
 				}
 			}
@@ -70,7 +70,7 @@ public class ServerFrame extends JFrame {
 		mainPanel.add(scroll, BorderLayout.CENTER);
 
 		JPanel rightPanel = new JPanel(new GridLayout(2, 0));
-		rightPanel.setPreferredSize(new Dimension((int) (Frame.getDimension().getWidth()/4), 0));
+		rightPanel.setPreferredSize(new Dimension((int) (Main.getFrame().getWidth()/4), 0));
 
 		usersList = new UserList();
 		usersList.setBorder(BorderFactory.createLoweredBevelBorder());

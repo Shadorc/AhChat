@@ -37,6 +37,7 @@ import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import me.shadorc.client.Client;
+import me.shadorc.client.Main;
 import me.shadorc.client.frame.Button.Size;
 import me.shadorc.client.frame.Storage.Data;
 import me.shadorc.server.ServerFrame;
@@ -53,6 +54,7 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
 
 	public ConnectionPanel() {
 		super(new GridBagLayout());
+		this.setOpaque(false);
 
 		this.background = new ImageIcon(this.getClass().getResource("/res/background.png")).getImage();
 
@@ -60,14 +62,15 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
 		mainPanel.setPreferredSize(new Dimension(500, 325));
 		mainPanel.setOpaque(false);
 
-		if(Storage.getData(Data.ICON) != null) {
-			icon = new File(Storage.getData(Data.ICON));
-		} else {
-			icon = new File(this.getClass().getResource("/res/icon.png").getFile());
-		}
+		icon = new File((Storage.getData(Data.ICON) != null) ? Storage.getData(Data.ICON) : this.getClass().getResource("/res/icon.png").getFile());
 
 		/*Icon Panel*/
 		iconButton = new JButton(UserImage.create(icon, 125));
+		iconButton.setBorder(BorderFactory.createEmptyBorder());
+		iconButton.setHorizontalTextPosition(JButton.CENTER);
+		iconButton.setContentAreaFilled(false);
+		iconButton.setForeground(Color.RED);
+		iconButton.setFocusable(false);
 		iconButton.addActionListener(this);
 		iconButton.addMouseListener(new MouseAdapter() {
 			@Override
@@ -80,14 +83,6 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
 				iconButton.setText("Changer");
 			}
 		});
-		iconButton.setFocusable(false);
-		iconButton.setContentAreaFilled(false);
-		iconButton.setBorder(BorderFactory.createEmptyBorder());
-		iconButton.setHorizontalTextPosition(JButton.CENTER);
-		iconButton.setVerticalTextPosition(JButton.CENTER);
-		iconButton.setForeground(Color.RED);
-		iconButton.setBackground(Color.WHITE);
-		iconButton.setOpaque(false);
 
 		new DropTarget(iconButton, new DropTargetListener() {
 			@Override
@@ -180,7 +175,6 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
 
 		mainPanel.add(buttons, BorderLayout.PAGE_END);
 
-		this.setOpaque(false);
 		this.add(mainPanel);
 	}
 
@@ -192,9 +186,7 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
 			chooser.setFileFilter(new FileNameExtensionFilter("Image files", ImageIO.getReaderFileSuffixes()));
 			chooser.setAcceptAllFileFilterUsed(false);
 
-			int choice = chooser.showOpenDialog(null);
-
-			if(choice == JFileChooser.APPROVE_OPTION) {
+			if(chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
 				icon = chooser.getSelectedFile();
 				iconButton.setIcon(UserImage.create(icon, iconButton.getHeight()));
 			}
@@ -215,9 +207,8 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
 	private void connection() {
 		if(nameField.getText().isEmpty() 
 				|| ipField.getText().isEmpty() 
-//				|| !ipField.getText().matches("^(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})$")  //Test if the IP address contains letters
 				|| !nameField.getText().replaceAll("[^0-9a-zA-Z]", "").equals(nameField.getText())) { //Test if name contains others than letters or number
-			Frame.popupError("Merci de remplir tous les champs correctement. (Les pseudos ne peuvent contenir que des lettres et des chiffres)");
+			Main.showErrorDialog(new Exception("Champs incorrects"), "Merci de remplir tous les champs correctement. (Les pseudos ne peuvent contenir que des lettres et des chiffres)");
 
 		} else {
 			connect.setText("Connexion...");
@@ -228,9 +219,9 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
 				public void run() {
 					ConnectedPanel pane = new ConnectedPanel(); //Sinon users est null et il y a une erreur lors du launch
 					if(Client.connect(nameField.getText(), icon, ipField.getText())) {
-						Frame.setPanel(pane);
+						Main.getFrame().setPanel(pane);
 					} else {
-						Frame.popupError("Serveur indisponible ou inexistant.");
+						Main.showErrorDialog(new Exception("Serveur indisponible"), "Serveur indisponible ou inexistant.");
 						connect.setText("Connexion");
 						connect.setEnabled(true);
 					}

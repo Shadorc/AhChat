@@ -28,6 +28,7 @@ import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
 import me.shadorc.client.Client;
+import me.shadorc.client.Main;
 import me.shadorc.client.frame.Button.Size;
 
 public class ConnectedPanel extends JPanel implements ActionListener {
@@ -70,7 +71,7 @@ public class ConnectedPanel extends JPanel implements ActionListener {
 		JPanel right = new JPanel(new GridLayout(2, 0));
 
 		users.setBorder(BorderFactory.createLoweredBevelBorder());
-		users.setPreferredSize(new Dimension((int) (Frame.getDimension().getWidth()/4), 0));
+		users.setPreferredSize(new Dimension((int) (Main.getFrame().getWidth()/4), 0));
 		right.add(users);
 
 		progressBars = new HashMap <String, JProgressBar> ();
@@ -89,7 +90,7 @@ public class ConnectedPanel extends JPanel implements ActionListener {
 		bottom.setBorder(BorderFactory.createEmptyBorder(10, 50, 5, 50));
 
 		inputField = new JFormattedTextField(DEFAULT_TEXT);
-		inputField.setPreferredSize(new Dimension((int) Frame.getDimension().getWidth(), 25));
+		inputField.setPreferredSize(new Dimension((int) Main.getFrame().getWidth(), 25));
 		inputField.addKeyListener(new KeyListener() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -160,7 +161,7 @@ public class ConnectedPanel extends JPanel implements ActionListener {
 			kit.insertHTML(doc, doc.getLength(), text, 0, 0, null);
 			Tray.alert();
 		} catch (BadLocationException | IOException e) {
-			Frame.popupError(e, "Une erreur est survenue lors de l'affichage du message : " + e.getMessage());
+			Main.showErrorDialog(e, "Une erreur est survenue lors de l'affichage du message : " + e.getMessage());
 		}
 	}
 
@@ -177,7 +178,7 @@ public class ConnectedPanel extends JPanel implements ActionListener {
 					try {
 						Desktop.getDesktop().open(new File(FileSystemView.getFileSystemView().getHomeDirectory() + "/" + name));
 					} catch (IOException e) {
-						Frame.popupError(e, "Erreur lors de l'ouverture du fichier, " + e.getMessage());
+						Main.showErrorDialog(e, "Erreur lors de l'ouverture du fichier, " + e.getMessage());
 					}
 				}
 			}

@@ -9,18 +9,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.ImageIcon;
-import javax.swing.JFrame;
 
 import me.shadorc.client.Client;
+import me.shadorc.client.Main;
 
 public class Tray {
 
 	private static TrayIcon icon;
-	private static JFrame frame;
 
-	public static void initialize(JFrame _frame) {
+	public static void initialize() {
 
-		frame = _frame;
 		PopupMenu menu = new PopupMenu();
 
 		MenuItem closeItem = new MenuItem("Close");
@@ -38,12 +36,12 @@ public class Tray {
 		try {
 			SystemTray.getSystemTray().add(icon);
 		} catch (AWTException e) {
-			ConnectedPanel.dispError(e, "Erreur lors de la création du TrayIcon : " + e.getMessage());
+			Main.showErrorDialog(e, "Erreur lors de la création du TrayIcon : " + e.getMessage());
 		}
 	}
 
 	public static void alert() {
-		if(!frame.isFocused()) {
+		if(!Main.getFrame().isFocused()) {
 			icon.displayMessage(null, "[CHAT] Nouveau message", TrayIcon.MessageType.INFO);
 		}
 	}
