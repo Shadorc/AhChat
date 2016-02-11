@@ -206,9 +206,12 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
 	}
 
 	private void connection() {
-		if(nameField.getText().isEmpty() 
-				|| ipField.getText().isEmpty() 
-				|| !nameField.getText().replaceAll("[^0-9a-zA-Z]", "").equals(nameField.getText())) { //Test if name contains others than letters or number
+
+		String pseudo = nameField.getText().trim();
+		String ip = ipField.getText().trim();
+
+		//Test if name contains others caracter than letters or number
+		if(pseudo.isEmpty() || ip.isEmpty() || !pseudo.replaceAll("[^0-9a-zA-Z]", "").equals(pseudo)) {
 			Main.showErrorDialog(new Exception("Champs incorrects"), "Merci de remplir tous les champs correctement. (Les pseudos ne peuvent contenir que des lettres et des chiffres)");
 
 		} else {
@@ -219,8 +222,9 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
 				@Override
 				public void run() {
 					ConnectedPanel pane = new ConnectedPanel(); //Sinon users est null et il y a une erreur lors du launch
-					if(Client.connect(nameField.getText(), icon, ipField.getText())) {
+					if(Client.connect(pseudo, icon, ip)) {
 						Main.getFrame().setPanel(pane);
+						Main.getFrame().setTitle(Main.getFrame().getTitle() + " - " + pseudo);
 					} else {
 						Main.showErrorDialog(new Exception("Serveur indisponible"), "Serveur indisponible ou inexistant.");
 						connect.setText("Connexion");

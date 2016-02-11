@@ -42,7 +42,7 @@ public class Reception implements Runnable {
 			}
 
 		} catch (IOException e) {
-			ConnectedPanel.dispError("Le serveur a été fermé.");
+			ConnectedPanel.dispError(e, "Le serveur a été fermé.");
 
 		} finally {
 			Client.exit(false);

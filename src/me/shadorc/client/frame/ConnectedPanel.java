@@ -56,23 +56,23 @@ public class ConnectedPanel extends JPanel implements ActionListener {
 
 		this.background = new ImageIcon(this.getClass().getResource("/res/background.png")).getImage();
 
-		JTextPane chat = new JTextPane();
-		chat.setEditable(false);
-		chat.setEditorKit(kit);
-		chat.setDocument(doc);
-		chat.setBorder(BorderFactory.createEmptyBorder());
-		chat.setContentType("text/html");
-		((DefaultCaret) chat.getCaret()).setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+		JTextPane chatPane = new JTextPane();
+		chatPane.setEditable(false);
+		chatPane.setEditorKit(kit);
+		chatPane.setDocument(doc);
+		chatPane.setBorder(BorderFactory.createEmptyBorder());
+		chatPane.setContentType("text/html");
+		((DefaultCaret) chatPane.getCaret()).setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 
-		JScrollPane scroll = new JScrollPane(chat, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		JScrollPane scroll = new JScrollPane(chatPane, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scroll.setOpaque(false);
 		this.add(scroll, BorderLayout.CENTER);
 
-		JPanel right = new JPanel(new GridLayout(2, 0));
+		JPanel rightPanel = new JPanel(new GridLayout(2, 0));
 
 		users.setBorder(BorderFactory.createLoweredBevelBorder());
 		users.setPreferredSize(new Dimension((int) (Main.getFrame().getWidth()/4), 0));
-		right.add(users);
+		rightPanel.add(users);
 
 		progressBars = new HashMap <String, JProgressBar> ();
 
@@ -81,9 +81,9 @@ public class ConnectedPanel extends JPanel implements ActionListener {
 		progressPanel.setBackground(Color.WHITE);
 
 		jsp = new JScrollPane(progressPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		right.add(jsp);
+		rightPanel.add(jsp);
 
-		this.add(right, BorderLayout.EAST);
+		this.add(rightPanel, BorderLayout.EAST);
 
 		JPanel bottom = new JPanel(new BorderLayout());
 		bottom.setOpaque(false);
@@ -95,7 +95,7 @@ public class ConnectedPanel extends JPanel implements ActionListener {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
-					sendMessage();
+					ConnectedPanel.this.sendMessage();
 				}
 			}
 
@@ -150,10 +150,6 @@ public class ConnectedPanel extends JPanel implements ActionListener {
 	public static void dispError(Exception e, String error) {
 		disp("<b><i><font color='red' size=4> /!\\ " + error + " /!\\\n</b></i></font>");
 		e.printStackTrace();
-	}
-
-	public static void dispError(String error) {
-		disp("<b><i><font color='red' size=4> /!\\ " + error + " /!\\\n</b></i></font>");
 	}
 
 	private static void disp(String text) {
