@@ -102,6 +102,8 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
 					icon = file;
 					iconButton.setIcon(UserImage.create(icon, 125));
 
+					Storage.saveData(Data.ICON, icon.getPath());
+
 				} catch (Exception e) {
 					iconButton.setIcon(UserImage.create(icon, 125));
 					e.printStackTrace();
@@ -177,8 +179,8 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent e) {
-		JButton bu = (JButton) e.getSource();
+	public void actionPerformed(ActionEvent event) {
+		JButton bu = (JButton) event.getSource();
 		if(bu == iconButton) {
 			JFileChooser chooser = new JFileChooser(new File(System.getProperty("user.home"), "Desktop"));
 			chooser.setFileFilter(new FileNameExtensionFilter("Image files", ImageIO.getReaderFileSuffixes()));
@@ -186,7 +188,8 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
 
 			if(chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
 				icon = chooser.getSelectedFile();
-				iconButton.setIcon(UserImage.create(icon, iconButton.getHeight()));
+				iconButton.setIcon(UserImage.create(icon, 125));
+				Storage.saveData(Data.ICON, icon.getPath());
 			}
 
 		} else if(bu == connect) {
