@@ -9,7 +9,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.SocketException;
 
-import javax.swing.filechooser.FileSystemView;
+import javax.swing.JFileChooser;
 
 import me.shadorc.client.frame.ConnectedPanel;
 
@@ -55,45 +55,45 @@ public class Reception implements Runnable {
 			@Override
 			public void run() {
 				OutputStream fileWriter = null;
-				String fileName = null;
 
 				try {
 					//Send file's informations
 					DataInputStream dataIn = new DataInputStream(inData);
 					String[] infos = dataIn.readUTF().split("&");
 
-					fileName = infos[0];
+					String fileName = infos[0];
 					long size = Long.parseLong(infos[1]);
 
 					ConnectedPanel.addProgressBar("Téléchargement", fileName);
 
-					File desktop = FileSystemView.getFileSystemView().getHomeDirectory();
-					String name, format;
-					if(fileName.contains(".")) {
-						name = fileName.substring(0, fileName.lastIndexOf("."));
-						format = fileName.substring(fileName.lastIndexOf("."));
-					} else {
-						name = fileName;
-						format = "";
-					}
+					int index = fileName.lastIndexOf(".");
+					String name = (index > 0) ?  fileName.substring(0, index) : fileName;
+					String format = (index > 0) ? fileName.substring(index) : null;
 
-					//While the file exists, change name
-					File file = new File(desktop + "/" + name + format);
-					for(int i = 1; file.exists(); i++) {
-						file = new File(desktop + "/" + name + " (" + i + ")" + format);
-					}
+					JFileChooser chooser = new JFileChooser();
+					chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY); 
+					if(chooser.showDialog(null, "Enregistrer \"" + fileName +"\"") == JFileChooser.APPROVE_OPTION) {
+						File saveFolder = chooser.getCurrentDirectory();
+						System.err.println(saveFolder);
 
-					fileWriter = new FileOutputStream(file);
+						//While the file exists, change name
+						File file = new File(saveFolder + "/" + name + format);
+						for(int i = 1; file.exists(); i++) {
+							file = new File(saveFolder + "/" + name + " (" + i + ")" + format);
+						}
 
-					byte buff[] = new byte[1024];
-					long total = 0;
-					int data;
+						fileWriter = new FileOutputStream(file);
 
-					while(total < size && (data = inData.read(buff)) > 0) {
-						fileWriter.write(buff, 0, data);
-						fileWriter.flush();
-						total += data;
-						ConnectedPanel.updateBar("Téléchargement", fileName, (int) (total * 100 / size));
+						byte buff[] = new byte[1024];
+						long total = 0;
+						int data;
+
+						while(total < size && (data = inData.read(buff)) > 0) {
+							fileWriter.write(buff, 0, data);
+							fileWriter.flush();
+							total += data;
+							ConnectedPanel.updateBar("Téléchargement", fileName, (int) (total * 100 / size));
+						}
 					}
 
 				} catch (SocketException ignore) {
