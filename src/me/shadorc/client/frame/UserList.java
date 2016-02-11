@@ -14,7 +14,7 @@ import javax.swing.JList;
 public class UserList extends JList <String> {
 
 	private static final long serialVersionUID = 1L;
-	private static HashMap <String, ImageIcon> imageMap;
+	private HashMap <String, ImageIcon> imageMap;
 
 	public UserList() {
 		super();

@@ -10,7 +10,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import me.shadorc.client.Client;
-import me.shadorc.server.ServerFrame;
+import me.shadorc.server.ServerMain;
 
 public class Frame extends JFrame {
 
@@ -24,7 +24,7 @@ public class Frame extends JFrame {
 			@Override
 			public void windowClosing(WindowEvent e) {
 				//Don't exit if Server is launched
-				Client.exit(!ServerFrame.isOpen());
+				Client.exit(!ServerMain.isOpen());
 			}
 		});
 

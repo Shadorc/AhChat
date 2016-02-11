@@ -5,32 +5,23 @@ import java.awt.datatransfer.StringSelection;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.SocketException;
-import java.util.ArrayList;
 
 import com.sun.org.apache.xml.internal.security.utils.Base64;
 
+import me.shadorc.client.Main;
 import me.shadorc.utility.ServerUtility;
 
 public class Server implements Runnable {
 
-	private static ArrayList <ServerClient> clients;
-
 	private ServerSocket ss_chat, ss_data;
 	private String ip;
 
-	public void start() {
-		new Thread(this).start();
+	public enum MessageType {
+		NORMAL, COMMAND, INFO;
 	}
 
-	public void stop() {
-		try {
-			Server.sendAll("/serverClosed", MessageType.COMMAND);
-			if(ss_chat != null) ss_chat.close();
-			if(ss_data != null) ss_data.close();
-		} catch (IOException e) {
-			ServerFrame.showError(e, "Erreur lors de la fermeture du serveur : " + e.getMessage());
-			e.printStackTrace();
-		}
+	public void start() {
+		new Thread(this).start();
 	}
 
 	@Override
@@ -38,8 +29,6 @@ public class Server implements Runnable {
 
 		ss_chat = null; //Chat Socket Server
 		ss_data = null; //Data Socket Server
-
-		clients = new ArrayList <ServerClient> ();
 
 		try {
 			ss_chat = new ServerSocket(15000);
@@ -49,10 +38,10 @@ public class Server implements Runnable {
 			ip = Base64.encode(ip.getBytes());
 			Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(ip), null);
 
-			ServerFrame.updateInfos(ip, ss_chat.getLocalPort(), ss_data.getLocalPort());
+			ServerMain.getFrame().updateInfos(ip, ss_chat.getLocalPort(), ss_data.getLocalPort());
 
-			ServerFrame.dispMessage("Welcome");
-			ServerFrame.dispMessage("-------------------------------------------");
+			ServerMain.getFrame().dispMessage("Welcome");
+			ServerMain.getFrame().dispMessage("-------------------------------------------");
 
 			while(true) {
 				//Pending connection loop (blocking on accept())
@@ -63,20 +52,26 @@ public class Server implements Runnable {
 			//Server's ending, ignore it
 
 		} catch(IOException e) {
-			ServerFrame.dispError(e, "Erreur lors de l'ouverture du serveur : " + e.getMessage());
+			ServerMain.getFrame().dispError(e, "Erreur lors de l'ouverture du serveur : " + e.getMessage());
 
 		} finally {
 			try {
 				if(ss_chat != null) ss_chat.close();
 				if(ss_data != null) ss_data.close();
 			} catch(IOException e) {
-				ServerFrame.dispError(e, "Erreur lors de la fermeture du serveur : " + e.getMessage());
+				ServerMain.getFrame().dispError(e, "Erreur lors de la fermeture du serveur : " + e.getMessage());
 			}
 		}
 	}
 
-	public enum MessageType {
-		NORMAL, COMMAND, INFO;
+	public void stop() {
+		try {
+			Server.sendAll("/serverClosed", MessageType.COMMAND);
+			if(ss_chat != null) ss_chat.close();
+			if(ss_data != null) ss_data.close();
+		} catch (IOException e) {
+			Main.showErrorDialog(e, "Erreur lors de la fermeture du serveur : " + e.getMessage());
+		}
 	}
 
 	public static synchronized void sendAll(String message, MessageType type) {
@@ -85,27 +80,13 @@ public class Server implements Runnable {
 			message = ServerUtility.getTime()
 					+ (type == MessageType.INFO ? "<b><i><font color=red>[INFO]</b></i> " : "") 
 					+ message;
-			ServerFrame.dispMessage(message);
+			ServerMain.getFrame().dispMessage(message);
 		}
 
-		for(ServerClient client : clients) {
+		for(ServerClient client : ServerMain.getClients()) {
 			client.sendMessage(message);
 		}
 	}
 
-	public static synchronized void addClient(ServerClient client) {
-		clients.add(client);
-		ServerFrame.addUser(client.getName());
-		Server.sendAll("/connexion " + client.getName(), MessageType.COMMAND);
-	}
 
-	public static synchronized void delClient(ServerClient client) {
-		clients.remove(client);
-		ServerFrame.removeUser(client.getName());
-		Server.sendAll("/deconnexion " + client.getName(), MessageType.COMMAND);
-	}
-
-	public static ArrayList <ServerClient> getClients() {
-		return clients;
-	}
 }

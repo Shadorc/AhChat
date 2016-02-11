@@ -51,18 +51,18 @@ public class ServerClient implements Runnable {
 
 			name = inChat.readLine();
 
-			for(ServerClient client : Server.getClients()) {
+			for(ServerClient client : ServerMain.getClients()) {
 				if(client.getName().equalsIgnoreCase(name)) {
 					name = name + "(" + new Random().nextInt(10) + ")";
 				}
 			}
 
-			Server.addClient(this);
+			ServerMain.addClient(this);
 
 			new Thread(this).start();
 
 		} catch (IOException e) {
-			ServerFrame.dispError(e, "Erreur lors de la création du client : " + e.getMessage());
+			ServerMain.getFrame().dispError(e, "Erreur lors de la création du client : " + e.getMessage());
 			this.quit();
 		}
 	}
@@ -77,7 +77,7 @@ public class ServerClient implements Runnable {
 			Server.sendAll(name + " vient de se connecter.", MessageType.INFO);
 
 			//Send the list of all connected people
-			for(ServerClient client : Server.getClients()) {
+			for(ServerClient client : ServerMain.getClients()) {
 				if(client == this) continue;
 				this.sendMessage("/connexion " + client.getName());
 			}
@@ -97,7 +97,7 @@ public class ServerClient implements Runnable {
 			//Client leave, the exception doesn't need to be managed
 
 		} catch (IOException e) {
-			ServerFrame.dispError(e, "Erreur lors de l'envoi de messages : " + e.getMessage());
+			ServerMain.getFrame().dispError(e, "Erreur lors de l'envoi de messages : " + e.getMessage());
 
 		} finally {
 			this.quit();
@@ -131,33 +131,33 @@ public class ServerClient implements Runnable {
 					String fileName = infos[0];
 					long size = Long.parseLong(infos[1]);
 
-					ServerFrame.dispMessage(ServerClient.this.name + " envoie un fichier de " + ServerUtility.toReadableUnit(size) + " nommé \"" + fileName + "\".");
+					ServerMain.getFrame().dispMessage(ServerClient.this.name + " envoie un fichier de " + ServerUtility.toReadableUnit(size) + " nommé \"" + fileName + "\".");
 
 					byte buff[] = new byte[1024];
 					long total = 0;
 					int data; 
 
-					for(ServerClient client : Server.getClients()) {
+					for(ServerClient client : ServerMain.getClients()) {
 						if(client == ServerClient.this) continue;
 						client.sendString(fileName + "&" + size);
 					}
 
 					while(total < size && (data = inData.read(buff)) > 0) {
-						for(ServerClient client : Server.getClients()) {
+						for(ServerClient client : ServerMain.getClients()) {
 							if(client == ServerClient.this) continue;
 							client.sendData(buff, 0, data);
 						}
 						total += data;
 					}
 
-					ServerFrame.dispMessage("\"" + fileName + "\" a été transmis à tous les clients.");
+					ServerMain.getFrame().dispMessage("\"" + fileName + "\" a été transmis à tous les clients.");
 
 				} catch(EOFException | SocketException ignore) {
 					//Server's ending, ignore it
 
 				} catch (IOException e) {
 					ServerClient.this.sendMessage("Erreur lors de l'envoi du fichier, " + e.getMessage());
-					ServerFrame.dispError(e, "Erreur lors de l'envoi du fichier, " + e.getMessage());
+					ServerMain.getFrame().dispError(e, "Erreur lors de l'envoi du fichier, " + e.getMessage());
 				}
 
 				ServerClient.this.waitingForFile();
@@ -168,7 +168,7 @@ public class ServerClient implements Runnable {
 	public void setName(String name) {
 		Server.sendAll("/rename " + this.name + " " + name, MessageType.COMMAND);
 		Server.sendAll(this.name + " s'est renommé en " + name + ".", MessageType.INFO);
-		ServerFrame.replaceUser(this.name, name);
+		ServerMain.getFrame().replaceUser(this.name, name);
 		this.name = name;
 	}
 
@@ -183,7 +183,7 @@ public class ServerClient implements Runnable {
 	private void quit() {
 		try {
 			Server.sendAll(name + " s'est déconnecté.", MessageType.INFO);
-			Server.delClient(this);
+			ServerMain.delClient(this);
 			if(s_chat != null) 	s_chat.close();
 			if(s_data != null)	s_data.close();
 			if(inData != null) 	inData.close();
@@ -192,7 +192,7 @@ public class ServerClient implements Runnable {
 			if(outChat != null) inChat.close();
 			if(outChat != null) outChat.close();
 		} catch (IOException e) {
-			ServerFrame.dispError(e, "Erreur lors de la fermeture du client : " + e.getMessage());
+			ServerMain.getFrame().dispError(e, "Erreur lors de la fermeture du client : " + e.getMessage());
 		}
 	}
 }

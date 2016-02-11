@@ -31,7 +31,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFormattedTextField;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -40,7 +39,7 @@ import me.shadorc.client.Client;
 import me.shadorc.client.Main;
 import me.shadorc.client.frame.Button.Size;
 import me.shadorc.client.frame.Storage.Data;
-import me.shadorc.server.ServerFrame;
+import me.shadorc.server.ServerMain;
 
 public class ConnectionPanel extends JPanel implements ActionListener, KeyListener {
 
@@ -50,7 +49,6 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
 	private JButton connect, create, iconButton;
 	private Image background;
 	private File icon;
-	private ServerFrame serverFrame;
 
 	public ConnectionPanel() {
 		super(new GridBagLayout());
@@ -195,11 +193,11 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
 			this.connection();
 
 		} else if(bu == create) {
-			if(serverFrame == null) {
-				serverFrame = new ServerFrame();
+			if(!ServerMain.isOpen()) {
+				ServerMain.init();
 			} else {
-				serverFrame.setState(JFrame.NORMAL);
-				serverFrame.toFront();
+				ServerMain.getFrame().setVisible(true);
+				ServerMain.getFrame().toFront();
 			}
 		}
 	}

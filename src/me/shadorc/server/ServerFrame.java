@@ -5,7 +5,14 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 
 import javax.swing.*;
@@ -14,7 +21,6 @@ import javax.swing.text.DefaultCaret;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
-import me.shadorc.client.Client;
 import me.shadorc.client.Command;
 import me.shadorc.client.Main;
 import me.shadorc.client.frame.UserList;
@@ -25,33 +31,16 @@ public class ServerFrame extends JFrame {
 
 	private String DEFAULT_TEXT = "Envoyer un message";
 
-	private static boolean isOpen = false;
-
 	private JFormattedTextField inputField;
-	private static HTMLEditorKit kit;
-	private static HTMLDocument doc;
+	private HTMLEditorKit kit;
+	private HTMLDocument doc;
 
-	private static JList <String> serverInfos;
-	private static UserList usersList;
-
-	private Server serv;
+	private JList <String> serverInfos;
+	private UserList usersList;
 
 	public ServerFrame() {
 		super("AhChat - Serveur");
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
-		this.addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosed(WindowEvent e) {
-				serv.stop();
-				isOpen = false;
-				if(!Main.getFrame().isVisible()) {
-					Client.exit(true);
-				}
-			}
-		});
-
-		isOpen = true;
 
 		kit = new HTMLEditorKit();
 		doc = new HTMLDocument();
@@ -142,50 +131,38 @@ public class ServerFrame extends JFrame {
 		this.setPreferredSize(new Dimension(800, 600));
 		this.setLocationRelativeTo(null);
 		this.setVisible(true);
-
-		serv = new Server();
-		serv.start();
 	}
 
-	public static void addUser(String name) {
+	public void addUser(String name) {
 		usersList.addUser(name, new ImageIcon(Command.class.getResource("/res/icon.png")));
 	}
 
-	public static void removeUser(String name) {
-		usersList.removeUser(name);
-	}
-
-	public static void replaceUser(String oldName, String newName) {
+	public void replaceUser(String oldName, String newName) {
 		usersList.replaceUser(oldName, newName);
 	}
 
-	public static void showError(Exception e, String error) {
-		JOptionPane.showMessageDialog(null, error, "AhChat - Serveur - Erreur", JOptionPane.ERROR_MESSAGE);
+	public void removeUser(String name) {
+		usersList.removeUser(name);
+	}
+
+	public void dispMessage(String message) {
+		this.disp("<font size=4>" + message + "</font>");
+	}
+
+	public void dispError(Exception e, String error) {
+		this.disp("<b><i><font color=red size=4> /!\\ " + error + " /!\\\n</b></i></font>");
 		e.printStackTrace();
 	}
 
-	public static void dispMessage(String message) {
-		ServerFrame.disp("<font size=4>" + message + "</font>");
-	}
-
-	public static void dispError(Exception e, String error) {
-		ServerFrame.disp("<b><i><font color=red size=4> /!\\ " + error + " /!\\\n</b></i></font>");
-		e.printStackTrace();
-	}
-
-	private static void disp(String message) {
+	private void disp(String message) {
 		try {
 			kit.insertHTML(doc, doc.getLength(), message, 0, 0, null);
 		} catch (BadLocationException | IOException e) {
-			ServerFrame.showError(e, "Erreur lors de l'affichage du message : " + e.getMessage());
+			Main.showErrorDialog(e, "Erreur lors de l'affichage du message : " + e.getMessage());
 		}
 	}
 
-	public static boolean isOpen() {
-		return isOpen;
-	}
-
-	public static void updateInfos(String ip, int chatPort, int dataPort) {
+	public void updateInfos(String ip, int chatPort, int dataPort) {
 		serverInfos.setListData(new String[] {"IP : " + ip, "Chat port : " + chatPort, "Data port : " + dataPort});
 	}
 }
