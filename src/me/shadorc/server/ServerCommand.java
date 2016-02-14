@@ -7,7 +7,7 @@ public class ServerCommand {
 
 		String[] splitCmd = command.split(" ");
 		String cmd = splitCmd[0].toLowerCase();
-		String arg = splitCmd.length > 1 ? command.split(" ", 2)[1] : null;
+		String arg = (splitCmd.length > 1) ? command.split(" ", 2)[1] : null;
 
 		switch(cmd) {
 			case "/rename":

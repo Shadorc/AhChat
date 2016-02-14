@@ -8,6 +8,7 @@ import me.shadorc.client.frame.ConnectedPanel;
 public class Command {
 
 	public static void serverCommand(String command) {
+
 		switch(command.split(" ")[0]) {
 			case "/connexion":
 				ConnectedPanel.getUsersList().addUser(command.split(" ")[1], new ImageIcon(Command.class.getResource("/res/icon.png")));

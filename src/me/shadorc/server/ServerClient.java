@@ -53,7 +53,7 @@ public class ServerClient implements Runnable {
 
 			for(ServerClient client : ServerMain.getClients()) {
 				if(client.getName().equalsIgnoreCase(name)) {
-					name = name + " (" + new Random().nextInt(10) + ")";
+					name = name + "_(" + new Random().nextInt(10) + ")";
 				}
 			}
 
