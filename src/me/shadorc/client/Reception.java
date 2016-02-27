@@ -73,8 +73,7 @@ public class Reception implements Runnable {
 					JFileChooser chooser = new JFileChooser();
 					chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY); 
 					if(chooser.showDialog(null, "Enregistrer \"" + fileName +"\"") == JFileChooser.APPROVE_OPTION) {
-						File saveFolder = chooser.getCurrentDirectory();
-						System.err.println(saveFolder);
+						File saveFolder = chooser.getSelectedFile();
 
 						//While the file exists, change name
 						File file = new File(saveFolder + "/" + name + format);
