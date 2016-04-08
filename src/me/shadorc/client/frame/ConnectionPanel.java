@@ -102,7 +102,7 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
 					icon = file;
 					iconButton.setIcon(UserImage.create(icon, 125));
 
-					Storage.saveData(Data.ICON, icon.getPath());
+					Storage.store(Data.ICON, icon.getPath());
 
 				} catch (Exception e) {
 					iconButton.setIcon(UserImage.create(icon, 125));
@@ -189,7 +189,7 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
 			if(chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
 				icon = chooser.getSelectedFile();
 				iconButton.setIcon(UserImage.create(icon, 125));
-				Storage.saveData(Data.ICON, icon.getPath());
+				Storage.store(Data.ICON, icon.getPath());
 			}
 
 		} else if(bu == connect) {

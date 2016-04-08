@@ -30,9 +30,9 @@ public class Client {
 
 	public static boolean connect(String pseudo, File icon, String ip) {
 
-		Storage.saveData(Data.PSEUDO, pseudo);
-		Storage.saveData(Data.IP, ip);
-		Storage.saveData(Data.ICON, icon.getPath());
+		Storage.store(Data.PSEUDO, pseudo);
+		Storage.store(Data.IP, ip);
+		Storage.store(Data.ICON, icon.getPath());
 
 		try {
 			ip = new String(Base64.decode(ip.getBytes()));

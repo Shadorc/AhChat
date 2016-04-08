@@ -1,53 +1,41 @@
 package me.shadorc.client.frame;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.HashMap;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Properties;
 
 public class Storage {
 
-	private static File file = new File("data");
+	private static Properties prop = new Properties();
+	private static File conf = new File("config.properties");
 
 	public enum Data {
 		PSEUDO, IP, ICON;
 	}
 
-	public static void saveData(Data data, String value) {
-		BufferedWriter writer = null;
-		BufferedReader reader = null;
+	public static void init() throws IOException {
+		conf.createNewFile();
+	}
+
+	public static void store(Data data, Object value) {
+		OutputStream output = null;
 
 		try {
-			HashMap <String, String> datas = new HashMap <String, String> ();
+			output = new FileOutputStream(conf);
 
-			reader = new BufferedReader(new FileReader(file));
-
-			String line;
-			while((line = reader.readLine()) != null) {
-				datas.put(line.split(":", 2)[0], line.split(":", 2)[1]);
-			}
-
-			datas.put(data.toString(), value);
-
-			writer = new BufferedWriter(new FileWriter(file));
-
-			for(String key : datas.keySet()) {
-				writer.write(key + ":" + datas.get(key) + "\n");
-			}
+			prop.setProperty(data.toString(), value.toString());
+			prop.store(output, null);
 
 		} catch (IOException e) {
 			e.printStackTrace();
 
 		} finally {
 			try {
-				if(writer != null) writer.close();
-				if(reader != null) reader.close();
+				if (output != null) output.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -55,18 +43,25 @@ public class Storage {
 	}
 
 	public static String getData(Data data) {
-		try {
-			file.createNewFile();
+		InputStream input = null;
 
-			for(String line : new String(Files.readAllBytes(Paths.get(file.getPath())), StandardCharsets.UTF_8).split("\n")) {
-				if(line.startsWith(data.toString())) {
-					return line.split(":", 2)[1].trim();
-				}
-			}
+		try {
+			input = new FileInputStream(conf);
+			prop.load(input);
+
+			return prop.getProperty(data.toString());
 
 		} catch (IOException e) {
 			e.printStackTrace();
+
+		} finally {
+			try {
+				if (input != null) input.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
+
 		return null;
 	}
 }

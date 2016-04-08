@@ -1,11 +1,13 @@
 package me.shadorc.client;
 
+import java.io.IOException;
+
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 
 import me.shadorc.client.frame.Frame;
+import me.shadorc.client.frame.Storage;
 import me.shadorc.client.frame.Tray;
 
 public class Main {
@@ -14,11 +16,18 @@ public class Main {
 
 	public static void main(String[] args) {
 
-		//Change UIManager look to look like the operating system one
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
+		}
+
+		try {
+			Storage.init();
+		} catch (IOException e) {
+			System.err.println("[ERROR] Can not create save file, aborting.");
+			e.printStackTrace();
+			System.exit(1);
 		}
 
 		SwingUtilities.invokeLater(new Runnable() {
@@ -27,7 +36,8 @@ public class Main {
 				frame = new Frame();
 			}
 		});
-		Tray.initialize();
+
+		Tray.init();
 	}
 
 	public static Frame getFrame() {

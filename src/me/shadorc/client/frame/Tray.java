@@ -18,7 +18,7 @@ public class Tray {
 
 	private static TrayIcon icon;
 
-	public static void initialize() {
+	public static void init() {
 
 		PopupMenu menu = new PopupMenu();
 
