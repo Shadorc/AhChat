@@ -6,8 +6,6 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.SocketException;
 
-import com.sun.org.apache.xml.internal.security.utils.Base64;
-
 import me.shadorc.client.Main;
 import me.shadorc.utility.ServerUtility;
 
@@ -35,7 +33,6 @@ public class Server implements Runnable {
 			ss_data = new ServerSocket(15001);
 
 			ip = ServerUtility.getIp();
-			ip = Base64.encode(ip.getBytes());
 			Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(ip), null);
 
 			ServerMain.getFrame().updateInfos(ip, ss_chat.getLocalPort(), ss_data.getLocalPort());

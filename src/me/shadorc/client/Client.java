@@ -9,9 +9,6 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-import com.sun.org.apache.xml.internal.security.exceptions.Base64DecodingException;
-import com.sun.org.apache.xml.internal.security.utils.Base64;
-
 import me.shadorc.client.frame.Storage;
 import me.shadorc.client.frame.Storage.Data;
 
@@ -33,13 +30,6 @@ public class Client {
 		Storage.store(Data.PSEUDO, pseudo);
 		Storage.store(Data.IP, ip);
 		Storage.store(Data.ICON, icon.getPath());
-
-		try {
-			ip = new String(Base64.decode(ip.getBytes()));
-		} catch (Base64DecodingException e) {
-			Main.showErrorDialog(e, "Erreur lors du décodage de l'IP, " + e.getMessage());
-			return false;
-		}
 
 		try {
 			//Ping server to test if it's reachable

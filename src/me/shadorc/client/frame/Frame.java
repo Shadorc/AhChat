@@ -28,9 +28,10 @@ public class Frame extends JFrame {
 			}
 		});
 
-		this.setIconImage(new ImageIcon(this.getClass().getResource("/res/icon.png")).getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH));
 		this.setContentPane(new ConnectionPanel());
 		this.pack();
+
+		this.setIconImage(new ImageIcon(this.getClass().getResource("/res/icon.png")).getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH));
 		this.setMinimumSize(new Dimension(800, 600));
 		this.setPreferredSize(new Dimension(800, 600));
 		this.setLocationRelativeTo(null);
