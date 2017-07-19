@@ -11,4 +11,4 @@ gen/
 .settings
 
 # Project files
-data
+config.properties
