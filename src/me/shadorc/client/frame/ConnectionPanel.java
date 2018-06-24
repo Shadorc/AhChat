@@ -22,9 +22,9 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.nio.file.Files;
 import java.util.List;
 
-import javax.activation.MimetypesFileTypeMap;
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -92,7 +92,7 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
 					File file = (File) (files.get(0));
 
 					//Get the type of the file (e.g : image/jpeg")
-					String type = new MimetypesFileTypeMap().getContentType(file).split("/")[0];
+					String type = Files.probeContentType(file.toPath()).split("/")[0];
 
 					if(!type.equals("image")) {
 						iconButton.setIcon(UserImage.create(icon, 125));

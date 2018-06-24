@@ -10,56 +10,34 @@ import java.util.Properties;
 
 public class Storage {
 
-	private static Properties prop = new Properties();
-	private static File conf = new File("config.properties");
+	private static final Properties PROPERTIES = new Properties();
+	private static final File CONFIG_FILE = new File("config.properties");
 
 	public enum Data {
 		PSEUDO, IP, ICON;
 	}
 
 	public static void init() throws IOException {
-		conf.createNewFile();
+		CONFIG_FILE.createNewFile();
 	}
 
 	public static void store(Data data, Object value) {
-		OutputStream output = null;
+		try (OutputStream output = new FileOutputStream(CONFIG_FILE)) {
+			PROPERTIES.setProperty(data.toString(), value.toString());
+			PROPERTIES.store(output, null);
 
-		try {
-			output = new FileOutputStream(conf);
-
-			prop.setProperty(data.toString(), value.toString());
-			prop.store(output, null);
-
-		} catch (IOException e) {
-			e.printStackTrace();
-
-		} finally {
-			try {
-				if (output != null) output.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		} catch (IOException err) {
+			err.printStackTrace();
 		}
 	}
 
 	public static String getData(Data data) {
-		InputStream input = null;
+		try (InputStream input = new FileInputStream(CONFIG_FILE)) {
+			PROPERTIES.load(input);
+			return PROPERTIES.getProperty(data.toString());
 
-		try {
-			input = new FileInputStream(conf);
-			prop.load(input);
-
-			return prop.getProperty(data.toString());
-
-		} catch (IOException e) {
-			e.printStackTrace();
-
-		} finally {
-			try {
-				if (input != null) input.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		} catch (IOException err) {
+			err.printStackTrace();
 		}
 
 		return null;
