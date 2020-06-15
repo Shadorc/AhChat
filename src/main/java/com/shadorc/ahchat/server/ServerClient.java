@@ -1,198 +1,210 @@
 package com.shadorc.ahchat.server;
 
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.EOFException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.net.Socket;
-import java.net.SocketException;
-import java.util.Random;
-
 import com.shadorc.ahchat.server.Server.MessageType;
 import com.shadorc.ahchat.utility.ServerUtil;
 
+import java.io.*;
+import java.net.Socket;
+import java.net.SocketException;
+import java.util.concurrent.ThreadLocalRandom;
+
 public class ServerClient implements Runnable {
 
-	private Socket s_chat;
-	private Socket s_data;
+    private final Socket chatSocket;
+    private final Socket dataSocket;
+    private final String ip;
+    private String name;
 
-	private InputStream inData;
-	private OutputStream outData;
+    private DataOutputStream infoDataOut;
+    private InputStream dataIn;
+    private OutputStream dataOut;
+    private BufferedReader chatIn;
+    private PrintWriter chatOut;
 
-	private DataOutputStream outInfoData;
 
-	private BufferedReader inChat;
-	private PrintWriter outChat;
+    public ServerClient(final Socket chatSocket, final Socket dataSocket) {
+        this.chatSocket = chatSocket;
+        this.dataSocket = dataSocket;
 
-	private String name;
-	private String ip;
+        this.name = "Unknown";
+        this.ip = chatSocket.getRemoteSocketAddress().toString();
 
-	public ServerClient(Socket s_chat, Socket s_data) {
+        try {
+            this.chatOut = new PrintWriter(chatSocket.getOutputStream());
+            this.chatIn = new BufferedReader(new InputStreamReader(chatSocket.getInputStream()));
 
-		this.s_chat = s_chat;
-		this.s_data = s_data;
+            this.dataOut = dataSocket.getOutputStream();
+            this.dataIn = dataSocket.getInputStream();
 
-		this.name = "Unknown";
-		this.ip = s_chat.getRemoteSocketAddress().toString();
+            this.infoDataOut = new DataOutputStream(this.dataOut);
 
-		try {
-			outChat = new PrintWriter(s_chat.getOutputStream());
-			inChat = new BufferedReader(new InputStreamReader(s_chat.getInputStream()));
+            // Waits for name to arrive
+            this.name = chatIn.readLine();
 
-			outData = s_data.getOutputStream();
-			inData = s_data.getInputStream();
+            // TODO: Improve this
+            // Rename the client if someone has already this name
+            for (final ServerClient client : ServerMain.getClients()) {
+                if (client.getName().equalsIgnoreCase(name)) {
+                    this.name = this.name + "_(" + ThreadLocalRandom.current().nextInt(10) + ")";
+                }
+            }
 
-			outInfoData = new DataOutputStream(outData); 
+            ServerMain.addClient(this);
 
-			name = inChat.readLine();
+            new Thread(this).start();
 
-			for(ServerClient client : ServerMain.getClients()) {
-				if(client.getName().equalsIgnoreCase(name)) {
-					name = name + "_(" + new Random().nextInt(10) + ")";
-				}
-			}
+        } catch (final IOException err) {
+            ServerMain.getFrame().dispError(err, "Erreur lors de la création du client : " + err.getMessage());
+            this.quit();
+        }
+    }
 
-			ServerMain.addClient(this);
+    @Override
+    public void run() {
+        String message;
 
-			new Thread(this).start();
+        try {
+            this.sendMessage("<b><font color=18B00A>* * Bienvenue ! Pour afficher l'aide, entrez /help.");
 
-		} catch (IOException e) {
-			ServerMain.getFrame().dispError(e, "Erreur lors de la création du client : " + e.getMessage());
-			this.quit();
-		}
-	}
+            Server.sendAll(name + " vient de se connecter.", MessageType.INFO);
 
-	@Override
-	public void run() {
-		String message;
+            //Send the list of all connected people
+            for (ServerClient client : ServerMain.getClients()) {
+                if (client == this) {
+                    continue;
+                }
+                this.sendMessage("/connexion " + client.getName());
+            }
 
-		try {
-			this.sendMessage("<b><font color=18B00A>* * Bienvenue ! Pour afficher l'aide, entrez /help.");
+            this.waitingForFile();
 
-			Server.sendAll(name + " vient de se connecter.", MessageType.INFO);
+            //Waiting for messages from the client (blocking on inChat.readLine())
+            while ((message = chatIn.readLine()) != null) {
+                if (message.startsWith("/")) {
+                    this.sendMessage(ServerCommand.user(this, message));
+                } else {
+                    Server.sendAll("<b><font color=blue>&lt;" + name + "&gt;</b> " + message, MessageType.NORMAL);
+                }
+            }
 
-			//Send the list of all connected people
-			for(ServerClient client : ServerMain.getClients()) {
-				if(client == this) continue;
-				this.sendMessage("/connexion " + client.getName());
-			}
+        } catch (SocketException ignored) {
+            //Client leave, the exception doesn't need to be managed
 
-			this.waitingForFile();
+        } catch (IOException e) {
+            ServerMain.getFrame().dispError(e, "Erreur lors de l'envoi de messages : " + e.getMessage());
 
-			//Waiting for messages from the client (blocking on inChat.readLine())
-			while((message = inChat.readLine()) != null) {
-				if(message.startsWith("/")) {
-					this.sendMessage(ServerCommand.user(this, message));
-				} else {
-					Server.sendAll("<b><font color=blue>&lt;" + name + "&gt;</b> " + message, MessageType.NORMAL);
-				}
-			}
+        } finally {
+            this.quit();
+        }
+    }
 
-		} catch (SocketException ignored) {
-			//Client leave, the exception doesn't need to be managed
+    public void sendMessage(String message) {
+        chatOut.println(message);
+        chatOut.flush();
+    }
 
-		} catch (IOException e) {
-			ServerMain.getFrame().dispError(e, "Erreur lors de l'envoi de messages : " + e.getMessage());
+    public void sendData(byte[] b, int off, int len) throws IOException {
+        dataOut.write(b, off, len);
+        dataOut.flush();
+    }
 
-		} finally {
-			this.quit();
-		}
-	}
+    public void sendString(String data) throws IOException {
+        infoDataOut.writeUTF(data);
+        infoDataOut.flush();
+    }
 
-	public void sendMessage(String message) {
-		outChat.println(message);
-		outChat.flush();
-	}
+    //This Thread is waiting for file from the Client
+    private void waitingForFile() {
+        //The client sends a file, Server sends it to others clients
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    DataInputStream dataIn = new DataInputStream(ServerClient.this.dataIn);
+                    String infos[] = dataIn.readUTF().split("&");
+                    String fileName = infos[0];
+                    long size = Long.parseLong(infos[1]);
 
-	public void sendData(byte[] b, int off, int len) throws IOException {
-		outData.write(b, off, len);
-		outData.flush();
-	}
+                    ServerMain.getFrame().dispMessage(ServerClient.this.name + " envoie un fichier de " + ServerUtil.toReadableUnit(size) + " nommé \"" + fileName + "\".");
 
-	public void sendString(String data) throws IOException {
-		outInfoData.writeUTF(data);
-		outInfoData.flush();
-	}
+                    byte buff[] = new byte[1024];
+                    long total = 0;
+                    int data;
 
-	//This Thread is waiting for file from the Client
-	private void waitingForFile() {
-		//The client sends a file, Server sends it to others clients
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					DataInputStream dataIn = new DataInputStream(inData);
-					String infos[] = dataIn.readUTF().split("&");
-					String fileName = infos[0];
-					long size = Long.parseLong(infos[1]);
+                    for (ServerClient client : ServerMain.getClients()) {
+                        if (client == ServerClient.this) {
+                            continue;
+                        }
+                        client.sendString(fileName + "&" + size);
+                    }
 
-					ServerMain.getFrame().dispMessage(ServerClient.this.name + " envoie un fichier de " + ServerUtil.toReadableUnit(size) + " nommé \"" + fileName + "\".");
+                    while (total < size && (data = ServerClient.this.dataIn.read(buff)) > 0) {
+                        for (ServerClient client : ServerMain.getClients()) {
+                            if (client == ServerClient.this) {
+                                continue;
+                            }
+                            client.sendData(buff, 0, data);
+                        }
+                        total += data;
+                    }
 
-					byte buff[] = new byte[1024];
-					long total = 0;
-					int data; 
+                    ServerMain.getFrame().dispMessage("\"" + fileName + "\" a été transmis à tous les clients.");
 
-					for(ServerClient client : ServerMain.getClients()) {
-						if(client == ServerClient.this) continue;
-						client.sendString(fileName + "&" + size);
-					}
+                } catch (EOFException | SocketException ignore) {
+                    //Server's ending, ignore it
 
-					while(total < size && (data = inData.read(buff)) > 0) {
-						for(ServerClient client : ServerMain.getClients()) {
-							if(client == ServerClient.this) continue;
-							client.sendData(buff, 0, data);
-						}
-						total += data;
-					}
+                } catch (IOException e) {
+                    ServerClient.this.sendMessage("Erreur lors de l'envoi du fichier, " + e.getMessage());
+                    ServerMain.getFrame().dispError(e, "Erreur lors de l'envoi du fichier, " + e.getMessage());
+                }
 
-					ServerMain.getFrame().dispMessage("\"" + fileName + "\" a été transmis à tous les clients.");
+                ServerClient.this.waitingForFile();
+            }
+        }).start();
+    }
 
-				} catch(EOFException | SocketException ignore) {
-					//Server's ending, ignore it
+    public void setName(String name) {
+        Server.sendAll("/rename " + this.name + " " + name, MessageType.COMMAND);
+        Server.sendAll(this.name + " s'est renommé en " + name + ".", MessageType.INFO);
+        ServerMain.getFrame().replaceUser(this.name, name);
+        this.name = name;
+    }
 
-				} catch (IOException e) {
-					ServerClient.this.sendMessage("Erreur lors de l'envoi du fichier, " + e.getMessage());
-					ServerMain.getFrame().dispError(e, "Erreur lors de l'envoi du fichier, " + e.getMessage());
-				}
+    public String getIp() {
+        return ip;
+    }
 
-				ServerClient.this.waitingForFile();
-			}
-		}).start();
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		Server.sendAll("/rename " + this.name + " " + name, MessageType.COMMAND);
-		Server.sendAll(this.name + " s'est renommé en " + name + ".", MessageType.INFO);
-		ServerMain.getFrame().replaceUser(this.name, name);
-		this.name = name;
-	}
-
-	public String getIp() {
-		return ip;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	private void quit() {
-		try {
-			Server.sendAll(name + " s'est déconnecté.", MessageType.INFO);
-			ServerMain.delClient(this);
-			if(s_chat != null) 	s_chat.close();
-			if(s_data != null)	s_data.close();
-			if(inData != null) 	inData.close();
-			if(outData != null) outData.close();
-			if(outInfoData != null) outInfoData.close();
-			if(outChat != null) inChat.close();
-			if(outChat != null) outChat.close();
-		} catch (IOException e) {
-			ServerMain.getFrame().dispError(e, "Erreur lors de la fermeture du client : " + e.getMessage());
-		}
-	}
+    private void quit() {
+        try {
+            Server.sendAll(name + " s'est déconnecté.", MessageType.INFO);
+            ServerMain.delClient(this);
+            if (chatSocket != null) {
+                chatSocket.close();
+            }
+            if (dataSocket != null) {
+                dataSocket.close();
+            }
+            if (dataIn != null) {
+                dataIn.close();
+            }
+            if (dataOut != null) {
+                dataOut.close();
+            }
+            if (infoDataOut != null) {
+                infoDataOut.close();
+            }
+            if (chatOut != null) {
+                chatIn.close();
+            }
+            if (chatOut != null) {
+                chatOut.close();
+            }
+        } catch (IOException e) {
+            ServerMain.getFrame().dispError(e, "Erreur lors de la fermeture du client : " + e.getMessage());
+        }
+    }
 }
