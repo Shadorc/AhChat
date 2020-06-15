@@ -14,7 +14,7 @@ import java.net.SocketException;
 import java.util.Random;
 
 import com.shadorc.ahchat.server.Server.MessageType;
-import com.shadorc.ahchat.utility.ServerUtility;
+import com.shadorc.ahchat.utility.ServerUtil;
 
 public class ServerClient implements Runnable {
 
@@ -131,7 +131,7 @@ public class ServerClient implements Runnable {
 					String fileName = infos[0];
 					long size = Long.parseLong(infos[1]);
 
-					ServerMain.getFrame().dispMessage(ServerClient.this.name + " envoie un fichier de " + ServerUtility.toReadableUnit(size) + " nommé \"" + fileName + "\".");
+					ServerMain.getFrame().dispMessage(ServerClient.this.name + " envoie un fichier de " + ServerUtil.toReadableUnit(size) + " nommé \"" + fileName + "\".");
 
 					byte buff[] = new byte[1024];
 					long total = 0;

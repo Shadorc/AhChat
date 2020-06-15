@@ -7,7 +7,7 @@ import java.net.ServerSocket;
 import java.net.SocketException;
 
 import com.shadorc.ahchat.client.Main;
-import com.shadorc.ahchat.utility.ServerUtility;
+import com.shadorc.ahchat.utility.ServerUtil;
 
 public class Server implements Runnable {
 
@@ -32,7 +32,7 @@ public class Server implements Runnable {
 			ss_chat = new ServerSocket(15000);
 			ss_data = new ServerSocket(15001);
 
-			ip = ServerUtility.getIp();
+			ip = ServerUtil.getIp();
 			Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(ip), null);
 
 			ServerMain.getFrame().updateInfos(ip, ss_chat.getLocalPort(), ss_data.getLocalPort());
@@ -74,7 +74,7 @@ public class Server implements Runnable {
 	public static synchronized void sendAll(String message, MessageType type) {
 
 		if(type != MessageType.COMMAND) {
-			message = ServerUtility.getTime()
+			message = ServerUtil.getFormattedTime()
 					+ (type == MessageType.INFO ? "<b><i><font color=red>[INFO]</b></i> " : "") 
 					+ message;
 			ServerMain.getFrame().dispMessage(message);
