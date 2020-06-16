@@ -21,9 +21,9 @@ public class Tray {
         showServerItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (ServerManager.isOpen()) {
-                    ServerManager.getFrame().toFront();
-                    ServerManager.getFrame().setVisible(true);
+                if (ServerManager.getInstance().isStarted()) {
+                    ServerManager.getInstance().getFrame().toFront();
+                    ServerManager.getInstance().getFrame().setVisible(true);
                 }
             }
         });
@@ -33,8 +33,8 @@ public class Tray {
         exitServerItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (ServerManager.isOpen()) {
-                    ServerManager.stop();
+                if (ServerManager.getInstance().isStarted()) {
+                    ServerManager.getInstance().stop();
                 }
             }
         });

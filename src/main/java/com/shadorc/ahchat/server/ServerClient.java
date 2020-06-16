@@ -1,8 +1,8 @@
 package com.shadorc.ahchat.server;
 
-import com.shadorc.ahchat.BaseCmd;
-import com.shadorc.ahchat.Context;
 import com.shadorc.ahchat.Util;
+import com.shadorc.ahchat.command.BaseCmd;
+import com.shadorc.ahchat.command.Context;
 import com.shadorc.ahchat.server.Server.MessageType;
 
 import java.io.*;
@@ -109,7 +109,9 @@ public class ServerClient implements Runnable {
             if (message.startsWith("/")) {
                 final Context context = new Context(this, message);
                 final BaseCmd cmd = CommandManager.getInstance().getCommand(context.getCommandName());
-                cmd.execute(context);
+                if (cmd != null) {
+                    cmd.execute(context);
+                }
             } else {
                 Server.sendAll("<b><font color=blue>&lt;" + name + "&gt;</b> " + message, MessageType.NORMAL);
             }

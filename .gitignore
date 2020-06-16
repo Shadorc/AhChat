@@ -13,6 +13,7 @@ gen/
 # IntelliJ project files
 .idea
 *.iml
+out/
 
 # Maven build files
 target/

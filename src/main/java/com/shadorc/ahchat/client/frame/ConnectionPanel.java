@@ -173,11 +173,11 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
             this.connection();
 
         } else if (bu == create) {
-            if (!ServerManager.isOpen()) {
-                ServerManager.init();
+            if (!ServerManager.getInstance().isStarted()) {
+                ServerManager.getInstance().start();
             } else {
-                ServerManager.getFrame().setVisible(true);
-                ServerManager.getFrame().toFront();
+                ServerManager.getInstance().getFrame().setVisible(true);
+                ServerManager.getInstance().getFrame().toFront();
             }
         }
     }

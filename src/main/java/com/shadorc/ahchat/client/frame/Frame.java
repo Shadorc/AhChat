@@ -23,7 +23,7 @@ public class Frame extends JFrame {
             @Override
             public void windowClosing(WindowEvent e) {
                 //Don't exit if Server is launched
-                Client.exit(!ServerManager.isOpen());
+                Client.exit(!ServerManager.getInstance().isStarted());
             }
         });
 

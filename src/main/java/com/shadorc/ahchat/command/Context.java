@@ -1,4 +1,4 @@
-package com.shadorc.ahchat;
+package com.shadorc.ahchat.command;
 
 import com.shadorc.ahchat.server.ServerClient;
 

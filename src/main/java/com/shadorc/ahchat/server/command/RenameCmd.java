@@ -1,14 +1,14 @@
 package com.shadorc.ahchat.server.command;
 
-import com.shadorc.ahchat.BaseCmd;
-import com.shadorc.ahchat.CommandException;
-import com.shadorc.ahchat.Context;
+import com.shadorc.ahchat.command.BaseCmd;
+import com.shadorc.ahchat.command.CommandException;
+import com.shadorc.ahchat.command.Context;
 
 import java.util.List;
 
 public class RenameCmd extends BaseCmd {
 
-    protected RenameCmd() {
+    public RenameCmd() {
         super(List.of("rename"));
     }
 

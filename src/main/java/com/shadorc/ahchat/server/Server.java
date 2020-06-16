@@ -55,7 +55,8 @@ public class Server implements Runnable {
         Util.close(this.dataSocket);
     }
 
-    public static synchronized void sendAll(final String message, final MessageType type) {
+    // TODO: Message should be final
+    public static synchronized void sendAll(String message, final MessageType type) {
         if (type != MessageType.COMMAND) {
             message = Util.getFormattedTime()
                     + (type == MessageType.INFO ? "<b><i><font color=red>[INFO]</b></i> " : "")

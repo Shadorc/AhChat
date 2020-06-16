@@ -1,6 +1,7 @@
 package com.shadorc.ahchat.server;
 
-import com.shadorc.ahchat.BaseCmd;
+import com.shadorc.ahchat.command.BaseCmd;
+import com.shadorc.ahchat.server.command.RenameCmd;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -18,7 +19,7 @@ public class CommandManager {
     private final Map<String, BaseCmd> commandsMap;
 
     private CommandManager() {
-        this.commandsMap = this.initialize();
+        this.commandsMap = this.initialize(new RenameCmd());
     }
 
     private Map<String, BaseCmd> initialize(final BaseCmd... cmds) {
@@ -31,7 +32,7 @@ public class CommandManager {
                 }
             }
         }
-        System.out.println(String.format("%d commands initialized", cmds.length));
+        System.out.println(String.format("%d command(s) initialized", cmds.length));
         return Collections.unmodifiableMap(map);
     }
 
