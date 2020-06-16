@@ -2,7 +2,7 @@ package com.shadorc.ahchat.client.frame;
 
 import com.shadorc.ahchat.client.Client;
 import com.shadorc.ahchat.client.Main;
-import com.shadorc.ahchat.server.ServerMain;
+import com.shadorc.ahchat.server.ServerManager;
 
 import javax.swing.ImageIcon;
 import java.awt.*;
@@ -21,9 +21,9 @@ public class Tray {
         showServerItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (ServerMain.isOpen()) {
-                    ServerMain.getFrame().toFront();
-                    ServerMain.getFrame().setVisible(true);
+                if (ServerManager.isOpen()) {
+                    ServerManager.getFrame().toFront();
+                    ServerManager.getFrame().setVisible(true);
                 }
             }
         });
@@ -33,8 +33,8 @@ public class Tray {
         exitServerItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (ServerMain.isOpen()) {
-                    ServerMain.exit();
+                if (ServerManager.isOpen()) {
+                    ServerManager.stop();
                 }
             }
         });

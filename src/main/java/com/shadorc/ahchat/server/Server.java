@@ -1,17 +1,15 @@
 package com.shadorc.ahchat.server;
 
-import com.shadorc.ahchat.client.Main;
-import com.shadorc.ahchat.utility.ServerUtil;
+import com.shadorc.ahchat.Util;
 
-import java.awt.Toolkit;
-import java.awt.datatransfer.StringSelection;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.SocketException;
 
 public class Server implements Runnable {
 
-    private ServerSocket ss_chat, ss_data;
+    private ServerSocket chatSocket;
+    private ServerSocket dataSocket;
     private String ip;
 
     public enum MessageType {
@@ -24,71 +22,48 @@ public class Server implements Runnable {
 
     @Override
     public void run() {
+        try (final ServerSocket chatSocket = new ServerSocket(15000);
+                final ServerSocket dataSocket = new ServerSocket(15001)) {
 
-        ss_chat = null; //Chat Socket Server
-        ss_data = null; //Data Socket Server
+            this.chatSocket = chatSocket;
+            this.dataSocket = dataSocket;
+            this.ip = Util.getIp();
 
-        try {
-            ss_chat = new ServerSocket(15000);
-            ss_data = new ServerSocket(15001);
+            ServerManager.getInstance().getFrame()
+                    .updateInfos(this.ip, this.chatSocket.getLocalPort(), this.dataSocket.getLocalPort());
 
-            ip = ServerUtil.getIp();
-            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(ip), null);
-
-            ServerMain.getFrame().updateInfos(ip, ss_chat.getLocalPort(), ss_data.getLocalPort());
-
-            ServerMain.getFrame().dispMessage("Welcome");
-            ServerMain.getFrame().dispMessage("-------------------------------------------");
+            ServerManager.getInstance().getFrame().dispMessage("Welcome");
+            ServerManager.getInstance().getFrame().dispMessage("-------------------------------------------");
 
             while (true) {
-                //Pending connection loop (blocking on accept())
-                new ServerClient(ss_chat.accept(), ss_data.accept());
+                // Pending connection loop (blocking on accept())
+                new ServerClient(chatSocket.accept(), dataSocket.accept());
             }
 
-        } catch (SocketException ignore) {
+        } catch (final SocketException ignore) {
             //Server's ending, ignore it
 
-        } catch (IOException e) {
-            ServerMain.getFrame().dispError(e, "Erreur lors de l'ouverture du serveur : " + e.getMessage());
-
-        } finally {
-            try {
-                if (ss_chat != null) {
-                    ss_chat.close();
-                }
-                if (ss_data != null) {
-                    ss_data.close();
-                }
-            } catch (IOException e) {
-                ServerMain.getFrame().dispError(e, "Erreur lors de la fermeture du serveur : " + e.getMessage());
-            }
+        } catch (final IOException err) {
+            ServerManager.getInstance().getFrame()
+                    .dispError(err, "Erreur lors de l'ouverture du serveur : " + err.getMessage());
         }
     }
 
     public void stop() {
-        try {
-            Server.sendAll("/serverClosed", MessageType.COMMAND);
-            if (ss_chat != null) {
-                ss_chat.close();
-            }
-            if (ss_data != null) {
-                ss_data.close();
-            }
-        } catch (IOException e) {
-            Main.showErrorDialog(e, "Erreur lors de la fermeture du serveur : " + e.getMessage());
-        }
+        Server.sendAll("/serverClosed", MessageType.COMMAND);
+        Util.close(this.chatSocket);
+        Util.close(this.dataSocket);
     }
 
-    public static synchronized void sendAll(String message, MessageType type) {
-
+    public static synchronized void sendAll(final String message, final MessageType type) {
         if (type != MessageType.COMMAND) {
-            message = ServerUtil.getFormattedTime()
+            message = Util.getFormattedTime()
                     + (type == MessageType.INFO ? "<b><i><font color=red>[INFO]</b></i> " : "")
                     + message;
-            ServerMain.getFrame().dispMessage(message);
+            ServerManager.getInstance().getFrame().dispMessage(message);
         }
 
-        for (ServerClient client : ServerMain.getClients()) {
+        for (ServerClient client : ServerManager.getInstance().getClients()) {
             client.sendMessage(message);
         }
     }

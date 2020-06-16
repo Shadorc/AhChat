@@ -1,7 +1,7 @@
 package com.shadorc.ahchat.client.frame;
 
 import com.shadorc.ahchat.client.Client;
-import com.shadorc.ahchat.server.ServerMain;
+import com.shadorc.ahchat.server.ServerManager;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -23,7 +23,7 @@ public class Frame extends JFrame {
             @Override
             public void windowClosing(WindowEvent e) {
                 //Don't exit if Server is launched
-                Client.exit(!ServerMain.isOpen());
+                Client.exit(!ServerManager.isOpen());
             }
         });
 

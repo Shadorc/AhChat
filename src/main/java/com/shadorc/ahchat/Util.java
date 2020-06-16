@@ -1,13 +1,14 @@
-package com.shadorc.ahchat.utility;
+package com.shadorc.ahchat;
 
 import java.io.BufferedReader;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public final class ServerUtil {
+public final class Util {
 
     private static final String GET_IP_URL = "http://checkip.amazonaws.com";
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss ");
@@ -31,5 +32,15 @@ public final class ServerUtil {
         final int exp = (int) (Math.log(bytes) / Math.log(unit));
         final char pre = ("kMGTPE").charAt(exp - 1);
         return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
+    }
+
+    public static void close(final Closeable closeable) {
+        try {
+            if (closeable != null) {
+                closeable.close();
+            }
+        } catch (final IOException ignored) {
+            // Ignored
+        }
     }
 }

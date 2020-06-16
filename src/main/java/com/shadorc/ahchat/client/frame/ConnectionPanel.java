@@ -4,7 +4,7 @@ import com.shadorc.ahchat.client.Client;
 import com.shadorc.ahchat.client.Main;
 import com.shadorc.ahchat.client.frame.Button.Size;
 import com.shadorc.ahchat.client.frame.Storage.Data;
-import com.shadorc.ahchat.server.ServerMain;
+import com.shadorc.ahchat.server.ServerManager;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -173,11 +173,11 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
             this.connection();
 
         } else if (bu == create) {
-            if (!ServerMain.isOpen()) {
-                ServerMain.init();
+            if (!ServerManager.isOpen()) {
+                ServerManager.init();
             } else {
-                ServerMain.getFrame().setVisible(true);
-                ServerMain.getFrame().toFront();
+                ServerManager.getFrame().setVisible(true);
+                ServerManager.getFrame().toFront();
             }
         }
     }
