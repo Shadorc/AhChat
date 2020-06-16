@@ -1,12 +1,13 @@
 package com.shadorc.ahchat.server;
 
+import com.shadorc.ahchat.ThreadPoolManager;
 import com.shadorc.ahchat.Util;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.SocketException;
 
-public class Server implements Runnable {
+public class Server {
 
     private boolean isRunning;
     private ServerSocket chatSocket;
@@ -23,36 +24,35 @@ public class Server implements Runnable {
 
     public void start() {
         this.isRunning = true;
-        new Thread(this).start();
-    }
 
-    @Override
-    public void run() {
-        try (final ServerSocket chatSocket = new ServerSocket(15000);
-                final ServerSocket dataSocket = new ServerSocket(15001)) {
+        ThreadPoolManager.getInstance().execute(() -> {
+            try (final ServerSocket chatSocket = new ServerSocket(15000);
+                    final ServerSocket dataSocket = new ServerSocket(15001)) {
 
-            this.chatSocket = chatSocket;
-            this.dataSocket = dataSocket;
-            this.ip = Util.getIp();
+                this.chatSocket = chatSocket;
+                this.dataSocket = dataSocket;
+                this.ip = Util.getIp();
 
-            ServerManager.getInstance().getFrame()
-                    .updateInfos(this.ip, this.chatSocket.getLocalPort(), this.dataSocket.getLocalPort());
+                ServerManager.getInstance().getFrame()
+                        .updateInfos(this.ip, this.chatSocket.getLocalPort(), this.dataSocket.getLocalPort());
 
-            ServerManager.getInstance().getFrame().dispMessage("Welcome");
-            ServerManager.getInstance().getFrame().dispMessage("-------------------------------------------");
+                ServerManager.getInstance().getFrame().dispMessage("Welcome");
+                ServerManager.getInstance().getFrame().dispMessage("-------------------------------------------");
 
-            while (this.isRunning) {
-                // Pending connection loop (blocking on accept())
-                new ServerClient(chatSocket.accept(), dataSocket.accept());
+                while (this.isRunning) {
+                    // Pending connection loop (blocking on accept())
+                    final ServerClient client = new ServerClient(chatSocket.accept(), dataSocket.accept());
+                    client.start();
+                }
+
+            } catch (final SocketException ignore) {
+                // Server's ending, ignore it
+
+            } catch (final IOException err) {
+                ServerManager.getInstance().getFrame()
+                        .dispError(err, "An unknown error occurred: " + err.getMessage());
             }
-
-        } catch (final SocketException ignore) {
-            // Server's ending, ignore it
-
-        } catch (final IOException err) {
-            ServerManager.getInstance().getFrame()
-                    .dispError(err, "An unknown error occurred: " + err.getMessage());
-        }
+        });
     }
 
     public void stop() {

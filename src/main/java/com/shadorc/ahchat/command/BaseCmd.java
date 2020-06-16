@@ -8,7 +8,7 @@ public abstract class BaseCmd {
     private final List<String> names;
     private final String alias;
 
-    protected BaseCmd(final List<String> names, final String alias) {
+    public BaseCmd(final List<String> names, final String alias) {
         this.names = names;
         this.alias = alias;
     }
@@ -28,9 +28,5 @@ public abstract class BaseCmd {
     public String getAlias() {
         return this.alias;
     }
-
-    public abstract void execute(final Context context);
-
-    public abstract void displayHelp(final Context context);
 
 }

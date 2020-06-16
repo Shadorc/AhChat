@@ -1,6 +1,5 @@
 package com.shadorc.ahchat.server;
 
-import com.shadorc.ahchat.client.Command;
 import com.shadorc.ahchat.client.Main;
 import com.shadorc.ahchat.client.frame.UserList;
 
@@ -123,7 +122,7 @@ public class ServerFrame extends JFrame {
     }
 
     public void addUser(final String name) {
-        this.usersList.addUser(name, new ImageIcon(Command.class.getResource("/icon.png")));
+        this.usersList.addUser(name, new ImageIcon(this.getClass().getResource("/icon.png")));
     }
 
     public void replaceUser(final String oldName, final String newName) {

@@ -12,8 +12,8 @@ public class Client {
     private static Socket chatSocket;
     private static Socket dataSocket;
 
-    private static Emission emission;
-    private static Reception reception;
+    private static Emitter emitter;
+    private static Receiver receiver;
 
     private static InputStream inData;
     private static OutputStream outData;
@@ -47,10 +47,10 @@ public class Client {
             Client.outData = Client.dataSocket.getOutputStream();
 
             //Chat's thread
-            Client.reception = new Reception(Client.inChat, Client.inData);
-            Client.reception.start();
+            Client.receiver = new Receiver(Client.inChat, Client.inData);
+            Client.receiver.start();
 
-            Client.emission = new Emission(Client.outChat, Client.outData);
+            Client.emitter = new Emitter(Client.outChat, Client.outData);
 
             Client.sendMessage(pseudo);
 
@@ -62,12 +62,12 @@ public class Client {
     }
 
     public static void sendMessage(final String message) {
-        Client.emission.sendMessage(message);
+        Client.emitter.sendMessage(message);
     }
 
     @Deprecated
     public static void sendFile(final File file) {
-        Client.emission.sendFile(file);
+        Client.emitter.sendFile(file);
     }
 
     public static void exit(final boolean exit) {

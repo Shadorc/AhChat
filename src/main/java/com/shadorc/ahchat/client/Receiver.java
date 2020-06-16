@@ -1,53 +1,60 @@
 package com.shadorc.ahchat.client;
 
+import com.shadorc.ahchat.ThreadPoolManager;
+import com.shadorc.ahchat.client.command.*;
 import com.shadorc.ahchat.client.frame.ConnectedPanel;
+import com.shadorc.ahchat.command.CommandManager;
 
 import javax.swing.JFileChooser;
 import java.io.*;
 import java.net.SocketException;
 
-public class Reception implements Runnable {
+public class Receiver {
 
     private final BufferedReader inChat;
     private final InputStream inData;
 
-    public Reception(final BufferedReader inChat, final InputStream inData) {
+    public Receiver(final BufferedReader inChat, final InputStream inData) {
         this.inChat = inChat;
         this.inData = inData;
     }
 
     public void start() {
-        new Thread(this).start();
-    }
+        ThreadPoolManager.getInstance().execute(() -> {
+            try {
+                // this.waitingForFile();
 
-    @Override
-    public void run() {
-        try {
-            // this.waitingForFile();
+                final CommandManager<ClientCmd> cmdManager = new CommandManager(new ConnectionCmd(),
+                        new DeconnectionCmd(), new RenameCmd(), new ServerClosedCmd());
 
-            String message;
-            while ((message = this.inChat.readLine()) != null) {
-                if (message.startsWith("/")) {
-                    Command.serverCommand(message);
-                } else {
-                    ConnectedPanel.dispMessage(message);
+                String message;
+                while ((message = this.inChat.readLine()) != null) {
+                    if (message.startsWith("/")) {
+                        final ClientContext context = new ClientContext(message);
+                        final ClientCmd cmd = cmdManager.getCommand(context.getCommandName());
+                        if (cmd != null) {
+                            cmd.execute(context);
+                        }
+                    } else {
+                        ConnectedPanel.dispMessage(message);
+                    }
                 }
+
+            } catch (final IOException err) {
+                ConnectedPanel.dispError(err, "Le serveur a été fermé.");
+
+            } finally {
+                Client.exit(false);
             }
-
-        } catch (final IOException err) {
-            ConnectedPanel.dispError(err, "Le serveur a été fermé.");
-
-        } finally {
-            Client.exit(false);
-        }
+        });
     }
 
     // This thread is waiting for receiving data
     @Deprecated
     private void waitingForFile() {
-        new Thread(() -> {
+        ThreadPoolManager.getInstance().execute(() -> {
             //Send file's informations
-            try (final DataInputStream dataIn = new DataInputStream(Reception.this.inData)) {
+            try (final DataInputStream dataIn = new DataInputStream(Receiver.this.inData)) {
                 final String[] infos = dataIn.readUTF().split("&");
 
                 final String fileName = infos[0];
@@ -75,7 +82,7 @@ public class Reception implements Runnable {
                         long total = 0;
                         int data;
 
-                        while (total < size && (data = Reception.this.inData.read(buff)) > 0) {
+                        while (total < size && (data = Receiver.this.inData.read(buff)) > 0) {
                             fileWriter.write(buff, 0, data);
                             fileWriter.flush();
                             total += data;
@@ -91,7 +98,7 @@ public class Reception implements Runnable {
                 ConnectedPanel.dispError(e, "Erreur lors de la réception du fichier, " + e.getMessage());
             }
 
-            Reception.this.waitingForFile();
-        }).start();
+            Receiver.this.waitingForFile();
+        });
     }
 }

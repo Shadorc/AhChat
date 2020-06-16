@@ -1,19 +1,17 @@
 package com.shadorc.ahchat.server.command;
 
-import com.shadorc.ahchat.command.BaseCmd;
 import com.shadorc.ahchat.command.CommandException;
-import com.shadorc.ahchat.command.Context;
 
 import java.util.List;
 
-public class RenameCmd extends BaseCmd {
+public class RenameCmd extends ServerCmd {
 
     public RenameCmd() {
         super(List.of("rename"));
     }
 
     @Override
-    public void execute(final Context context) {
+    public void execute(final ServerContext context) {
         final String arg = context.getArg();
         if (arg == null) {
             throw new CommandException("Pseudo invalide.");
@@ -24,7 +22,7 @@ public class RenameCmd extends BaseCmd {
     }
 
     @Override
-    public void displayHelp(final Context context) {
+    public void displayHelp(final ServerContext context) {
         context.getClient().sendMessage(String.format("Changer de pseudo: /%s <name>", this.getName()));
     }
 }

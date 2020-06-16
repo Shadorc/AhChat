@@ -1,8 +1,11 @@
 package com.shadorc.ahchat.server;
 
+import com.shadorc.ahchat.ThreadPoolManager;
 import com.shadorc.ahchat.Util;
-import com.shadorc.ahchat.command.BaseCmd;
-import com.shadorc.ahchat.command.Context;
+import com.shadorc.ahchat.command.CommandManager;
+import com.shadorc.ahchat.server.command.RenameCmd;
+import com.shadorc.ahchat.server.command.ServerCmd;
+import com.shadorc.ahchat.server.command.ServerContext;
 
 import java.io.*;
 import java.net.Socket;
@@ -10,7 +13,7 @@ import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class ServerClient implements Runnable {
+public class ServerClient {
 
     private final Socket chatSocket;
     private final Socket dataSocket;
@@ -51,9 +54,6 @@ public class ServerClient implements Runnable {
             }
 
             ServerManager.getInstance().addClient(this);
-
-            new Thread(this).start();
-
         } catch (final IOException err) {
             ServerManager.getInstance().getFrame()
                     .dispError(err, "Erreur lors de la création du client : " + err.getMessage());
@@ -61,30 +61,31 @@ public class ServerClient implements Runnable {
         }
     }
 
-    @Override
-    public void run() {
-        try {
-            this.sendMessage("<b><font color=18B00A>* * Bienvenue ! Pour afficher l'aide, entrez /help.");
-            Server.sendAll(this.name + " vient de se connecter.", Server.MessageType.INFO);
+    public void start() {
+        ThreadPoolManager.getInstance().execute(() -> {
+            try {
+                this.sendMessage("<b><font color=18B00A>* * Bienvenue ! Pour afficher l'aide, entrez /help.");
+                Server.sendAll(this.name + " vient de se connecter.", Server.MessageType.INFO);
 
-            //Sends the list of all connected people
-            for (final ServerClient client : ServerManager.getInstance().getClients()) {
-                if (client == this) {
-                    continue;
+                //Sends the list of all connected people
+                for (final ServerClient client : ServerManager.getInstance().getClients()) {
+                    if (client == this) {
+                        continue;
+                    }
+                    this.sendMessage("/connexion " + client.getName());
                 }
-                this.sendMessage("/connexion " + client.getName());
-            }
 
-            this.listenForFiles();
-            this.listenForMessages();
-        } catch (final SocketException ignored) {
-            // Client left, the exception doesn't need to be managed
-        } catch (final IOException err) {
-            ServerManager.getInstance().getFrame()
-                    .dispError(err, "Erreur lors de l'envoi de messages : " + err.getMessage());
-        } finally {
-            this.quit();
-        }
+                //this.listenForFiles();
+                this.listenForMessages();
+            } catch (final SocketException ignored) {
+                // Client left, the exception doesn't need to be managed
+            } catch (final IOException err) {
+                ServerManager.getInstance().getFrame()
+                        .dispError(err, "Erreur lors de l'envoi de messages : " + err.getMessage());
+            } finally {
+                this.quit();
+            }
+        });
     }
 
     public void sendMessage(final String message) {
@@ -103,12 +104,14 @@ public class ServerClient implements Runnable {
     }
 
     private void listenForMessages() throws IOException {
+        final CommandManager<ServerCmd> cmdManager = new CommandManager(new RenameCmd());
+
         String message = null;
         //Waiting for messages from the client (blocking on inChat.readLine())
         while ((message = this.chatIn.readLine()) != null) {
             if (message.startsWith("/")) {
-                final Context context = new Context(this, message);
-                final BaseCmd cmd = CommandManager.getInstance().getCommand(context.getCommandName());
+                final ServerContext context = new ServerContext(this, message);
+                final ServerCmd cmd = cmdManager.getCommand(context.getCommandName());
                 if (cmd != null) {
                     cmd.execute(context);
                 }
@@ -118,10 +121,11 @@ public class ServerClient implements Runnable {
         }
     }
 
+    @Deprecated
     // This Thread is waiting for file from the Client
     private void listenForFiles() {
         // The client sends a file, Server sends it to others clients
-        new Thread(() -> {
+        ThreadPoolManager.getInstance().execute(() -> {
             try (final DataInputStream dataIn = new DataInputStream(ServerClient.this.dataIn)) {
                 final String[] infos = dataIn.readUTF().split("&");
                 final String fileName = infos[0];
@@ -164,8 +168,8 @@ public class ServerClient implements Runnable {
                         .dispError(e, "Erreur lors de l'envoi du fichier, " + e.getMessage());
             }
 
-            ServerClient.this.listenForFiles();
-        }).start();
+            //ServerClient.this.listenForFiles();
+        });
     }
 
     public void setName(final String name) {
