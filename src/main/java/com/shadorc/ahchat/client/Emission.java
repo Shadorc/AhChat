@@ -19,6 +19,7 @@ public class Emission {
         this.outChat.flush();
     }
 
+    @Deprecated
     public void sendFile(final File file) {
         new Thread(() -> {
 

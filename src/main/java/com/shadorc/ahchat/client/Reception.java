@@ -23,7 +23,7 @@ public class Reception implements Runnable {
     @Override
     public void run() {
         try {
-            this.waitingForFile();
+            // this.waitingForFile();
 
             String message;
             while ((message = this.inChat.readLine()) != null) {
@@ -34,15 +34,16 @@ public class Reception implements Runnable {
                 }
             }
 
-        } catch (final IOException e) {
-            ConnectedPanel.dispError(e, "Le serveur a été fermé.");
+        } catch (final IOException err) {
+            ConnectedPanel.dispError(err, "Le serveur a été fermé.");
 
         } finally {
             Client.exit(false);
         }
     }
 
-    //This thread is waiting for receiving data
+    // This thread is waiting for receiving data
+    @Deprecated
     private void waitingForFile() {
         new Thread(() -> {
             //Send file's informations

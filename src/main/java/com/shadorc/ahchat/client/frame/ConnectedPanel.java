@@ -193,7 +193,8 @@ public class ConnectedPanel extends JPanel implements ActionListener {
         if (bu == this.messageButton) {
             this.sendMessage();
 
-        } else {
+        }
+        /*else {
             final JFileChooser chooser = new JFileChooser(new File(System.getProperty("user.home"), "Desktop"));
             chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
@@ -201,7 +202,7 @@ public class ConnectedPanel extends JPanel implements ActionListener {
             if (choice == JFileChooser.APPROVE_OPTION) {
                 Client.sendFile(chooser.getSelectedFile());
             }
-        }
+        }*/
     }
 
     @Override

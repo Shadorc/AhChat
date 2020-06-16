@@ -37,7 +37,7 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
         mainPanel.setPreferredSize(new Dimension(500, 325));
         mainPanel.setOpaque(false);
 
-        this.icon = new File((Storage.getData(Storage.Data.ICON) != null) ? Storage.getData(Storage.Data.ICON) :
+        this.icon = new File((Storage.getInstance().find(Storage.Data.ICON) != null) ? Storage.getInstance().find(Storage.Data.ICON) :
                 this.getClass().getResource("/icon.png").getFile());
 
         /*Icon Panel*/
@@ -80,7 +80,7 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
                     ConnectionPanel.this.icon = file;
                     ConnectionPanel.this.iconButton.setIcon(UserImage.create(ConnectionPanel.this.icon, 125));
 
-                    Storage.store(Storage.Data.ICON, ConnectionPanel.this.icon.getPath());
+                    Storage.getInstance().save(Storage.Data.ICON, ConnectionPanel.this.icon.getPath());
 
                 } catch (final Exception e) {
                     ConnectionPanel.this.iconButton.setIcon(UserImage.create(ConnectionPanel.this.icon, 125));
@@ -117,7 +117,7 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
         name.setFont(new Font("Segoe UI", Font.PLAIN, 28));
         loginPanel.add(name);
 
-        this.nameField = new JFormattedTextField(Storage.getData(Storage.Data.PSEUDO));
+        this.nameField = new JFormattedTextField(Storage.getInstance().find(Storage.Data.PSEUDO));
         this.nameField.addKeyListener(this);
         loginPanel.add(this.nameField);
 
@@ -127,7 +127,7 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
         ip.setFont(new Font("Segoe UI", Font.PLAIN, 28));
         loginPanel.add(ip);
 
-        this.ipField = new JFormattedTextField(Storage.getData(Storage.Data.IP));
+        this.ipField = new JFormattedTextField(Storage.getInstance().find(Storage.Data.IP));
         this.ipField.addKeyListener(this);
         loginPanel.add(this.ipField);
 
@@ -167,7 +167,7 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
             if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
                 this.icon = chooser.getSelectedFile();
                 this.iconButton.setIcon(UserImage.create(this.icon, 125));
-                Storage.store(Storage.Data.ICON, this.icon.getPath());
+                Storage.getInstance().save(Storage.Data.ICON, this.icon.getPath());
             }
 
         } else if (bu == this.connect) {

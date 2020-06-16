@@ -23,9 +23,9 @@ public class Client {
 
     public static boolean connect(final String pseudo, final File icon, final String ip) {
 
-        Storage.store(Storage.Data.PSEUDO, pseudo);
-        Storage.store(Storage.Data.IP, ip);
-        Storage.store(Storage.Data.ICON, icon.getPath());
+        Storage.getInstance().save(Storage.Data.PSEUDO, pseudo);
+        Storage.getInstance().save(Storage.Data.IP, ip);
+        Storage.getInstance().save(Storage.Data.ICON, icon.getPath());
 
         try {
             //Ping server to test if it's reachable
@@ -65,6 +65,7 @@ public class Client {
         Client.emission.sendMessage(message);
     }
 
+    @Deprecated
     public static void sendFile(final File file) {
         Client.emission.sendFile(file);
     }
