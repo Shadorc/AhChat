@@ -9,9 +9,9 @@ import java.util.List;
 
 public class Command {
 
-    public static void serverCommand(String command) {
+    public static void serverCommand(final String command) {
 
-        List<String> argsList = Arrays.asList(command.split(" "));
+        final List<String> argsList = Arrays.asList(command.split(" "));
 
         switch (argsList.get(0)) {
             case "/connexion":

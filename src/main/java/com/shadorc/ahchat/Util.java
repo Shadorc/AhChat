@@ -5,23 +5,24 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public final class Util {
 
-    private static final String GET_IP_URL = "http://checkip.amazonaws.com";
+    private static final String CHECK_IP_URL = "http://checkip.amazonaws.com";
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss ");
 
     public static String getIp() throws IOException {
-        final URL url = new URL(GET_IP_URL);
-        try (final BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()))) {
+        final URL url = new URL(Util.CHECK_IP_URL);
+        try (final BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream(), StandardCharsets.UTF_8))) {
             return in.readLine();
         }
     }
 
     public static String getFormattedTime() {
-        return DATE_TIME_FORMATTER.format(LocalDateTime.now());
+        return Util.DATE_TIME_FORMATTER.format(LocalDateTime.now());
     }
 
     public static String toReadableUnit(final long bytes) {

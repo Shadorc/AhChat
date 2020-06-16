@@ -2,7 +2,6 @@ package com.shadorc.ahchat.server;
 
 import com.shadorc.ahchat.client.Client;
 import com.shadorc.ahchat.client.Main;
-import com.shadorc.ahchat.server.Server.MessageType;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,13 +38,13 @@ public class ServerManager {
     public synchronized void addClient(final ServerClient client) {
         this.clients.add(client);
         this.serverFrame.addUser(client.getName());
-        Server.sendAll(String.format("/connexion %s", client.getName()), MessageType.COMMAND);
+        Server.sendAll(String.format("/connexion %s", client.getName()), Server.MessageType.COMMAND);
     }
 
     public synchronized void removeClient(final ServerClient client) {
         this.clients.remove(client);
         this.serverFrame.removeUser(client.getName());
-        Server.sendAll(String.format("/deconnexion %s", client.getName()), MessageType.COMMAND);
+        Server.sendAll(String.format("/deconnexion %s", client.getName()), Server.MessageType.COMMAND);
     }
 
     public List<ServerClient> getClients() {

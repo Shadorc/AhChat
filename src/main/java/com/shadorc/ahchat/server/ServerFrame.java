@@ -21,101 +21,98 @@ public class ServerFrame extends JFrame {
 
     private static final long serialVersionUID = 1L;
 
-    private String DEFAULT_TEXT = "Envoyer un message";
+    private static final String DEFAULT_TEXT = "Envoyer un message";
 
-    private JFormattedTextField inputField;
-    private HTMLEditorKit kit;
-    private HTMLDocument doc;
+    private final JFormattedTextField inputField;
+    private final HTMLEditorKit kit;
+    private final HTMLDocument doc;
 
-    private JList<String> serverInfos;
-    private UserList usersList;
+    private final JList<String> serverInfos;
+    private final UserList usersList;
 
     public ServerFrame() {
         super("AhChat - Serveur");
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        kit = new HTMLEditorKit();
-        doc = new HTMLDocument();
+        this.kit = new HTMLEditorKit();
+        this.doc = new HTMLDocument();
 
-        JPanel mainPanel = new JPanel(new BorderLayout());
+        final JPanel mainPanel = new JPanel(new BorderLayout());
 
-        JTextPane textPane = new JTextPane();
-        textPane.setEditorKit(kit);
-        textPane.setDocument(doc);
+        final JTextPane textPane = new JTextPane();
+        textPane.setEditorKit(this.kit);
+        textPane.setDocument(this.doc);
         textPane.setEditable(false);
         ((DefaultCaret) textPane.getCaret()).setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 
-        JScrollPane scroll = new JScrollPane(textPane,
+        final JScrollPane scroll = new JScrollPane(textPane,
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         mainPanel.add(scroll, BorderLayout.CENTER);
 
-        JPanel rightPanel = new JPanel(new GridLayout(2, 0));
-        rightPanel.setPreferredSize(new Dimension((int) (Main.getFrame().getWidth() / 4), 0));
+        final JPanel rightPanel = new JPanel(new GridLayout(2, 0));
+        rightPanel.setPreferredSize(new Dimension(Main.getFrame().getWidth() / 4, 0));
 
-        usersList = new UserList();
-        usersList.setBorder(BorderFactory.createLoweredBevelBorder());
-        rightPanel.add(usersList);
+        this.usersList = new UserList();
+        this.usersList.setBorder(BorderFactory.createLoweredBevelBorder());
+        rightPanel.add(this.usersList);
 
-        serverInfos = new JList<String>();
-        serverInfos.setBorder(BorderFactory.createLoweredBevelBorder());
-        serverInfos.addMouseListener(new MouseAdapter() {
+        this.serverInfos = new JList<>();
+        this.serverInfos.setBorder(BorderFactory.createLoweredBevelBorder());
+        this.serverInfos.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e) {
+            public void mouseClicked(final MouseEvent e) {
                 if (e.getButton() == MouseEvent.BUTTON3) {
-                    JPopupMenu menu = new JPopupMenu();
-                    JMenuItem item = new JMenuItem("Copy");
-                    item.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(serverInfos.getSelectedValue().split(" : ", 2)[1]), null);
-                        }
-                    });
+                    final JPopupMenu menu = new JPopupMenu();
+                    final JMenuItem item = new JMenuItem("Copy");
+                    item.addActionListener(e1 -> Toolkit.getDefaultToolkit().getSystemClipboard()
+                            .setContents(new StringSelection(
+                                    ServerFrame.this.serverInfos.getSelectedValue().split(" : ", 2)[1]), null));
                     menu.add(item);
                     menu.show(e.getComponent(), e.getX(), e.getY());
                 }
             }
         });
-        rightPanel.add(serverInfos);
+        rightPanel.add(this.serverInfos);
 
-        mainPanel.add(rightPanel, BorderLayout.EAST);
+        mainPanel.add(rightPanel, BorderLayout.LINE_END);
 
-        inputField = new JFormattedTextField(DEFAULT_TEXT);
-        inputField.setPreferredSize(new Dimension(0, 25));
+        this.inputField = new JFormattedTextField(this.DEFAULT_TEXT);
+        this.inputField.setPreferredSize(new Dimension(0, 25));
 
-        inputField.addKeyListener(new KeyListener() {
+        this.inputField.addKeyListener(new KeyListener() {
             @Override
-            public void keyPressed(KeyEvent event) {
-                String text = inputField.getText();
-                if (event.getKeyCode() == KeyEvent.VK_ENTER && text.trim().length() > 0) {
+            public void keyPressed(final KeyEvent event) {
+                final String text = ServerFrame.this.inputField.getText();
+                if (event.getKeyCode() == KeyEvent.VK_ENTER && !text.trim().isEmpty()) {
                     Server.sendAll("<b><font color='black'>[SERVER] : </b>" + text, Server.MessageType.NORMAL);
-                    inputField.setText(null);
+                    ServerFrame.this.inputField.setText(null);
                 }
             }
 
             @Override
-            public void keyReleased(KeyEvent e) {}
+            public void keyReleased(final KeyEvent e) {}
 
             @Override
-            public void keyTyped(KeyEvent e) {}
+            public void keyTyped(final KeyEvent e) {}
         });
 
-        inputField.addFocusListener(new FocusListener() {
+        this.inputField.addFocusListener(new FocusListener() {
             @Override
-            public void focusGained(FocusEvent event) {
-                if (inputField.getText().equals(DEFAULT_TEXT)) {
-                    inputField.setText(null);
+            public void focusGained(final FocusEvent event) {
+                if (ServerFrame.this.inputField.getText().equals(ServerFrame.this.DEFAULT_TEXT)) {
+                    ServerFrame.this.inputField.setText(null);
                 }
             }
 
             @Override
-            public void focusLost(FocusEvent event) {
-                if (inputField.getText().isEmpty()) {
-                    inputField.setText(DEFAULT_TEXT);
+            public void focusLost(final FocusEvent event) {
+                if (ServerFrame.this.inputField.getText().isEmpty()) {
+                    ServerFrame.this.inputField.setText(ServerFrame.this.DEFAULT_TEXT);
                 }
             }
         });
-        mainPanel.add(inputField, BorderLayout.PAGE_END);
+        mainPanel.add(this.inputField, BorderLayout.PAGE_END);
 
         this.setContentPane(mainPanel);
         this.pack();
@@ -125,36 +122,36 @@ public class ServerFrame extends JFrame {
         this.setVisible(true);
     }
 
-    public void addUser(String name) {
-        usersList.addUser(name, new ImageIcon(Command.class.getResource("/icon.png")));
+    public void addUser(final String name) {
+        this.usersList.addUser(name, new ImageIcon(Command.class.getResource("/icon.png")));
     }
 
-    public void replaceUser(String oldName, String newName) {
-        usersList.replaceUser(oldName, newName);
+    public void replaceUser(final String oldName, final String newName) {
+        this.usersList.replaceUser(oldName, newName);
     }
 
-    public void removeUser(String name) {
-        usersList.removeUser(name);
+    public void removeUser(final String name) {
+        this.usersList.removeUser(name);
     }
 
-    public void dispMessage(String message) {
+    public void dispMessage(final String message) {
         this.disp("<font size=4>" + message + "</font>");
     }
 
-    public void dispError(Exception e, String error) {
+    public void dispError(final Exception e, final String error) {
         this.disp("<b><i><font color=red size=4> /!\\ " + error + " /!\\\n</b></i></font>");
         e.printStackTrace();
     }
 
-    private void disp(String message) {
+    private void disp(final String message) {
         try {
-            kit.insertHTML(doc, doc.getLength(), message, 0, 0, null);
-        } catch (BadLocationException | IOException e) {
+            this.kit.insertHTML(this.doc, this.doc.getLength(), message, 0, 0, null);
+        } catch (final BadLocationException | IOException e) {
             Main.showErrorDialog(e, "Erreur lors de l'affichage du message : " + e.getMessage());
         }
     }
 
-    public void updateInfos(String ip, int chatPort, int dataPort) {
-        serverInfos.setListData(new String[]{"IP : " + ip, "Chat port : " + chatPort, "Data port : " + dataPort});
+    public void updateInfos(final String ip, final int chatPort, final int dataPort) {
+        this.serverInfos.setListData(new String[]{"IP : " + ip, "Chat port : " + chatPort, "Data port : " + dataPort});
     }
 }

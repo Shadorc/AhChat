@@ -3,11 +3,11 @@ package com.shadorc.ahchat.server;
 import com.shadorc.ahchat.Util;
 import com.shadorc.ahchat.command.BaseCmd;
 import com.shadorc.ahchat.command.Context;
-import com.shadorc.ahchat.server.Server.MessageType;
 
 import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class ServerClient implements Runnable {
@@ -31,8 +31,8 @@ public class ServerClient implements Runnable {
         this.ip = chatSocket.getRemoteSocketAddress().toString();
 
         try {
-            this.chatOut = new PrintWriter(chatSocket.getOutputStream());
-            this.chatIn = new BufferedReader(new InputStreamReader(chatSocket.getInputStream()));
+            this.chatOut = new PrintWriter(chatSocket.getOutputStream(), false, StandardCharsets.UTF_8);
+            this.chatIn = new BufferedReader(new InputStreamReader(chatSocket.getInputStream(), StandardCharsets.UTF_8));
 
             this.dataOut = dataSocket.getOutputStream();
             this.dataIn = dataSocket.getInputStream();
@@ -40,12 +40,12 @@ public class ServerClient implements Runnable {
             this.infoDataOut = new DataOutputStream(this.dataOut);
 
             // Waits for name to arrive
-            this.name = chatIn.readLine();
+            this.name = this.chatIn.readLine();
 
             // TODO: Improve this
             // Rename the client if someone has already this name
             for (final ServerClient client : ServerManager.getInstance().getClients()) {
-                if (client.getName().equalsIgnoreCase(name)) {
+                if (client.getName().equalsIgnoreCase(this.name)) {
                     this.name = this.name + "_(" + ThreadLocalRandom.current().nextInt(10) + ")";
                 }
             }
@@ -65,7 +65,7 @@ public class ServerClient implements Runnable {
     public void run() {
         try {
             this.sendMessage("<b><font color=18B00A>* * Bienvenue ! Pour afficher l'aide, entrez /help.");
-            Server.sendAll(name + " vient de se connecter.", MessageType.INFO);
+            Server.sendAll(this.name + " vient de se connecter.", Server.MessageType.INFO);
 
             //Sends the list of all connected people
             for (final ServerClient client : ServerManager.getInstance().getClients()) {
@@ -92,7 +92,7 @@ public class ServerClient implements Runnable {
         this.chatOut.flush();
     }
 
-    public void sendData(byte[] b, int off, int len) throws IOException {
+    public void sendData(final byte[] b, final int off, final int len) throws IOException {
         this.dataOut.write(b, off, len);
         this.dataOut.flush();
     }
@@ -113,7 +113,7 @@ public class ServerClient implements Runnable {
                     cmd.execute(context);
                 }
             } else {
-                Server.sendAll("<b><font color=blue>&lt;" + name + "&gt;</b> " + message, MessageType.NORMAL);
+                Server.sendAll("<b><font color=blue>&lt;" + this.name + "&gt;</b> " + message, Server.MessageType.NORMAL);
             }
         }
     }
@@ -121,60 +121,56 @@ public class ServerClient implements Runnable {
     // This Thread is waiting for file from the Client
     private void listenForFiles() {
         // The client sends a file, Server sends it to others clients
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    final DataInputStream dataIn = new DataInputStream(ServerClient.this.dataIn);
-                    final String infos[] = dataIn.readUTF().split("&");
-                    final String fileName = infos[0];
-                    final long size = Long.parseLong(infos[1]);
+        new Thread(() -> {
+            try (final DataInputStream dataIn = new DataInputStream(ServerClient.this.dataIn)) {
+                final String[] infos = dataIn.readUTF().split("&");
+                final String fileName = infos[0];
+                final long size = Long.parseLong(infos[1]);
 
-                    ServerManager.getInstance().getFrame()
-                            .dispMessage(ServerClient.this.name + " envoie un fichier de " + Util.toReadableUnit(size) + " nommé " +
-                                    "\"" + fileName + "\".");
+                ServerManager.getInstance().getFrame()
+                        .dispMessage(ServerClient.this.name + " envoie un fichier de " + Util.toReadableUnit(size) + " nommé " +
+                                "\"" + fileName + "\".");
 
-                    byte buff[] = new byte[1024];
-                    long total = 0;
-                    int data;
+                final byte[] buff = new byte[1024];
+                long total = 0;
+                int data;
 
-                    for (ServerClient client : ServerManager.getInstance().getClients()) {
+                for (final ServerClient client : ServerManager.getInstance().getClients()) {
+                    if (client == ServerClient.this) {
+                        continue;
+                    }
+                    client.sendFileInfo(fileName, size);
+                }
+
+                while (total < size && (data = ServerClient.this.dataIn.read(buff)) > 0) {
+                    for (final ServerClient client : ServerManager.getInstance().getClients()) {
                         if (client == ServerClient.this) {
                             continue;
                         }
-                        client.sendFileInfo(fileName, size);
+                        client.sendData(buff, 0, data);
                     }
-
-                    while (total < size && (data = ServerClient.this.dataIn.read(buff)) > 0) {
-                        for (ServerClient client : ServerManager.getInstance().getClients()) {
-                            if (client == ServerClient.this) {
-                                continue;
-                            }
-                            client.sendData(buff, 0, data);
-                        }
-                        total += data;
-                    }
-
-                    ServerManager.getInstance().getFrame()
-                            .dispMessage("\"" + fileName + "\" a été transmis à tous les clients.");
-
-                } catch (EOFException | SocketException ignore) {
-                    //Server's ending, ignore it
-
-                } catch (IOException e) {
-                    ServerClient.this.sendMessage("Erreur lors de l'envoi du fichier, " + e.getMessage());
-                    ServerManager.getInstance().getFrame()
-                            .dispError(e, "Erreur lors de l'envoi du fichier, " + e.getMessage());
+                    total += data;
                 }
 
-                ServerClient.this.listenForFiles();
+                ServerManager.getInstance().getFrame()
+                        .dispMessage("\"" + fileName + "\" a été transmis à tous les clients.");
+
+            } catch (final EOFException | SocketException ignore) {
+                //Server's ending, ignore it
+
+            } catch (final IOException e) {
+                ServerClient.this.sendMessage("Erreur lors de l'envoi du fichier, " + e.getMessage());
+                ServerManager.getInstance().getFrame()
+                        .dispError(e, "Erreur lors de l'envoi du fichier, " + e.getMessage());
             }
+
+            ServerClient.this.listenForFiles();
         }).start();
     }
 
-    public void setName(String name) {
-        Server.sendAll("/rename " + this.name + " " + name, MessageType.COMMAND);
-        Server.sendAll(this.name + " s'est renommé en " + name + ".", MessageType.INFO);
+    public void setName(final String name) {
+        Server.sendAll("/rename " + this.name + " " + name, Server.MessageType.COMMAND);
+        Server.sendAll(this.name + " s'est renommé en " + name + ".", Server.MessageType.INFO);
         ServerManager.getInstance().getFrame().replaceUser(this.name, name);
         this.name = name;
     }
@@ -188,7 +184,7 @@ public class ServerClient implements Runnable {
     }
 
     private void quit() {
-        Server.sendAll(name + " s'est déconnecté.", MessageType.INFO);
+        Server.sendAll(this.name + " s'est déconnecté.", Server.MessageType.INFO);
         ServerManager.getInstance().removeClient(this);
         Util.close(this.chatSocket);
         Util.close(this.dataSocket);

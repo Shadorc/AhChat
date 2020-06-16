@@ -8,6 +8,7 @@ import java.net.SocketException;
 
 public class Server implements Runnable {
 
+    private boolean isRunning;
     private ServerSocket chatSocket;
     private ServerSocket dataSocket;
     private String ip;
@@ -16,7 +17,12 @@ public class Server implements Runnable {
         NORMAL, COMMAND, INFO;
     }
 
+    public Server() {
+        this.isRunning = false;
+    }
+
     public void start() {
+        this.isRunning = true;
         new Thread(this).start();
     }
 
@@ -35,37 +41,39 @@ public class Server implements Runnable {
             ServerManager.getInstance().getFrame().dispMessage("Welcome");
             ServerManager.getInstance().getFrame().dispMessage("-------------------------------------------");
 
-            while (true) {
+            while (this.isRunning) {
                 // Pending connection loop (blocking on accept())
                 new ServerClient(chatSocket.accept(), dataSocket.accept());
             }
 
         } catch (final SocketException ignore) {
-            //Server's ending, ignore it
+            // Server's ending, ignore it
 
         } catch (final IOException err) {
             ServerManager.getInstance().getFrame()
-                    .dispError(err, "Erreur lors de l'ouverture du serveur : " + err.getMessage());
+                    .dispError(err, "An unknown error occurred: " + err.getMessage());
         }
     }
 
     public void stop() {
+        this.isRunning = false;
         Server.sendAll("/serverClosed", MessageType.COMMAND);
         Util.close(this.chatSocket);
         Util.close(this.dataSocket);
     }
 
     // TODO: Message should be final
-    public static synchronized void sendAll(String message, final MessageType type) {
+    public static synchronized void sendAll(final String message, final MessageType type) {
+        String formattedMessage = message;
         if (type != MessageType.COMMAND) {
-            message = Util.getFormattedTime()
+            formattedMessage = Util.getFormattedTime()
                     + (type == MessageType.INFO ? "<b><i><font color=red>[INFO]</b></i> " : "")
-                    + message;
-            ServerManager.getInstance().getFrame().dispMessage(message);
+                    + formattedMessage;
+            ServerManager.getInstance().getFrame().dispMessage(formattedMessage);
         }
 
-        for (ServerClient client : ServerManager.getInstance().getClients()) {
-            client.sendMessage(message);
+        for (final ServerClient client : ServerManager.getInstance().getClients()) {
+            client.sendMessage(formattedMessage);
         }
     }
 

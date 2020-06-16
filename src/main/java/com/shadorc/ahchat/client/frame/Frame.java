@@ -21,7 +21,7 @@ public class Frame extends JFrame {
 
         this.addWindowListener(new WindowAdapter() {
             @Override
-            public void windowClosing(WindowEvent e) {
+            public void windowClosing(final WindowEvent e) {
                 //Don't exit if Server is launched
                 Client.exit(!ServerManager.getInstance().isStarted());
             }
@@ -30,14 +30,15 @@ public class Frame extends JFrame {
         this.setContentPane(new ConnectionPanel());
         this.pack();
 
-        this.setIconImage(new ImageIcon(this.getClass().getResource("/icon.png")).getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH));
+        this.setIconImage(new ImageIcon(this.getClass().getResource("/icon.png"))
+                .getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH));
         this.setMinimumSize(new Dimension(800, 600));
         this.setPreferredSize(new Dimension(800, 600));
         this.setLocationRelativeTo(null);
         this.setVisible(true);
     }
 
-    public void setPanel(JPanel panel) {
+    public void setPanel(final JPanel panel) {
         this.setContentPane(panel);
         this.getContentPane().revalidate();
         this.getContentPane().repaint();

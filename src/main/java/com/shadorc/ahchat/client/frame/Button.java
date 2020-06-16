@@ -13,14 +13,14 @@ public class Button extends JButton {
 
     private static final long serialVersionUID = 1L;
 
-    private String name;
-    private Size size;
+    private final String name;
+    private final Size size;
 
     public enum Size {
         SMALL, NORMAL;
     }
 
-    public Button(String name, String info, Size size, ActionListener al) {
+    public Button(final String name, final String info, final Size size, final ActionListener al) {
         super();
 
         this.name = name;
@@ -33,14 +33,14 @@ public class Button extends JButton {
         this.setIcon(icon1);
         this.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseEntered(MouseEvent e) {
-                JButton bu = (JButton) e.getSource();
+            public void mouseEntered(final MouseEvent e) {
+                final JButton bu = (JButton) e.getSource();
                 bu.setIcon(icon3);
             }
 
             @Override
-            public void mouseExited(MouseEvent e) {
-                JButton bu = (JButton) e.getSource();
+            public void mouseExited(final MouseEvent e) {
+                final JButton bu = (JButton) e.getSource();
                 bu.setIcon(icon1);
             }
         });
@@ -53,9 +53,9 @@ public class Button extends JButton {
         this.setContentAreaFilled(false);
     }
 
-    private ImageIcon getIcon(String number) {
-        ImageIcon icon = new ImageIcon(this.getClass().getResource("/Button_" + name + "_" + number + ".png"));
-        int dimension = (size == Size.NORMAL) ? 50 : 30;
+    private ImageIcon getIcon(final String number) {
+        final ImageIcon icon = new ImageIcon(this.getClass().getResource("/Button_" + this.name + "_" + number + ".png"));
+        final int dimension = (this.size == Size.NORMAL) ? 50 : 30;
         return new ImageIcon(icon.getImage().getScaledInstance(dimension, dimension, Image.SCALE_SMOOTH));
     }
 }

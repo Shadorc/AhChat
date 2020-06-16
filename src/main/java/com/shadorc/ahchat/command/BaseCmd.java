@@ -1,5 +1,6 @@
 package com.shadorc.ahchat.command;
 
+import java.util.Collections;
 import java.util.List;
 
 public abstract class BaseCmd {
@@ -7,12 +8,12 @@ public abstract class BaseCmd {
     private final List<String> names;
     private final String alias;
 
-    protected BaseCmd(List<String> names, String alias) {
+    protected BaseCmd(final List<String> names, final String alias) {
         this.names = names;
         this.alias = alias;
     }
 
-    protected BaseCmd(List<String> names) {
+    protected BaseCmd(final List<String> names) {
         this(names, null);
     }
 
@@ -21,7 +22,7 @@ public abstract class BaseCmd {
     }
 
     public List<String> getNames() {
-        return this.names;
+        return Collections.unmodifiableList(this.names);
     }
 
     public String getAlias() {

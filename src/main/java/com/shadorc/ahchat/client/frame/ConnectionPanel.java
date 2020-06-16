@@ -2,8 +2,6 @@ package com.shadorc.ahchat.client.frame;
 
 import com.shadorc.ahchat.client.Client;
 import com.shadorc.ahchat.client.Main;
-import com.shadorc.ahchat.client.frame.Button.Size;
-import com.shadorc.ahchat.client.frame.Storage.Data;
 import com.shadorc.ahchat.server.ServerManager;
 
 import javax.imageio.ImageIO;
@@ -21,9 +19,12 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
 
     private static final long serialVersionUID = 1L;
 
-    private JFormattedTextField nameField, ipField;
-    private JButton connect, create, iconButton;
-    private Image background;
+    private final JFormattedTextField nameField;
+    private final JFormattedTextField ipField;
+    private final JButton connect;
+    private final JButton create;
+    private final JButton iconButton;
+    private final Image background;
     private File icon;
 
     public ConnectionPanel() {
@@ -32,122 +33,122 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
 
         this.background = new ImageIcon(this.getClass().getResource("/background.png")).getImage();
 
-        JPanel mainPanel = new JPanel(new BorderLayout());
+        final JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setPreferredSize(new Dimension(500, 325));
         mainPanel.setOpaque(false);
 
-        icon = new File((Storage.getData(Data.ICON) != null) ? Storage.getData(Data.ICON) :
+        this.icon = new File((Storage.getData(Storage.Data.ICON) != null) ? Storage.getData(Storage.Data.ICON) :
                 this.getClass().getResource("/icon.png").getFile());
 
         /*Icon Panel*/
-        iconButton = new JButton(UserImage.create(icon, 125));
-        iconButton.setBorder(BorderFactory.createEmptyBorder());
-        iconButton.setHorizontalTextPosition(JButton.CENTER);
-        iconButton.setContentAreaFilled(false);
-        iconButton.setForeground(Color.RED);
-        iconButton.setFocusable(false);
-        iconButton.addActionListener(this);
-        iconButton.addMouseListener(new MouseAdapter() {
+        this.iconButton = new JButton(UserImage.create(this.icon, 125));
+        this.iconButton.setBorder(BorderFactory.createEmptyBorder());
+        this.iconButton.setHorizontalTextPosition(JButton.CENTER);
+        this.iconButton.setContentAreaFilled(false);
+        this.iconButton.setForeground(Color.RED);
+        this.iconButton.setFocusable(false);
+        this.iconButton.addActionListener(this);
+        this.iconButton.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseExited(MouseEvent e) {
-                iconButton.setText("");
+            public void mouseExited(final MouseEvent e) {
+                ConnectionPanel.this.iconButton.setText("");
             }
 
             @Override
-            public void mouseEntered(MouseEvent e) {
-                iconButton.setText("Changer");
+            public void mouseEntered(final MouseEvent e) {
+                ConnectionPanel.this.iconButton.setText("Changer");
             }
         });
 
-        new DropTarget(iconButton, new DropTargetListener() {
+        new DropTarget(this.iconButton, new DropTargetListener() {
             @Override
-            public void drop(DropTargetDropEvent event) {
+            public void drop(final DropTargetDropEvent event) {
                 try {
                     event.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
 
-                    List<?> files = (List<?>) event.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
-                    File file = (File) (files.get(0));
+                    final List<?> files = (List<?>) event.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
+                    final File file = (File) (files.get(0));
 
                     //Get the type of the file (e.g : image/jpeg")
-                    String type = Files.probeContentType(file.toPath()).split("/")[0];
+                    final String type = Files.probeContentType(file.toPath()).split("/")[0];
 
-                    if (!type.equals("image")) {
-                        iconButton.setIcon(UserImage.create(icon, 125));
+                    if (!"image".equals(type)) {
+                        ConnectionPanel.this.iconButton.setIcon(UserImage.create(ConnectionPanel.this.icon, 125));
                         return;
                     }
 
-                    icon = file;
-                    iconButton.setIcon(UserImage.create(icon, 125));
+                    ConnectionPanel.this.icon = file;
+                    ConnectionPanel.this.iconButton.setIcon(UserImage.create(ConnectionPanel.this.icon, 125));
 
-                    Storage.store(Data.ICON, icon.getPath());
+                    Storage.store(Storage.Data.ICON, ConnectionPanel.this.icon.getPath());
 
-                } catch (Exception e) {
-                    iconButton.setIcon(UserImage.create(icon, 125));
+                } catch (final Exception e) {
+                    ConnectionPanel.this.iconButton.setIcon(UserImage.create(ConnectionPanel.this.icon, 125));
                     e.printStackTrace();
                 }
             }
 
             @Override
-            public void dragEnter(DropTargetDragEvent e) {
-                iconButton.setIcon(UserImage.create(new File(this.getClass().getResource("/drop_icon.png").getFile()), 125));
+            public void dragEnter(final DropTargetDragEvent e) {
+                ConnectionPanel.this.iconButton.setIcon(UserImage.create(new File(this.getClass().getResource("/drop_icon.png").getFile()), 125));
             }
 
             @Override
-            public void dragExit(DropTargetEvent e) {
-                iconButton.setIcon(UserImage.create(icon, 125));
+            public void dragExit(final DropTargetEvent e) {
+                ConnectionPanel.this.iconButton.setIcon(UserImage.create(ConnectionPanel.this.icon, 125));
             }
 
             @Override
-            public void dragOver(DropTargetDragEvent e) { }
+            public void dragOver(final DropTargetDragEvent e) { }
 
             @Override
-            public void dropActionChanged(DropTargetDragEvent e) { }
+            public void dropActionChanged(final DropTargetDragEvent e) { }
         });
 
-        mainPanel.add(iconButton, BorderLayout.PAGE_START);
+        mainPanel.add(this.iconButton, BorderLayout.PAGE_START);
 
-        JPanel loginPanel = new JPanel(new GridLayout(2, 2, 20, 25));
+        final JPanel loginPanel = new JPanel(new GridLayout(2, 2, 20, 25));
         loginPanel.setBorder(BorderFactory.createEmptyBorder(18, 0, 18, 0));
         loginPanel.setOpaque(false);
 
         /*Pseudo Panel*/
-        JLabel name = new JLabel("Pseudo :", JLabel.RIGHT);
+        final JLabel name = new JLabel("Pseudo :", JLabel.RIGHT);
         name.setForeground(Color.BLACK);
         name.setFont(new Font("Segoe UI", Font.PLAIN, 28));
         loginPanel.add(name);
 
-        nameField = new JFormattedTextField(Storage.getData(Data.PSEUDO));
-        nameField.addKeyListener(this);
-        loginPanel.add(nameField);
+        this.nameField = new JFormattedTextField(Storage.getData(Storage.Data.PSEUDO));
+        this.nameField.addKeyListener(this);
+        loginPanel.add(this.nameField);
 
         /*IP Panel*/
-        JLabel ip = new JLabel("IP du Serveur :", JLabel.RIGHT);
+        final JLabel ip = new JLabel("IP du Serveur :", JLabel.RIGHT);
         ip.setForeground(Color.BLACK);
         ip.setFont(new Font("Segoe UI", Font.PLAIN, 28));
         loginPanel.add(ip);
 
-        ipField = new JFormattedTextField(Storage.getData(Data.IP));
-        ipField.addKeyListener(this);
-        loginPanel.add(ipField);
+        this.ipField = new JFormattedTextField(Storage.getData(Storage.Data.IP));
+        this.ipField.addKeyListener(this);
+        loginPanel.add(this.ipField);
 
         mainPanel.add(loginPanel, BorderLayout.CENTER);
 
-        JPanel buttons = new JPanel(new GridLayout(0, 2, 20, 0));
+        final JPanel buttons = new JPanel(new GridLayout(0, 2, 20, 0));
         buttons.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
         buttons.setOpaque(false);
 
         /*Create Chat Room Button Panel*/
-        JPanel createPanel = new JPanel(new BorderLayout());
+        final JPanel createPanel = new JPanel(new BorderLayout());
         createPanel.setOpaque(false);
-        create = new Button("create", "Créer un salon", Size.NORMAL, this);
-        createPanel.add(create, BorderLayout.EAST);
+        this.create = new Button("create", "Créer un salon", Button.Size.NORMAL, this);
+        createPanel.add(this.create, BorderLayout.LINE_END);
         buttons.add(createPanel);
 
         /*Connection Button Panel*/
-        JPanel connectPanel = new JPanel(new BorderLayout());
+        final JPanel connectPanel = new JPanel(new BorderLayout());
         connectPanel.setOpaque(false);
-        connect = new Button("validate", "Connexion", Size.NORMAL, this);
-        connectPanel.add(connect, BorderLayout.WEST);
+        this.connect = new Button("validate", "Connexion", Button.Size.NORMAL, this);
+        connectPanel.add(this.connect, BorderLayout.LINE_START);
         buttons.add(connectPanel);
 
         mainPanel.add(buttons, BorderLayout.PAGE_END);
@@ -156,23 +157,23 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
     }
 
     @Override
-    public void actionPerformed(ActionEvent event) {
-        JButton bu = (JButton) event.getSource();
-        if (bu == iconButton) {
-            JFileChooser chooser = new JFileChooser(new File(System.getProperty("user.home"), "Desktop"));
+    public void actionPerformed(final ActionEvent event) {
+        final JButton bu = (JButton) event.getSource();
+        if (bu == this.iconButton) {
+            final JFileChooser chooser = new JFileChooser(new File(System.getProperty("user.home"), "Desktop"));
             chooser.setFileFilter(new FileNameExtensionFilter("Image files", ImageIO.getReaderFileSuffixes()));
             chooser.setAcceptAllFileFilterUsed(false);
 
             if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-                icon = chooser.getSelectedFile();
-                iconButton.setIcon(UserImage.create(icon, 125));
-                Storage.store(Data.ICON, icon.getPath());
+                this.icon = chooser.getSelectedFile();
+                this.iconButton.setIcon(UserImage.create(this.icon, 125));
+                Storage.store(Storage.Data.ICON, this.icon.getPath());
             }
 
-        } else if (bu == connect) {
+        } else if (bu == this.connect) {
             this.connection();
 
-        } else if (bu == create) {
+        } else if (bu == this.create) {
             if (!ServerManager.getInstance().isStarted()) {
                 ServerManager.getInstance().start();
             } else {
@@ -184,8 +185,8 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
 
     private void connection() {
 
-        String pseudo = nameField.getText().trim();
-        String ip = ipField.getText().trim();
+        final String pseudo = this.nameField.getText().trim();
+        final String ip = this.ipField.getText().trim();
 
         //Test if name contains others caracter than letters or number
         if (pseudo.isEmpty() || ip.isEmpty() || !pseudo.replaceAll("[^0-9a-zA-Z]", "").equals(pseudo)) {
@@ -193,42 +194,40 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
                     "peuvent contenir que des lettres et des chiffres)");
 
         } else {
-            connect.setText("Connexion...");
-            connect.setEnabled(false);
+            this.connect.setText("Connexion...");
+            this.connect.setEnabled(false);
 
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    ConnectedPanel pane = new ConnectedPanel(); //Sinon users est null et il y a une erreur lors du launch
-                    if (Client.connect(pseudo, icon, ip)) {
-                        Main.getFrame().setPanel(pane);
-                        Main.getFrame().setTitle(Main.getFrame().getTitle() + " - " + pseudo);
-                    } else {
-                        Main.showErrorDialog(new Exception("Serveur indisponible"), "Serveur indisponible ou inexistant.");
-                        connect.setText("Connexion");
-                        connect.setEnabled(true);
-                    }
+            new Thread(() -> {
+                final ConnectedPanel pane = new ConnectedPanel(); //Sinon users est null et il y a une erreur lors du launch
+                if (Client.connect(pseudo, ConnectionPanel.this.icon, ip)) {
+                    Main.getFrame().setPanel(pane);
+                    Main.getFrame().setTitle(Main.getFrame().getTitle() + " - " + pseudo);
+                } else {
+                    Main.showErrorDialog(new Exception("Serveur indisponible"), "Serveur indisponible ou inexistant.");
+                    ConnectionPanel.this.connect.setText("Connexion");
+                    ConnectionPanel.this.connect.setEnabled(true);
                 }
             }).start();
         }
     }
 
     @Override
-    protected void paintComponent(Graphics g) {
+    protected void paintComponent(final Graphics g) {
         super.paintComponent(g);
-        g.drawImage(background, 0, 0, this.getWidth(), this.getHeight(), 0, 0, background.getWidth(null), background.getHeight(null), this);
+        g.drawImage(this.background, 0, 0, this.getWidth(), this.getHeight(), 0, 0, this.background.getWidth(null),
+                this.background.getHeight(null), this);
     }
 
     @Override
-    public void keyPressed(KeyEvent event) {
+    public void keyPressed(final KeyEvent event) {
         if (event.getKeyCode() == KeyEvent.VK_ENTER) {
             this.connection();
         }
     }
 
     @Override
-    public void keyReleased(KeyEvent arg0) { }
+    public void keyReleased(final KeyEvent arg0) { }
 
     @Override
-    public void keyTyped(KeyEvent arg0) { }
+    public void keyTyped(final KeyEvent arg0) { }
 }

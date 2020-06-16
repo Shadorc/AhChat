@@ -1,14 +1,16 @@
 package com.shadorc.ahchat.client;
 
+import com.shadorc.ahchat.Util;
 import com.shadorc.ahchat.client.frame.Storage;
-import com.shadorc.ahchat.client.frame.Storage.Data;
 
 import java.io.*;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 
 public class Client {
 
-    private static Socket s_chat, s_data;
+    private static Socket chatSocket;
+    private static Socket dataSocket;
 
     private static Emission emission;
     private static Reception reception;
@@ -19,77 +21,61 @@ public class Client {
     private static BufferedReader inChat;
     private static PrintWriter outChat;
 
-    public static boolean connect(String pseudo, File icon, String ip) {
+    public static boolean connect(final String pseudo, final File icon, final String ip) {
 
-        Storage.store(Data.PSEUDO, pseudo);
-        Storage.store(Data.IP, ip);
-        Storage.store(Data.ICON, icon.getPath());
+        Storage.store(Storage.Data.PSEUDO, pseudo);
+        Storage.store(Storage.Data.IP, ip);
+        Storage.store(Storage.Data.ICON, icon.getPath());
 
         try {
             //Ping server to test if it's reachable
-            Process ping = Runtime.getRuntime().exec("ping -n 1 " + ip);
+            final Process ping = Runtime.getRuntime().exec("ping -n 1 " + ip);
             ping.waitFor();
 
             //Connexion successful
             if (ping.exitValue() == 0) {
-                s_chat = new Socket(ip, 15000);
-                s_data = new Socket(ip, 15001);
+                Client.chatSocket = new Socket(ip, 15000);
+                Client.dataSocket = new Socket(ip, 15001);
             } else {
                 return false;
             }
 
-            inChat = new BufferedReader(new InputStreamReader(s_chat.getInputStream()));
-            outChat = new PrintWriter(s_chat.getOutputStream());
+            Client.inChat = new BufferedReader(new InputStreamReader(Client.chatSocket.getInputStream(), StandardCharsets.UTF_8));
+            Client.outChat = new PrintWriter(Client.chatSocket.getOutputStream(), false, StandardCharsets.UTF_8);
 
-            inData = s_data.getInputStream();
-            outData = s_data.getOutputStream();
+            Client.inData = Client.dataSocket.getInputStream();
+            Client.outData = Client.dataSocket.getOutputStream();
 
             //Chat's thread
-            reception = new Reception(inChat, inData);
-            reception.start();
+            Client.reception = new Reception(Client.inChat, Client.inData);
+            Client.reception.start();
 
-            emission = new Emission(outChat, outData);
+            Client.emission = new Emission(Client.outChat, Client.outData);
 
-            sendMessage(pseudo);
+            Client.sendMessage(pseudo);
 
             return true;
 
-        } catch (IOException | InterruptedException e) {
+        } catch (final IOException | InterruptedException e) {
             return false;
         }
     }
 
-    public static void sendMessage(String message) {
-        emission.sendMessage(message);
+    public static void sendMessage(final String message) {
+        Client.emission.sendMessage(message);
     }
 
-    public static void sendFile(File file) {
-        emission.sendFile(file);
+    public static void sendFile(final File file) {
+        Client.emission.sendFile(file);
     }
 
-    public static void exit(boolean exit) {
-        try {
-            if (s_chat != null) {
-                s_chat.close();
-            }
-            if (s_data != null) {
-                s_data.close();
-            }
-            if (inChat != null) {
-                inChat.close();
-            }
-            if (inData != null) {
-                inData.close();
-            }
-            if (outChat != null) {
-                outChat.close();
-            }
-            if (outData != null) {
-                outData.close();
-            }
-        } catch (IOException e) {
-            Main.showErrorDialog(e, "Erreur lors de la fermeture du client : " + e.getMessage());
-        }
+    public static void exit(final boolean exit) {
+        Util.close(Client.chatSocket);
+        Util.close(Client.dataSocket);
+        Util.close(Client.inChat);
+        Util.close(Client.outChat);
+        Util.close(Client.inData);
+        Util.close(Client.outData);
 
         if (exit) {
             System.exit(0);

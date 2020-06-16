@@ -24,7 +24,7 @@ public class RenameCmd extends BaseCmd {
     }
 
     @Override
-    public void displayHelp(Context context) {
+    public void displayHelp(final Context context) {
         context.getClient().sendMessage(String.format("Changer de pseudo: /%s <name>", this.getName()));
     }
 }

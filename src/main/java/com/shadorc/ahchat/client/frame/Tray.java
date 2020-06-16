@@ -6,8 +6,6 @@ import com.shadorc.ahchat.server.ServerManager;
 
 import javax.swing.ImageIcon;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class Tray {
 
@@ -15,55 +13,44 @@ public class Tray {
 
     public static void init() {
 
-        PopupMenu menu = new PopupMenu();
+        final PopupMenu menu = new PopupMenu();
 
-        MenuItem showServerItem = new MenuItem("Afficher le serveur");
-        showServerItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (ServerManager.getInstance().isStarted()) {
-                    ServerManager.getInstance().getFrame().toFront();
-                    ServerManager.getInstance().getFrame().setVisible(true);
-                }
+        final MenuItem showServerItem = new MenuItem("Afficher le serveur");
+        showServerItem.addActionListener(e -> {
+            if (ServerManager.getInstance().isStarted()) {
+                ServerManager.getInstance().getFrame().toFront();
+                ServerManager.getInstance().getFrame().setVisible(true);
             }
         });
         menu.add(showServerItem);
 
-        MenuItem exitServerItem = new MenuItem("Fermer le serveur");
-        exitServerItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (ServerManager.getInstance().isStarted()) {
-                    ServerManager.getInstance().stop();
-                }
+        final MenuItem exitServerItem = new MenuItem("Fermer le serveur");
+        exitServerItem.addActionListener(e -> {
+            if (ServerManager.getInstance().isStarted()) {
+                ServerManager.getInstance().stop();
             }
         });
         menu.add(exitServerItem);
 
         menu.addSeparator();
 
-        MenuItem exitItem = new MenuItem("Quitter");
-        exitItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Client.exit(true);
-            }
-        });
+        final MenuItem exitItem = new MenuItem("Quitter");
+        exitItem.addActionListener(e -> Client.exit(true));
         menu.add(exitItem);
 
-        icon = new TrayIcon(new ImageIcon(Tray.class.getResource("/icon.png")).getImage(), "AhChat", menu);
-        icon.setImageAutoSize(true);
+        Tray.icon = new TrayIcon(new ImageIcon(Tray.class.getResource("/icon.png")).getImage(), "AhChat", menu);
+        Tray.icon.setImageAutoSize(true);
 
         try {
-            SystemTray.getSystemTray().add(icon);
-        } catch (AWTException e) {
+            SystemTray.getSystemTray().add(Tray.icon);
+        } catch (final AWTException e) {
             Main.showErrorDialog(e, "Erreur lors de la création du TrayIcon : " + e.getMessage());
         }
     }
 
     public static void alert() {
         if (!Main.getFrame().isFocused()) {
-            icon.displayMessage(null, "[CHAT] Nouveau message", TrayIcon.MessageType.INFO);
+            Tray.icon.displayMessage(null, "[CHAT] Nouveau message", TrayIcon.MessageType.INFO);
         }
     }
 }

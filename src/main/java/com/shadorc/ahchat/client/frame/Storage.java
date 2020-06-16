@@ -13,25 +13,25 @@ public class Storage {
     }
 
     public static void init() throws IOException {
-        CONFIG_FILE.createNewFile();
+        Storage.CONFIG_FILE.createNewFile();
     }
 
-    public static void store(Data data, Object value) {
-        try (OutputStream output = new FileOutputStream(CONFIG_FILE)) {
-            PROPERTIES.setProperty(data.toString(), value.toString());
-            PROPERTIES.store(output, null);
+    public static void store(final Data data, final Object value) {
+        try (final OutputStream output = new FileOutputStream(Storage.CONFIG_FILE)) {
+            Storage.PROPERTIES.setProperty(data.toString(), value.toString());
+            Storage.PROPERTIES.store(output, null);
 
-        } catch (IOException err) {
+        } catch (final IOException err) {
             err.printStackTrace();
         }
     }
 
-    public static String getData(Data data) {
-        try (InputStream input = new FileInputStream(CONFIG_FILE)) {
-            PROPERTIES.load(input);
-            return PROPERTIES.getProperty(data.toString());
+    public static String getData(final Data data) {
+        try (final InputStream input = new FileInputStream(Storage.CONFIG_FILE)) {
+            Storage.PROPERTIES.load(input);
+            return Storage.PROPERTIES.getProperty(data.toString());
 
-        } catch (IOException err) {
+        } catch (final IOException err) {
             err.printStackTrace();
         }
 
