@@ -12,7 +12,8 @@ public class ServerClosedCmd extends ClientCmd {
 
     @Override
     public void execute(final ClientContext context) {
-        Client.exit(false);
+        Client.getInstance().disconnect();
+        System.exit(0);
     }
 
 }

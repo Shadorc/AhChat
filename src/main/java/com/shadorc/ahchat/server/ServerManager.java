@@ -63,7 +63,8 @@ public class ServerManager {
         this.server.stop();
         this.isStarted.set(false);
         if (!Main.getFrame().isVisible()) {
-            Client.exit(true);
+            Client.getInstance().disconnect();
+            System.exit(0);
         }
     }
 

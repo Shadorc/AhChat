@@ -35,7 +35,10 @@ public class Tray {
         menu.addSeparator();
 
         final MenuItem exitItem = new MenuItem("Quitter");
-        exitItem.addActionListener(e -> Client.exit(true));
+        exitItem.addActionListener(ignored -> {
+            Client.getInstance().disconnect();
+            System.exit(0);
+        });
         menu.add(exitItem);
 
         Tray.icon = new TrayIcon(new ImageIcon(Tray.class.getResource("/icon.png")).getImage(), "AhChat", menu);

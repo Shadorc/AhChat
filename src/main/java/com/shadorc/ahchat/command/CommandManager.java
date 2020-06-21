@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class CommandManager<T extends BaseCmd> {
+public class CommandManager<T extends BaseCmd<?>> {
 
     private final Map<String, T> commandsMap;
 

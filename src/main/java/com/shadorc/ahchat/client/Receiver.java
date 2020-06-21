@@ -20,13 +20,16 @@ public class Receiver {
     }
 
     public void start() {
+        // this.waitsForFile();
+        this.waitsForMessage();
+    }
+
+    private void waitsForMessage() {
+        final CommandManager<ClientCmd> cmdManager = new CommandManager(new ConnectionCmd(),
+                new DeconnectionCmd(), new RenameCmd(), new ServerClosedCmd());
+
         ThreadPoolManager.getInstance().execute(() -> {
             try {
-                // this.waitingForFile();
-
-                final CommandManager<ClientCmd> cmdManager = new CommandManager(new ConnectionCmd(),
-                        new DeconnectionCmd(), new RenameCmd(), new ServerClosedCmd());
-
                 String message;
                 while ((message = this.inChat.readLine()) != null) {
                     if (message.startsWith("/")) {
@@ -39,19 +42,20 @@ public class Receiver {
                         ConnectedPanel.dispMessage(message);
                     }
                 }
+            } catch (final SocketException ignored) {
+                // Client has been closed
+                Client.getInstance().disconnect();
 
             } catch (final IOException err) {
-                ConnectedPanel.dispError(err, "Le serveur a été fermé.");
-
-            } finally {
-                Client.exit(false);
+                System.err.println("An error occurred while receiving message: " + err.getMessage());
+                err.printStackTrace();
             }
         });
     }
 
     // This thread is waiting for receiving data
     @Deprecated
-    private void waitingForFile() {
+    private void waitsForFile() {
         ThreadPoolManager.getInstance().execute(() -> {
             //Send file's informations
             try (final DataInputStream dataIn = new DataInputStream(Receiver.this.inData)) {
@@ -98,7 +102,7 @@ public class Receiver {
                 ConnectedPanel.dispError(e, "Erreur lors de la réception du fichier, " + e.getMessage());
             }
 
-            Receiver.this.waitingForFile();
+            Receiver.this.waitsForFile();
         });
     }
 }

@@ -3,7 +3,7 @@ package com.shadorc.ahchat.command;
 import java.util.Collections;
 import java.util.List;
 
-public abstract class BaseCmd {
+public abstract class BaseCmd<T extends BaseContext> {
 
     private final List<String> names;
     private final String alias;
@@ -28,5 +28,7 @@ public abstract class BaseCmd {
     public String getAlias() {
         return this.alias;
     }
+
+    public abstract void execute(final T context);
 
 }

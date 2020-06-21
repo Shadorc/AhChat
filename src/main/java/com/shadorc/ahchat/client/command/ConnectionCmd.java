@@ -13,6 +13,7 @@ public class ConnectionCmd extends ClientCmd {
 
     @Override
     public void execute(final ClientContext context) {
-        ConnectedPanel.getUsersList().addUser(context.getArg(), new ImageIcon(this.getClass().getResource("/icon.png")));
+        ConnectedPanel.getUsersList()
+                .addUser(context.getArg(), new ImageIcon(this.getClass().getResource("/icon.png")));
     }
 }

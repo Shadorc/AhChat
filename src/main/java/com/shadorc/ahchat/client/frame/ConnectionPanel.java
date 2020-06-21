@@ -184,7 +184,6 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
     }
 
     private void connection() {
-
         final String pseudo = this.nameField.getText().trim();
         final String ip = this.ipField.getText().trim();
 
@@ -199,7 +198,7 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
 
             new Thread(() -> {
                 final ConnectedPanel pane = new ConnectedPanel(); //Sinon users est null et il y a une erreur lors du launch
-                if (Client.connect(pseudo, ConnectionPanel.this.icon, ip)) {
+                if (Client.getInstance().connect(ip, pseudo, ConnectionPanel.this.icon)) {
                     Main.getFrame().setPanel(pane);
                     Main.getFrame().setTitle(Main.getFrame().getTitle() + " - " + pseudo);
                 } else {

@@ -22,8 +22,11 @@ public class Frame extends JFrame {
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(final WindowEvent e) {
-                //Don't exit if Server is launched
-                Client.exit(!ServerManager.getInstance().isStarted());
+                Client.getInstance().disconnect();
+                // Don't exit if Server is launched
+                if (!ServerManager.getInstance().isStarted()) {
+                    System.exit(0);
+                }
             }
         });
 

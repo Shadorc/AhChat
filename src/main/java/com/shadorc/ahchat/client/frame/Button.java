@@ -11,8 +11,6 @@ import java.awt.event.MouseEvent;
 
 public class Button extends JButton {
 
-    private static final long serialVersionUID = 1L;
-
     private final String name;
     private final Size size;
 
@@ -20,42 +18,41 @@ public class Button extends JButton {
         SMALL, NORMAL;
     }
 
-    public Button(final String name, final String info, final Size size, final ActionListener al) {
-        super();
-
+    public Button(final String name, final String info, final Size size, final ActionListener listener) {
         this.name = name;
         this.size = size;
 
-        final ImageIcon icon1 = this.getIcon("1");
-        final ImageIcon icon2 = this.getIcon("2");
-        final ImageIcon icon3 = this.getIcon("3");
+        final ImageIcon icon1 = this.generateIcon("1");
+        final ImageIcon icon2 = this.generateIcon("2");
+        final ImageIcon icon3 = this.generateIcon("3");
 
         this.setIcon(icon1);
         this.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseEntered(final MouseEvent e) {
-                final JButton bu = (JButton) e.getSource();
-                bu.setIcon(icon3);
+            public void mouseEntered(final MouseEvent event) {
+                final JButton button = (JButton) event.getSource();
+                button.setIcon(icon3);
             }
 
             @Override
-            public void mouseExited(final MouseEvent e) {
-                final JButton bu = (JButton) e.getSource();
-                bu.setIcon(icon1);
+            public void mouseExited(final MouseEvent event) {
+                final JButton button = (JButton) event.getSource();
+                button.setIcon(icon1);
             }
         });
         this.setPressedIcon(icon2);
         this.setToolTipText(info);
         this.setBackground(Color.WHITE);
-        this.addActionListener(al);
+        this.addActionListener(listener);
         this.setFocusable(false);
         this.setBorder(BorderFactory.createEmptyBorder());
         this.setContentAreaFilled(false);
     }
 
-    private ImageIcon getIcon(final String number) {
-        final ImageIcon icon = new ImageIcon(this.getClass().getResource("/Button_" + this.name + "_" + number + ".png"));
-        final int dimension = (this.size == Size.NORMAL) ? 50 : 30;
+    private ImageIcon generateIcon(final String number) {
+        final ImageIcon icon = new ImageIcon(this.getClass()
+                .getResource(String.format("/Button_%s_%d.png", this.name, number)));
+        final int dimension = this.size == Size.NORMAL ? 50 : 30;
         return new ImageIcon(icon.getImage().getScaledInstance(dimension, dimension, Image.SCALE_SMOOTH));
     }
 }

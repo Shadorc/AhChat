@@ -12,7 +12,8 @@ public class DeconnectionCmd extends ClientCmd {
 
     @Override
     public void execute(final ClientContext context) {
-        ConnectedPanel.getUsersList().removeUser(context.getArg());
+        ConnectedPanel.getUsersList()
+                .removeUser(context.getArg());
     }
 
 }

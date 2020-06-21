@@ -9,77 +9,73 @@ import java.nio.charset.StandardCharsets;
 
 public class Client {
 
-    private static Socket chatSocket;
-    private static Socket dataSocket;
+    private static Client instance;
 
-    private static Emitter emitter;
-    private static Receiver receiver;
+    static {
+        Client.instance = new Client();
+    }
 
-    private static InputStream inData;
-    private static OutputStream outData;
+    private String ip;
+    private String pseudo;
+    private File icon;
 
-    private static BufferedReader inChat;
-    private static PrintWriter outChat;
+    private Socket chatSocket;
+    private Socket dataSocket;
+    private Emitter emitter;
+    private Receiver receiver;
 
-    public static boolean connect(final String pseudo, final File icon, final String ip) {
+    public boolean connect(final String ip, final String pseudo, final File icon) {
+        this.ip = ip;
+        this.pseudo = pseudo;
+        this.icon = icon;
 
         Storage.getInstance().save(Storage.Data.PSEUDO, pseudo);
         Storage.getInstance().save(Storage.Data.IP, ip);
         Storage.getInstance().save(Storage.Data.ICON, icon.getPath());
 
         try {
-            //Ping server to test if it's reachable
+            // Ping server to test if it's reachable
             final Process ping = Runtime.getRuntime().exec("ping -n 1 " + ip);
             ping.waitFor();
 
-            //Connexion successful
-            if (ping.exitValue() == 0) {
-                Client.chatSocket = new Socket(ip, 15000);
-                Client.dataSocket = new Socket(ip, 15001);
-            } else {
+            if (ping.exitValue() != 0) {
                 return false;
             }
 
-            Client.inChat = new BufferedReader(new InputStreamReader(Client.chatSocket.getInputStream(), StandardCharsets.UTF_8));
-            Client.outChat = new PrintWriter(Client.chatSocket.getOutputStream(), false, StandardCharsets.UTF_8);
+            this.chatSocket = new Socket(this.ip, 15000);
+            this.dataSocket = new Socket(this.ip, 15001);
 
-            Client.inData = Client.dataSocket.getInputStream();
-            Client.outData = Client.dataSocket.getOutputStream();
+            final BufferedReader inChat = new BufferedReader(
+                    new InputStreamReader(this.chatSocket.getInputStream(), StandardCharsets.UTF_8));
+            final PrintWriter outChat = new PrintWriter(this.chatSocket.getOutputStream(), false, StandardCharsets.UTF_8);
 
-            //Chat's thread
-            Client.receiver = new Receiver(Client.inChat, Client.inData);
-            Client.receiver.start();
+            final InputStream inData = this.dataSocket.getInputStream();
+            final OutputStream outData = this.dataSocket.getOutputStream();
 
-            Client.emitter = new Emitter(Client.outChat, Client.outData);
+            this.emitter = new Emitter(outChat, outData);
+            this.receiver = new Receiver(inChat, inData);
+            this.receiver.start();
 
-            Client.sendMessage(pseudo);
+            this.emitter.sendMessage(pseudo);
 
-            return true;
-
-        } catch (final IOException | InterruptedException e) {
+        } catch (final IOException | InterruptedException err) {
             return false;
         }
+
+        return true;
     }
 
-    public static void sendMessage(final String message) {
-        Client.emitter.sendMessage(message);
+    public Emitter getEmitter() {
+        return this.emitter;
     }
 
-    @Deprecated
-    public static void sendFile(final File file) {
-        Client.emitter.sendFile(file);
+    public void disconnect() {
+        Util.close(this.chatSocket);
+        Util.close(this.dataSocket);
     }
 
-    public static void exit(final boolean exit) {
-        Util.close(Client.chatSocket);
-        Util.close(Client.dataSocket);
-        Util.close(Client.inChat);
-        Util.close(Client.outChat);
-        Util.close(Client.inData);
-        Util.close(Client.outData);
-
-        if (exit) {
-            System.exit(0);
-        }
+    public static Client getInstance() {
+        return Client.instance;
     }
+
 }

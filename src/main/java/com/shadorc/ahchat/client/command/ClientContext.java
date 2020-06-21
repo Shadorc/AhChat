@@ -4,7 +4,7 @@ import com.shadorc.ahchat.command.BaseContext;
 
 public class ClientContext extends BaseContext {
 
-    public ClientContext(String message) {
+    public ClientContext(final String message) {
         super(message);
     }
 

@@ -18,8 +18,6 @@ import java.util.Map;
 
 public class ConnectedPanel extends JPanel implements ActionListener {
 
-    private static final long serialVersionUID = 1L;
-
     private static final String DEFAULT_TEXT = "Envoyer un message";
 
     private static JScrollPane jsp;
@@ -182,7 +180,7 @@ public class ConnectedPanel extends JPanel implements ActionListener {
     private void sendMessage() {
         final String message = this.inputField.getText().trim();
         if (!message.isEmpty()) {
-            Client.sendMessage(message);
+            Client.getInstance().getEmitter().sendMessage(message);
         }
         this.inputField.setText("");
     }

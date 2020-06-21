@@ -1,7 +1,6 @@
 package com.shadorc.ahchat.client;
 
 import com.shadorc.ahchat.client.frame.Frame;
-import com.shadorc.ahchat.client.frame.Tray;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -15,13 +14,13 @@ public class Main {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (final Exception err) {
-            System.err.println("An error occurred while setting UIMAnager look and feel: " + err.getMessage());
+            System.err.println("An error occurred while setting UIManager look and feel: " + err.getMessage());
             err.printStackTrace();
         }
 
         SwingUtilities.invokeLater(() -> Main.frame = new Frame());
 
-        Tray.init();
+        // TODO: Tray.init();
     }
 
     public static Frame getFrame() {
