@@ -11,7 +11,6 @@ public class Client {
     private static Socket s_chat, s_data;
 
     private static Emission emission;
-    private static Reception reception;
 
     private static InputStream inData;
     private static OutputStream outData;
@@ -45,7 +44,7 @@ public class Client {
             outData = s_data.getOutputStream();
 
             //Chat's thread
-            reception = new Reception(inChat, inData);
+            Reception reception = new Reception(inChat, inData);
             reception.start();
 
             emission = new Emission(outChat, outData);

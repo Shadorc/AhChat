@@ -10,8 +10,8 @@ import java.util.Random;
 
 public class ServerClient implements Runnable {
 
-    private Socket s_chat;
-    private Socket s_data;
+    private final Socket s_chat;
+    private final Socket s_data;
 
     private InputStream inData;
     private OutputStream outData;
@@ -22,7 +22,7 @@ public class ServerClient implements Runnable {
     private PrintWriter outChat;
 
     private String name;
-    private String ip;
+    private final String ip;
 
     public ServerClient(Socket s_chat, Socket s_data) {
 
@@ -114,46 +114,43 @@ public class ServerClient implements Runnable {
     //This Thread is waiting for file from the Client
     private void waitingForFile() {
         //The client sends a file, Server sends it to others clients
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    DataInputStream dataIn = new DataInputStream(inData);
-                    String infos[] = dataIn.readUTF().split("&");
-                    String fileName = infos[0];
-                    long size = Long.parseLong(infos[1]);
+        new Thread(() -> {
+            try {
+                DataInputStream dataIn = new DataInputStream(inData);
+                String[] infos = dataIn.readUTF().split("&");
+                String fileName = infos[0];
+                long size = Long.parseLong(infos[1]);
 
-                    ServerMain.getFrame().dispMessage(ServerClient.this.name + " envoie un fichier de " + ServerUtility.toReadableUnit(size) + " nommé \"" + fileName + "\".");
+                ServerMain.getFrame().dispMessage(ServerClient.this.name + " envoie un fichier de " + ServerUtility.toReadableUnit(size) + " nommé \"" + fileName + "\".");
 
-                    byte buff[] = new byte[1024];
-                    long total = 0;
-                    int data;
+                byte[] buff = new byte[1024];
+                long total = 0;
+                int data;
 
-                    for (ServerClient client : ServerMain.getClients()) {
-                        if (client == ServerClient.this) continue;
-                        client.sendString(fileName + "&" + size);
-                    }
-
-                    while (total < size && (data = inData.read(buff)) > 0) {
-                        for (ServerClient client : ServerMain.getClients()) {
-                            if (client == ServerClient.this) continue;
-                            client.sendData(buff, 0, data);
-                        }
-                        total += data;
-                    }
-
-                    ServerMain.getFrame().dispMessage("\"" + fileName + "\" a été transmis à tous les clients.");
-
-                } catch (EOFException | SocketException ignore) {
-                    //Server's ending, ignore it
-
-                } catch (IOException e) {
-                    ServerClient.this.sendMessage("Erreur lors de l'envoi du fichier, " + e.getMessage());
-                    ServerMain.getFrame().dispError(e, "Erreur lors de l'envoi du fichier, " + e.getMessage());
+                for (ServerClient client : ServerMain.getClients()) {
+                    if (client == ServerClient.this) continue;
+                    client.sendString(fileName + "&" + size);
                 }
 
-                ServerClient.this.waitingForFile();
+                while (total < size && (data = inData.read(buff)) > 0) {
+                    for (ServerClient client : ServerMain.getClients()) {
+                        if (client == ServerClient.this) continue;
+                        client.sendData(buff, 0, data);
+                    }
+                    total += data;
+                }
+
+                ServerMain.getFrame().dispMessage("\"" + fileName + "\" a été transmis à tous les clients.");
+
+            } catch (EOFException | SocketException ignore) {
+                //Server's ending, ignore it
+
+            } catch (IOException e) {
+                ServerClient.this.sendMessage("Erreur lors de l'envoi du fichier, " + e.getMessage());
+                ServerMain.getFrame().dispError(e, "Erreur lors de l'envoi du fichier, " + e.getMessage());
             }
+
+            ServerClient.this.waitingForFile();
         }).start();
     }
 
@@ -162,10 +159,6 @@ public class ServerClient implements Runnable {
         Server.sendAll(this.name + " s'est renommé en " + name + ".", MessageType.INFO);
         ServerMain.getFrame().replaceUser(this.name, name);
         this.name = name;
-    }
-
-    public String getIp() {
-        return ip;
     }
 
     public String getName() {

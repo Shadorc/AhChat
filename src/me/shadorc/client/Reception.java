@@ -8,8 +8,8 @@ import java.net.SocketException;
 
 public class Reception implements Runnable {
 
-    private BufferedReader inChat;
-    private InputStream inData;
+    private final BufferedReader inChat;
+    private final InputStream inData;
 
     public Reception(BufferedReader inChat, InputStream inData) {
         this.inChat = inChat;
@@ -44,66 +44,63 @@ public class Reception implements Runnable {
 
     //This thread is waiting for receiving data
     private void waitingForFile() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                OutputStream fileWriter = null;
+        new Thread(() -> {
+            OutputStream fileWriter = null;
 
-                try {
-                    //Send file's informations
-                    DataInputStream dataIn = new DataInputStream(inData);
-                    String[] infos = dataIn.readUTF().split("&");
+            try {
+                //Send file's informations
+                DataInputStream dataIn = new DataInputStream(inData);
+                String[] infos = dataIn.readUTF().split("&");
 
-                    String fileName = infos[0];
-                    long size = Long.parseLong(infos[1]);
+                String fileName = infos[0];
+                long size = Long.parseLong(infos[1]);
 
-                    ConnectedPanel.addProgressBar("Téléchargement", fileName);
+                ConnectedPanel.addProgressBar("Téléchargement", fileName);
 
-                    int index = fileName.lastIndexOf(".");
-                    String name = (index > 0) ? fileName.substring(0, index) : fileName;
-                    String format = (index > 0) ? fileName.substring(index) : null;
+                int index = fileName.lastIndexOf(".");
+                String name = (index > 0) ? fileName.substring(0, index) : fileName;
+                String format = (index > 0) ? fileName.substring(index) : null;
 
-                    JFileChooser chooser = new JFileChooser();
-                    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-                    if (chooser.showDialog(null, "Enregistrer \"" + fileName + "\"") == JFileChooser.APPROVE_OPTION) {
-                        File saveFolder = chooser.getSelectedFile();
+                JFileChooser chooser = new JFileChooser();
+                chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                if (chooser.showDialog(null, "Enregistrer \"" + fileName + "\"") == JFileChooser.APPROVE_OPTION) {
+                    File saveFolder = chooser.getSelectedFile();
 
-                        //While the file exists, change name
-                        File file = new File(saveFolder + "/" + name + format);
-                        for (int i = 1; file.exists(); i++) {
-                            file = new File(saveFolder + "/" + name + " (" + i + ")" + format);
-                        }
-
-                        fileWriter = new FileOutputStream(file);
-
-                        byte buff[] = new byte[1024];
-                        long total = 0;
-                        int data;
-
-                        while (total < size && (data = inData.read(buff)) > 0) {
-                            fileWriter.write(buff, 0, data);
-                            fileWriter.flush();
-                            total += data;
-                            ConnectedPanel.updateBar("Téléchargement", fileName, (int) (total * 100 / size));
-                        }
+                    //While the file exists, change name
+                    File file = new File(saveFolder + "/" + name + format);
+                    for (int i = 1; file.exists(); i++) {
+                        file = new File(saveFolder + "/" + name + " (" + i + ")" + format);
                     }
 
-                } catch (SocketException ignore) {
-                    //Server's ending, ignore it.
+                    fileWriter = new FileOutputStream(file);
 
-                } catch (IOException e) {
-                    ConnectedPanel.dispError(e, "Erreur lors de la réception du fichier, " + e.getMessage());
+                    byte[] buff = new byte[1024];
+                    long total = 0;
+                    int data;
 
-                } finally {
-                    try {
-                        if (fileWriter != null) fileWriter.close();
-                    } catch (IOException e) {
-                        ConnectedPanel.dispError(e, "Erreur lors de la fermeture de la réception du fichier, " + e.getMessage());
+                    while (total < size && (data = inData.read(buff)) > 0) {
+                        fileWriter.write(buff, 0, data);
+                        fileWriter.flush();
+                        total += data;
+                        ConnectedPanel.updateBar("Téléchargement", fileName, (int) (total * 100 / size));
                     }
                 }
 
-                Reception.this.waitingForFile();
+            } catch (SocketException ignore) {
+                //Server's ending, ignore it.
+
+            } catch (IOException e) {
+                ConnectedPanel.dispError(e, "Erreur lors de la réception du fichier, " + e.getMessage());
+
+            } finally {
+                try {
+                    if (fileWriter != null) fileWriter.close();
+                } catch (IOException e) {
+                    ConnectedPanel.dispError(e, "Erreur lors de la fermeture de la réception du fichier, " + e.getMessage());
+                }
             }
+
+            Reception.this.waitingForFile();
         }).start();
     }
 }

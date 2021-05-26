@@ -27,12 +27,7 @@ public class Main {
             System.exit(1);
         }
 
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                frame = new Frame();
-            }
-        });
+        SwingUtilities.invokeLater(() -> frame = new Frame());
 
         Tray.init();
     }

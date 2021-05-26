@@ -19,11 +19,12 @@ import java.util.List;
 
 public class ConnectionPanel extends JPanel implements ActionListener, KeyListener {
 
-    private static final long serialVersionUID = 1L;
-
-    private JFormattedTextField nameField, ipField;
-    private JButton connect, create, iconButton;
-    private Image background;
+    private final JFormattedTextField nameField;
+    private final JFormattedTextField ipField;
+    private final JButton connect;
+    private final JButton create;
+    private final JButton iconButton;
+    private final Image background;
     private File icon;
 
     public ConnectionPanel() {
@@ -196,18 +197,15 @@ public class ConnectionPanel extends JPanel implements ActionListener, KeyListen
             connect.setText("Connexion...");
             connect.setEnabled(false);
 
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    ConnectedPanel pane = new ConnectedPanel(); //Sinon users est null et il y a une erreur lors du launch
-                    if (Client.connect(pseudo, icon, ip)) {
-                        Main.getFrame().setPanel(pane);
-                        Main.getFrame().setTitle(Main.getFrame().getTitle() + " - " + pseudo);
-                    } else {
-                        Main.showErrorDialog(new Exception("Serveur indisponible"), "Serveur indisponible ou inexistant.");
-                        connect.setText("Connexion");
-                        connect.setEnabled(true);
-                    }
+            new Thread(() -> {
+                ConnectedPanel pane = new ConnectedPanel(); //Sinon users est null et il y a une erreur lors du launch
+                if (Client.connect(pseudo, icon, ip)) {
+                    Main.getFrame().setPanel(pane);
+                    Main.getFrame().setTitle(Main.getFrame().getTitle() + " - " + pseudo);
+                } else {
+                    Main.showErrorDialog(new Exception("Serveur indisponible"), "Serveur indisponible ou inexistant.");
+                    connect.setText("Connexion");
+                    connect.setEnabled(true);
                 }
             }).start();
         }

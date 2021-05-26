@@ -8,13 +8,11 @@ import java.awt.event.MouseEvent;
 
 public class Button extends JButton {
 
-    private static final long serialVersionUID = 1L;
-
-    private String name;
-    private Size size;
+    private final String name;
+    private final Size size;
 
     public enum Size {
-        SMALL, NORMAL;
+        SMALL, NORMAL
     }
 
     public Button(String name, String info, Size size, ActionListener al) {

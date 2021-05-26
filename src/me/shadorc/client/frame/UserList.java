@@ -5,22 +5,20 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 
 public class UserList extends JList<String> {
 
-    private static final long serialVersionUID = 1L;
-    private HashMap<String, ImageIcon> imageMap;
+    private final Map<String, ImageIcon> imageMap;
 
     public UserList() {
         super();
         this.setCellRenderer(new ListRenderer());
 
-        imageMap = new HashMap<String, ImageIcon>();
+        imageMap = new HashMap<>();
     }
 
     public class ListRenderer extends DefaultListCellRenderer {
-
-        private static final long serialVersionUID = 1L;
 
         @Override
         public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
@@ -32,7 +30,7 @@ public class UserList extends JList<String> {
     }
 
     public String[] getUsersArray() {
-        String[] users = imageMap.keySet().toArray(new String[imageMap.size()]);
+        String[] users = imageMap.keySet().toArray(new String[0]);
         Arrays.sort(users, String.CASE_INSENSITIVE_ORDER);
         return users;
     }

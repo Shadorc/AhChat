@@ -10,8 +10,6 @@ import java.awt.event.WindowEvent;
 
 public class Frame extends JFrame {
 
-    private static final long serialVersionUID = 1L;
-
     public Frame() {
         super("AhChat");
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

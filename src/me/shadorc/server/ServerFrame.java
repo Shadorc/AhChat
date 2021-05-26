@@ -16,16 +16,14 @@ import java.io.IOException;
 
 public class ServerFrame extends JFrame {
 
-    private static final long serialVersionUID = 1L;
+    private final String DEFAULT_TEXT = "Envoyer un message";
 
-    private String DEFAULT_TEXT = "Envoyer un message";
+    private final JFormattedTextField inputField;
+    private final HTMLEditorKit kit;
+    private final HTMLDocument doc;
 
-    private JFormattedTextField inputField;
-    private HTMLEditorKit kit;
-    private HTMLDocument doc;
-
-    private JList<String> serverInfos;
-    private UserList usersList;
+    private final JList<String> serverInfos;
+    private final UserList usersList;
 
     public ServerFrame() {
         super("AhChat - Serveur");
@@ -48,13 +46,13 @@ public class ServerFrame extends JFrame {
         mainPanel.add(scroll, BorderLayout.CENTER);
 
         JPanel rightPanel = new JPanel(new GridLayout(2, 0));
-        rightPanel.setPreferredSize(new Dimension((int) (Main.getFrame().getWidth() / 4), 0));
+        rightPanel.setPreferredSize(new Dimension(Main.getFrame().getWidth() / 4, 0));
 
         usersList = new UserList();
         usersList.setBorder(BorderFactory.createLoweredBevelBorder());
         rightPanel.add(usersList);
 
-        serverInfos = new JList<String>();
+        serverInfos = new JList<>();
         serverInfos.setBorder(BorderFactory.createLoweredBevelBorder());
         serverInfos.addMouseListener(new MouseAdapter() {
             @Override
@@ -62,12 +60,7 @@ public class ServerFrame extends JFrame {
                 if (e.getButton() == MouseEvent.BUTTON3) {
                     JPopupMenu menu = new JPopupMenu();
                     JMenuItem item = new JMenuItem("Copy");
-                    item.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(serverInfos.getSelectedValue().split(" : ", 2)[1]), null);
-                        }
-                    });
+                    item.addActionListener(e1 -> Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(serverInfos.getSelectedValue().split(" : ", 2)[1]), null));
                     menu.add(item);
                     menu.show(e.getComponent(), e.getX(), e.getY());
                 }

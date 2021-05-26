@@ -6,8 +6,6 @@ import me.shadorc.server.ServerMain;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class Tray {
 
@@ -18,24 +16,18 @@ public class Tray {
         PopupMenu menu = new PopupMenu();
 
         MenuItem showServerItem = new MenuItem("Afficher le serveur");
-        showServerItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (ServerMain.isOpen()) {
-                    ServerMain.getFrame().toFront();
-                    ServerMain.getFrame().setVisible(true);
-                }
+        showServerItem.addActionListener(e -> {
+            if (ServerMain.isOpen()) {
+                ServerMain.getFrame().toFront();
+                ServerMain.getFrame().setVisible(true);
             }
         });
         menu.add(showServerItem);
 
         MenuItem exitServerItem = new MenuItem("Fermer le serveur");
-        exitServerItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (ServerMain.isOpen()) {
-                    ServerMain.exit();
-                }
+        exitServerItem.addActionListener(e -> {
+            if (ServerMain.isOpen()) {
+                ServerMain.exit();
             }
         });
         menu.add(exitServerItem);
@@ -43,12 +35,7 @@ public class Tray {
         menu.addSeparator();
 
         MenuItem exitItem = new MenuItem("Quitter");
-        exitItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Client.exit(true);
-            }
-        });
+        exitItem.addActionListener(e -> Client.exit(true));
         menu.add(exitItem);
 
         icon = new TrayIcon(new ImageIcon(Tray.class.getResource("/res/icon.png")).getImage(), "AhChat", menu);

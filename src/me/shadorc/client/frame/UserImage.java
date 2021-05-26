@@ -13,7 +13,6 @@ public class UserImage {
 
         //Resize image with ratio aspect
         int width = (icon.getIconWidth() >= icon.getIconHeight()) ? -1 : dimension;
-        ;
         int height = (icon.getIconWidth() >= icon.getIconHeight()) ? dimension : -1;
 
         icon = new ImageIcon(icon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH));

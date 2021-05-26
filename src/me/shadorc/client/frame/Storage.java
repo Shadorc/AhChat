@@ -9,7 +9,7 @@ public class Storage {
     private static final File CONFIG_FILE = new File("config.properties");
 
     public enum Data {
-        PSEUDO, IP, ICON;
+        PSEUDO, IP, ICON
     }
 
     public static void init() throws IOException {

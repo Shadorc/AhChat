@@ -12,10 +12,9 @@ import java.net.SocketException;
 public class Server implements Runnable {
 
     private ServerSocket ss_chat, ss_data;
-    private String ip;
 
     public enum MessageType {
-        NORMAL, COMMAND, INFO;
+        NORMAL, COMMAND, INFO
     }
 
     public void start() {
@@ -32,7 +31,7 @@ public class Server implements Runnable {
             ss_chat = new ServerSocket(15000);
             ss_data = new ServerSocket(15001);
 
-            ip = ServerUtility.getIp();
+            String ip = ServerUtility.getIp();
             Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(ip), null);
 
             ServerMain.getFrame().updateInfos(ip, ss_chat.getLocalPort(), ss_data.getLocalPort());

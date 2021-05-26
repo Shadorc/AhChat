@@ -18,22 +18,20 @@ import java.util.HashMap;
 
 public class ConnectedPanel extends JPanel implements ActionListener {
 
-    private static final long serialVersionUID = 1L;
-
-    private String DEFAULT_TEXT = "Envoyer un message";
+    private final String DEFAULT_TEXT = "Envoyer un message";
 
     private static JScrollPane jsp;
     private static HashMap<String, JProgressBar> progressBars;
 
-    private JButton fileButton, messageButton;
-    private JFormattedTextField inputField;
+    private final JButton messageButton;
+    private final JFormattedTextField inputField;
 
-    private Image background;
+    private final Image background;
 
-    private static HTMLEditorKit kit = new HTMLEditorKit();
-    private static HTMLDocument doc = new HTMLDocument();
+    private static final HTMLEditorKit kit = new HTMLEditorKit();
+    private static final HTMLDocument doc = new HTMLDocument();
 
-    private static UserList users = new UserList();
+    private static final UserList users = new UserList();
 
     public ConnectedPanel() {
         super(new BorderLayout());
@@ -56,10 +54,10 @@ public class ConnectedPanel extends JPanel implements ActionListener {
         JPanel rightPanel = new JPanel(new GridLayout(2, 0));
 
         users.setBorder(BorderFactory.createLoweredBevelBorder());
-        users.setPreferredSize(new Dimension((int) (Main.getFrame().getWidth() / 4), 0));
+        users.setPreferredSize(new Dimension(Main.getFrame().getWidth() / 4, 0));
         rightPanel.add(users);
 
-        progressBars = new HashMap<String, JProgressBar>();
+        progressBars = new HashMap<>();
 
         JPanel progressPanel = new JPanel(new GridLayout(10, 1));
         progressPanel.setBorder(BorderFactory.createLoweredBevelBorder());
@@ -75,7 +73,7 @@ public class ConnectedPanel extends JPanel implements ActionListener {
         bottom.setBorder(BorderFactory.createEmptyBorder(10, 50, 5, 50));
 
         inputField = new JFormattedTextField(DEFAULT_TEXT);
-        inputField.setPreferredSize(new Dimension((int) Main.getFrame().getWidth(), 25));
+        inputField.setPreferredSize(new Dimension(Main.getFrame().getWidth(), 25));
         inputField.addKeyListener(new KeyListener() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -117,7 +115,7 @@ public class ConnectedPanel extends JPanel implements ActionListener {
         messageButton.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
         buttonsPanel.add(messageButton);
 
-        fileButton = new Button("send", "Envoyer un fichier", Size.SMALL, this);
+        JButton fileButton = new Button("send", "Envoyer un fichier", Size.SMALL, this);
         fileButton.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
         buttonsPanel.add(fileButton);
 

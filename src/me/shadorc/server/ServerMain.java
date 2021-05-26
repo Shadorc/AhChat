@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 public class ServerMain {
 
-    private static ArrayList<ServerClient> clients = new ArrayList<ServerClient>();
+    private static final ArrayList<ServerClient> clients = new ArrayList<>();
 
     private static boolean isOpen = false;
     private static ServerFrame serverFrame;
